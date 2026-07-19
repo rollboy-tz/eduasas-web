@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Facebook Blue Palette (Consistent) */
+    --primary-50: #eef7ff; --primary-100: #d9edff; --primary-200: #bcdfff;
+    --primary-300: #8ecbff; --primary-400: #58a9ff; --primary-500: #0866ff;
+    --primary-600: #0051e8; --primary-700: #0040c2; --primary-800: #00369a;
+    --primary-900: #00307d; --primary-950: #001d4a;
+
+    /* Neutral Palette (Light Mode) */
+    --neutral-50: 0 0% 98%;   --neutral-100: 0 0% 96%;   --neutral-200: 0 0% 90%;
+    --neutral-300: 0 0% 83%;  --neutral-400: 0 0% 64%;   --neutral-500: 0 0% 45%;
+    --neutral-600: 0 0% 29%;  --neutral-700: 0 0% 20%;   --neutral-800: 0 0% 12%;
+    --neutral-900: 0 0% 8%;   --neutral-950: 0 0% 4%;
+
+    --background: 0 0% 98%;
+    --foreground: var(--neutral-950);
+    --card: 0 0% 100%;
+    --card-foreground: var(--neutral-950);
+    --border: var(--neutral-200);
+  }
+
+  [data-theme="dark"] {
+    /* Dark Mode Neutral Values */
+    --background: 0 0% 4%;
+    --foreground: 0 0% 98%;      /* Sasa maandishi yatakuwa meupe/nyepesi */
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 98%;
+    --border: 0 0% 16%;          /* Border inaonekana vizuri kwenye giza */
+  }
+}
+
+@theme {
+  --color-primary-50: var(--primary-50);
+  --color-primary-100: var(--primary-100);
+  --color-primary-200: var(--primary-200);
+  --color-primary-300: var(--primary-300);
+  --color-primary-400: var(--primary-400);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+  --color-primary-800: var(--primary-800);
+  --color-primary-900: var(--primary-900);
+  --color-primary-950: var(--primary-950);
+
+  --color-neutral-50: hsl(var(--neutral-50));
+  --color-neutral-100: hsl(var(--neutral-100));
+  --color-neutral-200: hsl(var(--neutral-200));
+  --color-neutral-300: hsl(var(--neutral-300));
+  --color-neutral-400: hsl(var(--neutral-400));
+  --color-neutral-500: hsl(var(--neutral-500));
+  --color-neutral-600: hsl(var(--neutral-600));
+  --color-neutral-700: hsl(var(--neutral-700));
+  --color-neutral-800: hsl(var(--neutral-800));
+  --color-neutral-900: hsl(var(--neutral-900));
+  --color-neutral-950: hsl(var(--neutral-950));
+
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-border: hsl(var(--border));
+
+  --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-card-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: Arial, sans-serif;
+  }
+}
+
+/* @layer utilities {
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary-500)) hsl(var(--neutral-200));
+  }
+
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--primary-500) / 0.5);
+    border-radius: 20px;
+    transition: background 0.3s;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--primary-500));
+  }
+
+  .scroll-y {
+    @apply overflow-y-auto custom-scrollbar;
+  }
+
+  .scroll-x {
+    @apply overflow-x-auto custom-scrollbar;
+  }
+} */
+
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+.animate-shake { animation: shake 0.2s linear; }
+
+@keyframes shrink {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+.animate-shrink { animation: shrink linear forwards; }

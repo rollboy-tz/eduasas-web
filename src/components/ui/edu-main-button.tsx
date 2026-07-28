@@ -41,7 +41,7 @@ export const EduButton = ({
   
   // 1. VARIANT STYLES
   const variantClasses = {
-    primary: "bg-primary text-white hover:opacity-70 shadow-primary/20 border-none opacity-90",
+    primary: "bg-primary-500 text-white hover:opacity-70 shadow-primary/20 border-none opacity-90",
     danger: "bg-red-500 text-white hover:bg-red-600 shadow-red-500/20 border-none",
     neon: "border-2 border-primary text-primary bg-primary/5 shadow-[0_0_15px_rgba(var(--primary-rgb),0.2)] hover:bg-primary hover:text-white",
     outline: "border-2 border-slate-500/20 text-foreground hover:border-primary hover:text-primary",

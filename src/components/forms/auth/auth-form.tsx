@@ -1,6 +1,6 @@
 'use client'
 import { useRouter, useSearchParams } from "next/navigation";
-import { LoginForm, RegisterForm, PasswordForm, VerifyForm } from "./auth-form-components";
+import { LoginForm, RegisterForm, ForgotForm, ResetForm, VerifyForm } from "./auth-form-components";
 import { cn } from "@/lib/utils";
 
 export const AuthForm = ({ action }: { action: string }) => {
@@ -21,7 +21,9 @@ export const AuthForm = ({ action }: { action: string }) => {
 
         if (action === "verify") return <VerifyForm />
 
-        if (action === "forgot" || action === "reset")  return <PasswordForm />
+        if (action === "reset")  return <ResetForm />
+
+        if (action === "forgot") return <ForgotForm/>
         
         return <LoginForm />
 

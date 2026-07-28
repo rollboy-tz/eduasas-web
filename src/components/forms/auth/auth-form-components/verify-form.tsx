@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-import { AlertCircle, Timer, CheckCircle , Clock, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import { AlertCircle, Timer, CheckCircle, Clock, ShieldCheck, RefreshCcw, ArrowLeft } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { apiMutation } from "@/lib/api";
+import { EduMainLoader } from "@/components/elements";
+import { useEffect, useRef, useState } from "react";
 import { EduButton } from "@/components/ui";
 import { useToast } from "@/lib/store";
+import { apiMutation } from "@/lib/api";
+import { cn } from "@/lib/utils";
 
 
 export const VerifyForm = () => {
@@ -11,12 +14,12 @@ export const VerifyForm = () => {
     // Utilities extractions
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams.toString());
-    
+
     //Params & Quaries extractions
     const url_tokenn = params.get("token");
     const return_url = params.get("return_url");
     const reset_token = params.get("reset_token")
-    const auth_action = params.get("auth_action");
+    const otp_reason = params.get("reason");
     const identity = params.get("identity");
 
     const toast = useToast();
@@ -32,10 +35,9 @@ export const VerifyForm = () => {
     // 1. Security Check: Kama identity haipo, rudi mwanzo (Invalid Access)
     useEffect(() => {
         if (!identity) {
-            const fallback = auth_action === "reset" ? "/auth/forgot-password" : "/auth/register";
-            router.replace(fallback);
+            router.back();
         }
-    }, [identity, auth_action, router]);
+    }, [identity, otp_reason, router]);
 
     // Timer logic
     useEffect(() => {
@@ -54,29 +56,29 @@ export const VerifyForm = () => {
     }, [otpValues]);
 
     const getStatusStyles = () => {
-    if (tokenTimer === 0) {
-      return {
-        container: "bg-[var(--error-bg)] border-[var(--error-border)] text-destructive",
-        text: "text-destructive",
-        icon: <AlertCircle size={32} />,
-        label: "session expired"
-      };
-    }
-    if (tokenTimer < 60) {
-      return {
-        container: "bg-amber-500/10 border-amber-500/20 text-amber-600",
-        text: "text-amber-600 animate-pulse",
-        icon: <Clock size={32} className="animate-pulse" />,
-        label: "expiring soon"
-      };
-    }
-    return {
-      container: "bg-[var(--info-primary-bg)] border-[var(--info-primary-border)] text-primary",
-      text: "text-[var(--icon-color)]",
-      icon: <ShieldCheck size={32} />,
-      label: "expires in"
+        if (tokenTimer === 0) {
+            return {
+                container: "bg-[var(--error-bg)] border-[var(--error-border)] text-destructive",
+                text: "text-destructive",
+                icon: <AlertCircle size={32} />,
+                label: "session expired"
+            };
+        }
+        if (tokenTimer < 60) {
+            return {
+                container: "bg-amber-500/10 border-amber-500/20 text-amber-600",
+                text: "text-amber-600 animate-pulse",
+                icon: <Clock size={32} className="animate-pulse" />,
+                label: "expiring soon"
+            };
+        }
+        return {
+            container: "bg-[var(--info-primary-bg)] border-[var(--info-primary-border)] text-primary",
+            text: "text-[var(--icon-color)]",
+            icon: <ShieldCheck size={32} />,
+            label: "expires in"
+        };
     };
-  };
 
     const status = getStatusStyles();
 
@@ -128,7 +130,7 @@ export const VerifyForm = () => {
 
             if (res.status === 'success') {
                 const message = `${res.message || "Verified successfull!"}`;
-                toast.show({ message,  type: "success"});
+                toast.show({ message, type: "success" });
 
                 // 2. Hapa ndipo tunasafisha abiria ambao kazi yao imeisha
                 params.delete("identity");
@@ -136,9 +138,9 @@ export const VerifyForm = () => {
                 params.delete("action");
                 params.set("new", "true");
 
-                if (auth_action === "reset") {
-                    
-                    if(identity === null) return;
+                if (otp_reason === "reset") {
+
+                    if (identity === null) return;
 
                     // Bind data za reset
                     params.set("identity", identity); // Rudisha identity kwa ajili ya reset page
@@ -161,7 +163,16 @@ export const VerifyForm = () => {
                     router.replace(finalDestination);
                 }
             }
-        } catch (error) {
+
+            if (res.status === 'error') {
+                const message = res.message || "Something went wrong. Unable to verify the OTP"
+                toast.show({ message, type: "error" });
+                router.back()
+                    ;
+            }
+        } catch (error: any) {
+            const message = error.message || "Error occured while verifying."
+            toast.show({ message, type: "error" })
             // Error handling yako
         } finally {
             setIsLoading(false);
@@ -174,7 +185,7 @@ export const VerifyForm = () => {
         try {
             const res = await apiMutation("post", "/auth/resend", {
                 identity,
-                purpose: auth_action === "reset" ? "FORGOT_PASSWORD" : "VERIFICATION"
+                purpose: otp_reason === "reset" ? "FORGOT_PASSWORD" : "VERIFICATION"
             });
             if (res.status === 'success') {
                 const message = res.message || "a new code has been sent.";
@@ -186,9 +197,19 @@ export const VerifyForm = () => {
             }
         } catch (error) { } finally { setIsResending(false); }
     };
+
+    // Njia ya kurudi nyuma yenye kubeba state
+    const backUrl = otp_reason === "reset"  ? `/auth/forgot-password?${params.toString()}` : `/auth/sign-up?${params.toString()}`;
+    const info_text = otp_reason === "reset" ? "To verify its you please enter OTP Code" : "To verify your new account enter OTP Code";
     return (
-        <div className="flex items-center p-2 h-full w-full">
-            <div>
+        <div className="flex flex-col items-center justify-center p-2 h-full w-full">
+
+            <div className="flex flex-col gap-1">
+                <h2 className="font-black text-lg">Verify OTP</h2>
+                <p className="text-sm">{info_text}<br />Sent to: <strong>{identity}</strong></p>
+            </div>
+
+            <div className="">
                 <form onSubmit={handleVerify} className="mt-10 space-y-8">
                     <div className="flex flex-col items-center gap-6">
                         <div className="flex items-center justify-center gap-3">
@@ -205,17 +226,17 @@ export const VerifyForm = () => {
                                         onPaste={handlePaste}
                                         onChange={(e) => handleChange(i, e.target.value)}
                                         onKeyDown={(e) => handleKeyDown(i, e)}
-                                        className={`w-10 h-12 border rounded-[var(--radius)] text-center text-xl font-bold outline-none transition-all 
-                                                    ${tokenTimer === 0
-                                                ? "bg-background border-border text-[var(--icon-muted)]"
-                                                : "bg-transparent border-border focus:border-primary focus:ring-1 focus:ring-primary/20 text-foreground"
-                                            }`}
+                                        className={cn("w-10 h-10 border rounded text-center text-xl font-bold outline-none transition-all",
+                                            tokenTimer === 0
+                                                ? "bg-background border-border text-neutral-300"
+                                                : "bg-transparent border-border focus:border-primary-500 focus:ring-1 focus:ring-primary-400"
+                                        )}
                                     />
                                 ))}
                             </div>
                         </div>
 
-                        <div className={`flex items-center gap-2 text-[11px] font-bold tracking-widest uppercase px-4 py-1.5 rounded-[var(--radius)] border border-border bg-background/50 transition-colors duration-500`}>
+                        <div className={`flex items-center gap-2 text-[11px] font-bold tracking-widest uppercase px-4 py-1.5 rounded border border-border bg-background/50 transition-colors duration-500`}>
                             {tokenTimer > 0 ? (
                                 <>
                                     <Timer size={14} className={status.text} />
@@ -223,7 +244,7 @@ export const VerifyForm = () => {
                                 </>
                             ) : (
                                 <span className="text-destructive flex items-center gap-1.5">
-                                    <AlertCircle size={14} /> session expired
+                                    <AlertCircle size={14} /> Session expired
                                 </span>
                             )}
                         </div>
@@ -238,6 +259,28 @@ export const VerifyForm = () => {
                         verify & continue
                     </EduButton>
                 </form>
+
+                <div className="mt-10 space-y-6">
+                    <button
+                        type="button"
+                        onClick={handleResend}
+                        disabled={resendTimer > 0 || isResending}
+                        className={`text-[11px] font-bold flex items-center justify-center gap-2 mx-auto uppercase tracking-widest transition-all bg-transparent border-none p-0 ${resendTimer > 0 ? 'text-[var(--icon-muted)] opacity-50' : 'text-primary hover:opacity-80 cursor-pointer'}`}
+                    >
+                        {isResending ? <EduMainLoader size={20} /> : <RefreshCcw size={14} />}
+                        {resendTimer > 0 ? `resend code (${formatTime(resendTimer)})` : "request new code"}
+                    </button>
+
+                    <div className="pt-6 border-t border-border">
+                        <Link
+                            href={backUrl}
+                            className="text-[11px] text-[var(--icon-color)] hover:text-primary flex items-center justify-center gap-2 font-bold uppercase tracking-widest transition-colors cursor-pointer"
+                        >
+                            <ArrowLeft size={14} /> back to {otp_reason === "reset" ? "forgot password" : "registration"}
+                        </Link>
+                    </div>
+                </div>
+
             </div>
         </div>
     )

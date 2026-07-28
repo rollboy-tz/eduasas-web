@@ -35,7 +35,7 @@ declare module "axios" {
    ========================================================= */
 
 const API_URL = "/main";
-const isDev = process.env.NODE_ENV === "development";
+const isDev = process.env.NEXT_PUBLIC_APP_STAGE !== "production";
 
 /** Hard ceiling on how long we'll wait for a session refresh before
  *  giving up and forcing logout. Prevents the refresh queue from

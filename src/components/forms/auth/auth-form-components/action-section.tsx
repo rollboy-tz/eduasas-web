@@ -3,8 +3,8 @@ import { EduSocialButton, EduButton } from "@/components/ui";
 import { triggerGoogleAuth } from "@/lib/helpers/googleOAuth";
 
 export const AuthButtons = (
-    { oauthAction, clickAction }:
-        { oauthAction?: "login" | "register"; clickAction: () => void; }
+    { oauthAction, clickAction, text }:
+        { oauthAction?: "login" | "register"; clickAction: () => void; text: string }
 ) => {
 
 
@@ -13,6 +13,7 @@ export const AuthButtons = (
         <div className="flex w-full flex-col">
             <EduButton
                 onClick={clickAction}
+                children={text}
                 className="w-full h-11 bg-primary-500"
             />
             {/* Divider */}

@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils/helper";
 import { useEffect, useState } from "react";
 import { useInputEngine } from "@/lib/input-engine";
-import { AlertCircle, ArrowRight, CheckCircle2, EyeIcon, EyeOff } from "lucide-react";
+import { AlertCircle, ArrowRight, CheckCircle2, EyeIcon, EyeOff, LucideIcon } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 export type inputType = "text" | "email" | "contact" | "password" | "confirm" | "phone" | "url" | "fullname" | "name";
 
@@ -80,11 +80,11 @@ interface EduInputProps {
     disabled?: boolean;
 
     /**Pass the icon for the input, 
-     * - **Recomendation:** *Use size ```20``` for the icon. Don't pass text color or icon class bg in icon ```className```* 
+     * - Pass the icon name eg ```UserIcon``` as shown in example below.
      * @example
-     * icon={<UserIcon size={20}>}
+     * icon={UserIcon}
      */
-    icon?: React.ReactNode;
+    icon?: LucideIcon;
 
     /**Chenge event of the input providing string value */
     onChange?: (value: string) => void;
@@ -119,7 +119,7 @@ export const EduModernInput = (
         inputState,
         maxValue,
         required,
-        icon,
+        icon: Icon,
         error
     }
         : EduInputProps) => {
@@ -150,7 +150,7 @@ export const EduModernInput = (
                 <div className={cn(
                     "w-full h-full flex items-center px-1.5 py-1 gap-1 bg-inherit"
                 )}>
-                    {icon && (<span className="text-primary-700">{icon}</span>)}
+                    {Icon && (<span className="text-primary-700">{<Icon size={20}/>}</span>)}
                     <input
                         {...input.bind()}
                         value={input.value}

@@ -19,29 +19,29 @@ export const LoginForm = ({ goToForgot, goToRegister, identity, onIdentityChange
 
             <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-[3px]">
-                    <label htmlFor="identity" className="text-sm">Enter email or phone</label>
+                    <label htmlFor="username" className="text-sm">Enter email or phone</label>
                     <EduModernInput
                         value={formData.identity}
                         type="contact"
                         className="h-10"
-                        icon={<UserIcon size={20}/>}
+                        icon={UserIcon}
                         onChange={(val) => setFormData({ ...formData, identity: val })}
                     />
                 </div>
                 <div className="flex flex-col gap-[3px]">
-                    <label htmlFor="identity" className="text-sm">Enter password</label>
+                    <label htmlFor="password" className="text-sm">Enter password</label>
                     <EduModernInput
                         value={formData.identity}
                         type="password"
                         className="h-10"
-                        icon={<LockIcon size={20}/>}
+                        icon={LockIcon}
                         onChange={(val) => setFormData({ ...formData, password: val })}
                     />
                     <span onClick={() => goToForgot } className="w-full text-end text-primary-600 font-medium text-sm hover:text-primary-400 transition-all duration-200">
                         Forgot password.
                     </span>
                 </div>
-                <AuthButtons clickAction={() => console.log("Handle click")}/>
+                <AuthButtons clickAction={() => console.log("Handle click")} text="Login"/>
                 <div className="flex w-full text-right cursor-pointer">
                     <span onClick={() => goToRegister} className="text-primary-600 font-medium text-sm hover:text-primary-400 transition-all duration-200">
                         I don't have an account.

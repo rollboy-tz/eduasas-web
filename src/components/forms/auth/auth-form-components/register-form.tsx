@@ -51,7 +51,7 @@ export const RegisterForm = () => {
                                     type="name"
                                     transform="capitalize"
                                     className="h-10"
-                                    icon={<UserIcon size={20} />}
+                                    icon={UserIcon}
                                     onChange={(val) => setFormData({ ...formData, firstName: val })}
                                 />
                             </div>
@@ -62,11 +62,11 @@ export const RegisterForm = () => {
                                     type="name"
                                     transform="capitalize"
                                     className="h-10"
-                                    icon={<UserIcon size={20} />}
+                                    icon={UserIcon}
                                     onChange={(val) => setFormData({ ...formData, lastName: val })}
                                 />
                             </div>
-                            <AuthButtons clickAction={() => setStep(2)} />
+                            <AuthButtons clickAction={() => setStep(2)} text="Continue" />
                         </motion.div>
                     ) : (
 
@@ -84,18 +84,18 @@ export const RegisterForm = () => {
                                         onClick={() => setStep(1)}
                                         className="h-full p-2 reounded-md flex items-ceter justify-center bg-neutral-200 cursor-pointer"
                                     >
-                                        <ChevronLeft size={20} />
+                                        <ChevronLeft size={20}/>
                                     </button>
 
                                     <h3 className="font-bold px-2">Finish creating account.</h3>
                                 </div>
                                 <div className="flex flex-col gap-[3px]">
-                                    <label htmlFor="identity" className="text-sm">Email or Phone</label>
+                                    <label htmlFor="username" className="text-sm">Email or Phone</label>
                                     <EduModernInput
                                         value={contactValue}
                                         type="contact"
                                         className="h-10"
-                                        icon={<Contact size={20} />}
+                                        icon={Contact}
                                         onChange={(val) => setFormData({ ...formData, firstName: val })}
                                     />
                                 </div>
@@ -105,7 +105,7 @@ export const RegisterForm = () => {
                                         value={formData.password}
                                         type="password"
                                         className="h-10"
-                                        icon={<LockIcon size={20} />}
+                                        icon={LockIcon}
                                         onChange={(val) => setFormData({ ...formData, password: val })}
                                     />
                                 </div>
@@ -115,7 +115,7 @@ export const RegisterForm = () => {
                                         value={""}
                                         type="password"
                                         className="h-10"
-                                        icon={<LockIcon size={20} />}
+                                        icon={LockIcon}
                                         onChange={(val) => setFormData({ ...formData, password: val })}
                                     />
                                 </div>

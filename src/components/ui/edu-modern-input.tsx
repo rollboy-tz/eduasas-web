@@ -146,7 +146,7 @@ export const EduModernInput = (
         <div className={cn("flex flex-col w-full", disabled && "cursor-notallowed opacity-0.8")}>
             {/* Input */}
             <div
-                className={cn("group relative flex flex-col w-full rounded  bg-neutral-100 overflow-hidden", className)}>
+                className={cn("group relative flex flex-col w-full rounded  bg-neutral-800 overflow-hidden", className)}>
                 <div className={cn(
                     "w-full h-full flex items-center px-1.5 py-1 gap-1 bg-inherit"
                 )}>

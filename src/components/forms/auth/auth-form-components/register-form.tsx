@@ -49,9 +49,7 @@ export const RegisterForm = () => {
             if (res.status === "success") {
                 toast.show({ message: `${res.message || "Account created sucessfully"}`, type: "success" })
             }
-        } catch (e) {
-
-        } finally {
+        } catch (e) { } finally {
             
         }
     }

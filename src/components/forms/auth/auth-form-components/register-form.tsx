@@ -4,29 +4,55 @@ import { EduButton } from "@/components/ui";
 import { EduModernInput } from "@/components/ui";
 import { AuthButtons } from "./action-section";
 import { AnimatePresence, motion } from "framer-motion";
+import { useToast } from "@/lib/store";
+import { apiMutation } from "@/lib/api";
 import { UserIcon, LockIcon, Contact, ChevronLeft } from "lucide-react";
 import { parseContact } from "@/lib/utils/contact";
 
 export const RegisterForm = () => {
+    const toast = useToast();
     const [step, setStep] = useState<number>(1);
     const [contactValue, setConactValue] = useState("");
     const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", phone: "", password: "" })
 
-    const changeStep = () => {
+    const handleSubmit = async () => {
 
-        setStep(2);
-        return;
-    }
-
-    const appendContact = (val: string) => {
-        const contact = parseContact(val);
+        //Contact validation
+        const contact = parseContact(contactValue);
+        if (!contactValue || contact.isValid !== true || contact.type === "unkown") {
+            toast.show({ message: "Please enter valid emai or phone number", type: "error" });
+            return
+        }
 
         if (contact.type === "EMAIL") {
-            setFormData({ ...formData, email: val })
+            setFormData({ ...formData, email: contact.value })
         }
 
         if (contact.type === "PHONE") {
-            setFormData({ ...formData, email: val })
+            setFormData({ ...formData, phone: contact.value })
+        }
+
+        console.log("Form Data: ", formData);
+        if(!formData.email && formData.phone) {
+            toast.show({ message: "Please enter emai or phone number", type: "error" });
+            return
+        }
+
+        if(!formData.password || !formData.firstName || !formData.lastName) {
+            const message = "Please fill out all fields"
+            toast.show({ message, type: "error" })
+            return
+        }
+
+        try {
+           const res = await apiMutation("post", "/auth/register", formData)
+            if (res.status === "success") {
+                toast.show({ message: `${res.message || "Account created sucessfully"}`, type: "success" })
+            }
+        } catch (e) {
+
+        } finally {
+            
         }
     }
 
@@ -96,7 +122,7 @@ export const RegisterForm = () => {
                                         type="contact"
                                         className="h-10"
                                         icon={Contact}
-                                        onChange={(val) => setFormData({ ...formData, firstName: val })}
+                                        onChange={(val) => { setConactValue(val) }}
                                     />
                                 </div>
                                 <div className="flex flex-col gap-[3px]">
@@ -119,7 +145,7 @@ export const RegisterForm = () => {
                                         onChange={(val) => setFormData({ ...formData, password: val })}
                                     />
                                 </div>
-                                <EduButton className="w-full h-11 bg-primary-500" />
+                                <EduButton onClick={handleSubmit} className="w-full h-11 bg-primary-500" />
                         </motion.div>
                     )}
                 </AnimatePresence>

@@ -5,26 +5,26 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { sidebarGroups } from "@/data/sidebar-links";
 import { EduAsasLogo } from "./edu-asas-logo";
-import { useSidebar } from "@/contexts/sidebar-context";
+import { useSidebar } from "@/context/sidebar-context";
 import { LogOut, School, ChevronLeft, ChevronRight, X } from "lucide-react";
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { isCollapsed, isMobileOpen, toggleCollapse, closeMobile } = useSidebar();
+  const { isCollapsed, isMobileOpen, toggleCollapse, toggleMobile } = useSidebar();
 
   return (
     <>
       {/* 1. MOBILE BACKDROP (Overlay ya mweusi ikifunguka kwenye simu) */}
       {isMobileOpen && (
         <div
-          onClick={closeMobile}
+          onClick={toggleMobile}
           className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
         />
       )}
 
       {/* 2. SIDEBAR CONTAINER */}
       <aside
-        className={`fixed lg:static top-0 left-0 z-50 h-screen bg-neutral-1 border-r border-border flex flex-col justify-between p-4 transition-all duration-300 ease-in-out ${
+        className={`fixed lg:static top-0 left-0 z-50 h-screen bg-card border-r border-border flex flex-col justify-between p-4 transition-all duration-300 ease-in-out ${
           // Mobile responsive placement
           isMobileOpen ? "translate-x-0 w-64" : "-translate-x-full lg:translate-x-0"
         } ${
@@ -42,7 +42,7 @@ export default function Sidebar() {
 
             {/* Mobile Close Button */}
             <button
-              onClick={closeMobile}
+              onClick={toggleMobile}
               className="p-1 text-gray-500 hover:bg-gray-100 rounded-lg lg:hidden"
             >
               <X className="w-5 h-5" />

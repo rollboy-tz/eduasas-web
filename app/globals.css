@@ -19,33 +19,6 @@
     --card: 0 0% 100%;
     --card-foreground: var(--neutral-950);
     --border: var(--neutral-200);
-
-    /* Semantic Mapping */
-    --primary-1: var(--primary-50);
-    --primary-2: var(--primary-100);
-    --primary-3: var(--primary-200);
-    --primary-4: var(--primary-300);
-    --primary-5: var(--primary-400);
-    --primary-6: var(--primary-500);
-    --primary-7: var(--primary-600);
-    --primary-8: var(--primary-700);
-    --primary-9: var(--primary-800);
-    --primary-10: var(--primary-900);
-    --primary-11: var(--primary-950);
-
-    /* Neutral Semantic Mapping */
-    --neutral-1: var(--neutral-50);
-    --neutral-2: var(--neutral-100);
-    --neutral-3: var(--neutral-200);
-    --neutral-4: var(--neutral-300);
-    --neutral-5: var(--neutral-400);
-    --neutral-6: var(--neutral-500);
-    --neutral-7: var(--neutral-600);
-    --neutral-8: var(--neutral-700);
-    --neutral-9: var(--neutral-800);
-    --neutral-10: var(--neutral-900);
-    --neutral-11: var(--neutral-950);
-
   }
 
   [data-theme="dark"] {
@@ -55,41 +28,49 @@
     --card: 0 0% 8%;
     --card-foreground: 0 0% 98%;
     --border: 0 0% 16%;          /* Border inaonekana vizuri kwenye giza */
-
-    /* Semantic Mapping for Dark Mode */
-    --primary-1: var(--primary-950);
-    --primary-2: var(--primary-900);
-    --primary-3: var(--primary-800);
-    --primary-4: var(--primary-700);
-    --primary-5: var(--primary-600);
-    --primary-6: var(--primary-500);
-    --primary-7: var(--primary-400);
-    --primary-8: var(--primary-300);
-    --primary-9: var(--primary-200);
-    --primary-10: var(--primary-100);
-    --primary-11: var(--primary-50);
-
-    /* Neutral Semantic Mapping */
-    --neutral-1: var(--neutral-950);
-    --neutral-2: var(--neutral-900);
-    --neutral-3: var(--neutral-800);
-    --neutral-4: var(--neutral-700);
-    --neutral-5: var(--neutral-600);
-    --neutral-6: var(--neutral-500);
-    --neutral-7: var(--neutral-400);
-    --neutral-8: var(--neutral-300);
-    --neutral-9: var(--neutral-200);
-    --neutral-10: var(--neutral-100);
-    --neutral-11: var(--neutral-50);
-
   }
+}
+
+@theme {
+  --color-primary-50: var(--primary-50);
+  --color-primary-100: var(--primary-100);
+  --color-primary-200: var(--primary-200);
+  --color-primary-300: var(--primary-300);
+  --color-primary-400: var(--primary-400);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+  --color-primary-800: var(--primary-800);
+  --color-primary-900: var(--primary-900);
+  --color-primary-950: var(--primary-950);
+
+  --color-neutral-50: hsl(var(--neutral-50));
+  --color-neutral-100: hsl(var(--neutral-100));
+  --color-neutral-200: hsl(var(--neutral-200));
+  --color-neutral-300: hsl(var(--neutral-300));
+  --color-neutral-400: hsl(var(--neutral-400));
+  --color-neutral-500: hsl(var(--neutral-500));
+  --color-neutral-600: hsl(var(--neutral-600));
+  --color-neutral-700: hsl(var(--neutral-700));
+  --color-neutral-800: hsl(var(--neutral-800));
+  --color-neutral-900: hsl(var(--neutral-900));
+  --color-neutral-950: hsl(var(--neutral-950));
+
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-border: hsl(var(--border));
+
+  --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-card-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 @layer base {
   body { font-family: Arial, sans-serif; }
 }
 
-/* @layer utilities {
+@layer utilities {
   .custom-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--primary-500)) hsl(var(--neutral-200));
@@ -114,15 +95,7 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background-color: hsl(var(--primary-500));
   }
-
-  .scroll-y {
-    @apply overflow-y-auto custom-scrollbar;
-  }
-
-  .scroll-x {
-    @apply overflow-x-auto custom-scrollbar;
-  }
-} */
+}
 
 
 @keyframes shake {

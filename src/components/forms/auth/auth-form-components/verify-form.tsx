@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { EduButton } from "@/components/ui";
 import { useToast } from "@/lib/store";
 import { apiMutation } from "@/lib/api";
-import { cn } from "@/lib/utils";
+import { cn, resetuserKey } from "@/lib/utils";
 
 
 export const VerifyForm = () => {
@@ -16,8 +16,7 @@ export const VerifyForm = () => {
     const params = new URLSearchParams(searchParams.toString());
 
     //Params & Quaries extractions
-    const url_tokenn = params.get("token");
-    const return_url = params.get("return_url");
+    const url_token = params.get("token");
     const reset_token = params.get("reset_token")
     const otp_reason = params.get("reason");
     const identity = params.get("identity");
@@ -134,8 +133,7 @@ export const VerifyForm = () => {
 
                 // 2. Hapa ndipo tunasafisha abiria ambao kazi yao imeisha
                 params.delete("identity");
-                params.delete("method");
-                params.delete("action");
+                params.delete("reason");
                 params.set("new", "true");
 
                 if (otp_reason === "reset") {
@@ -145,30 +143,41 @@ export const VerifyForm = () => {
                     // Bind data za reset
                     params.set("identity", identity); // Rudisha identity kwa ajili ya reset page
                     params.set("token", res.data.resetToken);
-                    router.replace(`/auth/forgot-password?${params.toString()}`);
+                    router.replace(`/auth/reset?${params.toString()}`);
                 } else {
                     // Flow ya Dashboard
-                    const callbackUrl = params.get("callback") || "/u";
-                    params.delete("callback");
+                    let return_url = params.get("return_url") || "/";
 
-                    const remainingParams = params.toString();
-                    const finalDestination = remainingParams
-                        ? `${callbackUrl}?${remainingParams}`
-                        : callbackUrl;
+                    // 2. MTEGO WA LOOP: Zuia callback isijielekeze kwenye login/auth tena
+                    if (return_url?.includes("/auth/login") || return_url?.startsWith("/auth/")) {
+                        return_url = "/";
+                    }
 
-                    // Shtua auth provider kurekebisha cache kuna user mpya anakuja
+                    // 3. SAFISHA PARAMS (Don't carry over auth-specific params)
+                    const finalParams = new URLSearchParams(searchParams.toString());
+                    const authParams = ["identity", "reason", "token", "return_url", "error", "code", "reason", "utm_source", "utm_campagain", "reset_token"];
+                    authParams.forEach(p => finalParams.delete(p));
+
+                    // 4. JENGA DESTINATION SAHIHI
+                    const queryString = finalParams.toString();
+                    const destination = queryString
+                        ? `${return_url}${return_url.includes('?') ? '&' : '?'}${queryString}`
+                        : return_url;
+
+                    // 5. SHTUA EVENT LISTENA KUFUTA DATA KWENYE CACHE KUNA USER MPYA
                     const event = new CustomEvent("eduasas:login");
                     window.dispatchEvent(event);
+                    resetuserKey();
 
-                    router.replace(finalDestination);
+                    // Tumia replace badala ya push ili kufuta historia ya verify loop
+                    router.replace(destination);
                 }
             }
 
-            if (res.status === 'error') {
+            else if (res.status === 'error') {
                 const message = res.message || "Something went wrong. Unable to verify the OTP"
                 toast.show({ message, type: "error" });
-                router.back()
-                    ;
+                router.back();
             }
         } catch (error: any) {
             const message = error.message || "Error occured while verifying."
@@ -199,7 +208,7 @@ export const VerifyForm = () => {
     };
 
     // Njia ya kurudi nyuma yenye kubeba state
-    const backUrl = otp_reason === "reset"  ? `/auth/forgot-password?${params.toString()}` : `/auth/sign-up?${params.toString()}`;
+    const backUrl = otp_reason === "reset" ? `/auth/forgot-password?${params.toString()}` : `/auth/sign-up?${params.toString()}`;
     const info_text = otp_reason === "reset" ? "To verify its you please enter OTP Code" : "To verify your new account enter OTP Code";
     return (
         <div className="flex flex-col items-center justify-center p-2 h-full w-full">

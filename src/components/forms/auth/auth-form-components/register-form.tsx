@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { EduButton } from "@/components/ui";
 import { EduModernInput } from "@/components/ui";
 import { AuthButtons } from "./action-section";
@@ -9,11 +10,39 @@ import { apiMutation } from "@/lib/api";
 import { UserIcon, LockIcon, Contact, ChevronLeft } from "lucide-react";
 import { parseContact } from "@/lib/utils/contact";
 
+type FormData = {
+    firstName: string;
+    lastName: string;
+    email: string | null;
+    phone: string | null;
+    password: string;
+}
+
 export const RegisterForm = () => {
+    
+    // Utilities extractions
+    const searchParams = useSearchParams();
+    const params = new URLSearchParams(searchParams.toString());
+
+    const utm_source = params.get("utm_source");
+    const utm_campaign = params.get("utm_campaign");
+
     const toast = useToast();
+    const router = useRouter();
+
+
     const [step, setStep] = useState<number>(1);
     const [contactValue, setConactValue] = useState("");
-    const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", phone: "", password: "" })
+    const [formData, setFormData] = useState<FormData>({ firstName: "", lastName: "", password: "", phone: null, email: null })
+
+    const getCleanParams = (currentIdentity: string) => {
+        const newParams = new URLSearchParams(searchParams.toString());
+        newParams.set("identity", currentIdentity);
+        newParams.delete("verified");
+        newParams.delete("utm_campaign");
+        newParams.delete("utm_source");
+        return newParams.toString();
+    };
 
     const handleSubmit = async () => {
 
@@ -25,16 +54,15 @@ export const RegisterForm = () => {
         }
 
         if (contact.type === "EMAIL") {
-            setFormData({ ...formData, email: contact.value })
+            setFormData({ ...formData, email: contact.value, phone: null })
         }
 
         if (contact.type === "PHONE") {
-            setFormData({ ...formData, phone: contact.value })
+            setFormData({ ...formData, phone: contact.value, email: null })
         }
 
-        console.log("Form Data: ", formData);
-        if(!formData.email && formData.phone) {
-            toast.show({ message: "Please enter emai or phone number", type: "error" });
+        if(!formData.email && !formData.phone) {
+            toast.show({ message: "Please enter email or phone number", type: "error" });
             return
         }
 
@@ -48,6 +76,7 @@ export const RegisterForm = () => {
            const res = await apiMutation("post", "/auth/register", formData)
             if (res.status === "success") {
                 toast.show({ message: `${res.message || "Account created sucessfully"}`, type: "success" })
+                router.replace(`/auth/verify?identity=${formData.email ?? formData.phone}&reason=register`)
             }
         } catch (e) { } finally {
             

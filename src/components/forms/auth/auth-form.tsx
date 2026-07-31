@@ -1,7 +1,6 @@
 'use client'
 import { useRouter, useSearchParams } from "next/navigation";
 import { LoginForm, RegisterForm, ForgotForm, ResetForm, VerifyForm } from "./auth-form-components";
-import { cn } from "@/lib/utils";
 
 export const AuthForm = ({ action }: { action: string }) => {
 
@@ -10,11 +9,6 @@ export const AuthForm = ({ action }: { action: string }) => {
     const params = new URLSearchParams(searchParams.toString());
 
     //Params & Quaries extractions
-    const utm_source = params.get("utm_source");
-    const url_tokenn = params.get("token");
-    const return_url = params.get("return_url");
-    const reset_token = params.get("reset_token")
-    const identity = params.get("identity");
 
     const RenderForm = () => {
         if (action === "register") return <RegisterForm />

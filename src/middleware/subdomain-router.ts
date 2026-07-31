@@ -16,7 +16,7 @@ const IGNORED_HOSTS = new Set(["www"]);
  */
 const VALID_SUBDOMAIN_PATTERN = /^[a-z0-9-]+$/;
 
-const isDev = process.env.NEXT_PUBLIC_APP_STAGE === "development" || process.env.NEXT_PUBLIC_APP_STAGE === "staging";
+const isDev = process.env.NEXT_PUBLIC_APP_STAGE === "development" || process.env.NEXT_PUBLIC_APP_STAGE === "beta";
 
 /* =========================================================
    HELPERS

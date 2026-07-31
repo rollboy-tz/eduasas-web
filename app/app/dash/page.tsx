@@ -6,7 +6,7 @@ import { EduModernInput } from "@/components/ui/edu-modern-input";
 import { UserIcon } from "lucide-react";
 import { useToast } from "@/lib/store";
 
-const AccountlePage = () => {
+const DashPage = () => {
 
     const toast = useToast();
 
@@ -43,4 +43,4 @@ const AccountlePage = () => {
     )
 }
 
-export default AccountlePage
+export default DashPage;

@@ -33,5 +33,4 @@ export const config = {
   matcher: [
     "/((?!api|main|_next/static|_next/image|icons|images|fonts|favicon.ico|robots.txt|sitemap.xml|manifest.json|sw.js|workbox-).*)",
   ],
-  runtime:"edge",
 };

@@ -11,7 +11,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api/api-fetch";
 import { CompatibleGradingRule } from "@/types/portal/grading.types";
-import { UserAffiliatedSchool } from "@/types/account";
+import { UserAffiliatedSchool } from "@/types/dash";
 import { useMemo } from "react";
 
 /**

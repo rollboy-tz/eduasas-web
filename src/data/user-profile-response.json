@@ -1,1 +1,70 @@
-{"status":"success","message":"User profile and security compliance status retrieved.","action":"NONE","data":{"profile":{"id":"01KYTBWQ8Z24CH45JN5N7MCQ94","uid":"EAU-260730001","email":"jamilajohn@eduasas.co.tz","phone":null,"firstName":"Jamila","secondName":null,"lastName":"John","displayName":null,"gender":null,"picture":null,"nationality":null,"systemRole":"USER","status":"VERIFIED","authProvider":"LOCAL","isEmailVerified":true,"isPhoneVerified":false,"lastLoginAt":"2026-07-31T06:26:52.662Z","lastSeenAt":null,"createdAt":"2026-07-30T23:36:42.130Z","settings":{"theme":"light","language":"en","timezone":"Africa/Dar_es_Salaam","compactView":false,"landingPage":"DASHBOARD","emailEnabled":true,"smsEnabled":false,"pushEnabled":true,"dndEnabled":false,"dndStartTime":"22:00","dndEndTime":"07:00","autoSave":true,"academicChannels":["DASHBOARD"],"paymentChannels":["DASHBOARD","EMAIL"],"systemChannels":["DASHBOARD","EMAIL"]},"schools":[],"cachedAt":"2026-07-31T06:27:10.371Z"},"accountSecurity":{"isComplianceMet":false,"requiredActions":[{"field":"phone","severity":"CRITICAL","action":"UPDATE_REQUIRED","message":"A valid phone number is required for Multi-Factor Authentication."}],"alertLevel":"WARNING","recommendation":"Please complete the pending security actions to ensure uninterrupted access."}},"metadata":null,"timestamp":"2026-07-31T06:27:10.375Z"}
+{
+    "status": "success",
+    "message": "User profile and security compliance status retrieved.",
+    "action": "NONE",
+    "data": {
+        "profile": {
+            "id": "01KYTBWQ8Z24CH45JN5N7MCQ94",
+            "uid": "EAU-260730001",
+            "email": "jamilajohn@eduasas.co.tz",
+            "phone": null,
+            "firstName": "Jamila",
+            "secondName": null,
+            "lastName": "John",
+            "displayName": null,
+            "gender": null,
+            "picture": null,
+            "nationality": null,
+            "systemRole": "USER",
+            "status": "VERIFIED",
+            "authProvider": "LOCAL",
+            "isEmailVerified": true,
+            "isPhoneVerified": false,
+            "lastLoginAt": "2026-07-31T06:26:52.662Z",
+            "lastSeenAt": null,
+            "createdAt": "2026-07-30T23:36:42.130Z",
+            "settings": {
+                "theme": "light",
+                "language": "en",
+                "timezone": "Africa/Dar_es_Salaam",
+                "compactView": false,
+                "landingPage": "DASHBOARD",
+                "emailEnabled": true,
+                "smsEnabled": false,
+                "pushEnabled": true,
+                "dndEnabled": false,
+                "dndStartTime": "22:00",
+                "dndEndTime": "07:00",
+                "autoSave": true,
+                "academicChannels": [
+                    "DASHBOARD"
+                ],
+                "paymentChannels": [
+                    "DASHBOARD",
+                    "EMAIL"
+                ],
+                "systemChannels": [
+                    "DASHBOARD",
+                    "EMAIL"
+                ]
+            },
+            "schools": [],
+            "cachedAt": "2026-07-31T06:27:10.371Z"
+        },
+        "accountSecurity": {
+            "isComplianceMet": false,
+            "requiredActions": [
+                {
+                    "field": "phone",
+                    "severity": "CRITICAL",
+                    "action": "UPDATE_REQUIRED",
+                    "message": "A valid phone number is required for Multi-Factor Authentication."
+                }
+            ],
+            "alertLevel": "WARNING",
+            "recommendation": "Please complete the pending security actions to ensure uninterrupted access."
+        }
+    },
+    "metadata": null,
+    "timestamp": "2026-07-31T06:27:10.375Z"
+}

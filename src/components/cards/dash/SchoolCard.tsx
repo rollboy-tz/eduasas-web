@@ -13,7 +13,7 @@ interface SchoolCardProps {
 }
 export const SchoolCard = ({ school }: SchoolCardProps): JSX.Element => {
 
-    const statusClass = {
+    const statusClass: { [key: string]: string } = {
         pending: "bg-blue-400 text-white",
         active: "bg-green-700 text-white",
         closed: "bg-red-700 text-white",

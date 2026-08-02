@@ -10,7 +10,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api/api-fetch";
 import { api }  from "@/lib/api";
-import { SchoolClassesResponse } from "@/types/portal";
+import { SchoolClassesResponse } from "@/types/school";
 
 /**
  * ### useSchoolClasses

@@ -1,46 +1,56 @@
-// components/sidebar-links.ts
-import { 
-  LayoutDashboard, 
-  Users, 
-  GraduationCap, 
-  BookOpen, 
-  FileSpreadsheet, 
-  Settings, 
-  UserCircle 
-} from "lucide-react";
+import { MenuGroup } from "../components/layout/sidebar/sidebar-composer";
 
-export interface SidebarItem {
-  title: string;
-  href: string;
-  icon: any;
-}
-
-export interface SidebarGroup {
-  groupLabel: string;
-  items: SidebarItem[];
-}
-
-export const sidebarGroups: SidebarGroup[] = [
+export const mockSidebar: MenuGroup[] = [
   {
-    groupLabel: "MAIN",
+    label: "MAIN",
     items: [
-      { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      {
+        title: "Dashboard",
+        href: "/dashboard",
+        icon: "LayoutDashboard",
+      },
+      {
+        title: "Notifications",
+        href: "/notifications",
+        icon: "Bell",
+        badge: 5,
+      },
     ],
   },
+
   {
-    groupLabel: "ACADEMICS",
+    label: "ACADEMIC",
     items: [
-      { title: "Wanafunzi", href: "/dashboard/students", icon: GraduationCap },
-      { title: "Walimu", href: "/dashboard/teachers", icon: Users },
-      { title: "Masomo", href: "/dashboard/subjects", icon: BookOpen },
-      { title: "Matokeo / Exams", href: "/dashboard/exams", icon: FileSpreadsheet },
+      {
+        title: "Students",
+        icon: "Users",
+        items: [
+          {
+            title: "All Students",
+            href: "/students",
+          },
+          {
+            title: "Add Student",
+            href: "/students/create",
+          },
+        ],
+      },
+      {
+        title: "Classes",
+        href: "/classes",
+        icon: "School",
+      },
     ],
   },
+
   {
-    groupLabel: "SYSTEM",
+    label: "SYSTEM",
     items: [
-      { title: "Profile", href: "/dashboard/profile", icon: UserCircle },
-      { title: "Mipangilio", href: "/dashboard/settings", icon: Settings },
+      {
+        title: "Settings",
+        href: "/settings",
+        icon: "Settings",
+      },
     ],
   },
 ];

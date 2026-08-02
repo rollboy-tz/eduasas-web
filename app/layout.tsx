@@ -1,8 +1,5 @@
 import type { Metadata, Viewport } from "next";
-//import { useEffect } from 'react';
-// import { GeistSans } from "geist/font/sans";
-// import { GeistMono } from "geist/font/mono";
-
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import { EduToaster } from "@/components/ui/toaster"; 
@@ -10,6 +7,18 @@ import { ReactQueryProvider, ThemeProvider } from "@/providers";
 import GlobalSystemWatcher from "@/lib/utils/global-system.watcher";
 import { AppFeedbackModal, AppConfirmModal } from "@/components/modals";
 
+const geist = Geist({
+    variable: "--font-geist",
+    subsets: ["latin"],
+    display: "swap",
+});
+
+
+const geistMono = Geist_Mono({
+    variable: "--font-geist-mono",
+    subsets: ["latin"],
+    display: "swap",
+});
 
 // 1. METADATA - AI-Ready & Industrial Branding
 export const metadata: Metadata = {
@@ -92,13 +101,16 @@ export default function RootLayout({
   return (
     <html
       lang="sw"
-      // className={`${GeistSans.variable} ${GeistMono.variable} antialiased scroll-smooth`}
-      className="antialiased scroll-smoot"
+      className={`
+        ${geist.variable}
+        ${geistMono.variable}
+        antialiased scroll-smoot
+    `}
       suppressHydrationWarning
     >
       <body
         className={`
-          min-h-screen bg-background text-foreground 
+          min-h-screen text-foreground 
           selection:bg-gray selection:text-primary-foreground
           overflow-x-hidden font-sans
         `}

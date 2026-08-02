@@ -11,7 +11,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch, apiMutation } from "@/lib/api";
 import { api }  from "@/lib/api";
-import { SubjectsDataResponse } from "@/types/portal";
+import { SubjectsDataResponse } from "@/types/school";
 
 /**
  * ### useSubjects

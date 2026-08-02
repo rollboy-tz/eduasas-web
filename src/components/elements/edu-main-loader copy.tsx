@@ -18,7 +18,7 @@ interface EduMainLoaderProps {
 
 export function EduMainLoader({ 
   size = 30, 
-  color = "var(--primary)", 
+  color = "black", 
   loadingText 
 }: EduMainLoaderProps) {
 

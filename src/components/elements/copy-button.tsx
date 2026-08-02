@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
-import { Copy, AlertCircle, CopyCheck } from 'lucide-react'; // Tumia icon unazopenda
+import { Copy, AlertCircle, Check } from 'lucide-react'; // Tumia icon unazopenda
 import { copyToClipboard } from '@/lib/utils'; // Path ya function tuliyounda juu
 
 interface CopyButtonProps {
@@ -30,7 +30,7 @@ export function CopyButton({ content, className = "" }: CopyButtonProps) {
     <button
       onClick={handleAction}
       disabled={status !== 'idle'}
-      className={`relative flex items-center justify-center transition-all${
+      className={`relative flex items-center justify-center cursor-pointer transition-all${
         status === 'success' 
           ? 'text-emerald-500 bg-emerald-500/10' 
           : status === 'error'
@@ -41,7 +41,7 @@ export function CopyButton({ content, className = "" }: CopyButtonProps) {
     >
       {/* Logic ya kubadilisha Icon */}
       {status === 'idle' && <Copy className="w-4 h-4 animate-in zoom-in duration-200" />}
-      {status === 'success' && <CopyCheck className="w-4 h-4 animate-in zoom-in duration-200" />}
+      {status === 'success' && <Check className="w-4 h-4 animate-in zoom-in duration-200 text-blue-400" />}
       {status === 'error' && <AlertCircle className="w-4 h-4 animate-in shake duration-300" />}
     </button>
   );

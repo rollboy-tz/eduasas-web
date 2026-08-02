@@ -1,11 +1,17 @@
-const HomeDashboardPage = () => {
- return(
-    <main className="w-full h-screen flex flex-col">
-      <header className="w-full">
-         <p>Home Dashboard</p>
-      </header>
-    </main>
- )
-}
+import { OverviewPageConents } from "@/components/pages/dash/overview";
+import { EduScreenLoader } from "@/components/ui";
+import { Metadata } from "next";
+import { Suspense } from "react";
 
-export default HomeDashboardPage;
+export const metadata: Metadata = {
+  title: "Dashboard Overview",
+};
+
+export default function DashOverViewPage() {
+
+  return (
+    <Suspense fallback={<EduScreenLoader/>}>
+      <OverviewPageConents />
+    </Suspense>
+  );
+}

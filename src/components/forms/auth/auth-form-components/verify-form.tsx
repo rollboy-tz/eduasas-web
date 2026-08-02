@@ -237,7 +237,7 @@ export const VerifyForm = () => {
                                         onKeyDown={(e) => handleKeyDown(i, e)}
                                         className={cn("w-10 h-10 border rounded text-center text-xl font-bold outline-none transition-all",
                                             tokenTimer === 0
-                                                ? "bg-background border-border text-neutral-300"
+                                                ? "bg-background border-border text-muted-300"
                                                 : "bg-transparent border-border focus:border-primary-500 focus:ring-1 focus:ring-primary-400"
                                         )}
                                     />

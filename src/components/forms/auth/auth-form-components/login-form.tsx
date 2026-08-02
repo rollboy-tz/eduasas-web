@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { resetuserKey } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
-import { EduModernInput } from "@/components/ui/edu-modern-input";
+import { EduModernInput } from "@/components/fields/edu-modern-input";
 import { AuthButtons } from "./action-section";
 import { LockIcon, UserIcon } from "lucide-react";
 import { useToast } from "@/lib/store";

@@ -2,11 +2,11 @@
 import { SidebarProvider } from "@/context/sidebar-context";
 import { SearchProvider } from "@/context/search-context";
 import { GlobalSearch } from "@/components/ui/global-search";
-import MobileProfilePanel from "@/components/ui/profilepanel";
-import Sidebar from "@/components/ui/sidebar";
-import Header from "@/components/ui/header";
+import MobileProfilePanel from "@/components/layout/profilepanel/mobile-profilepanel";
+import Header from "@/components/layout/topbar/header";
+import Sidebar from "@/components/layout/sidebar/Sidebar";
 
-export default function DashboardLayout({
+export default function DashWorkspaceLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -18,12 +18,12 @@ export default function DashboardLayout({
         <GlobalSearch />
         <MobileProfilePanel />
 
-        <div className="flex h-screen overflow-hidden bg-gray-50">
+        <div className="flex h-screen overflow-hidden ">
           <Sidebar />
 
           <div className="flex flex-1 flex-col overflow-hidden">
             <Header />
-            <main className="flex-1 overflow-y-auto p-4 sm:p-6">
+            <main className="flex-1 overflow-y-auto px-2 sm:p-4">
               {children}
             </main>
           </div>

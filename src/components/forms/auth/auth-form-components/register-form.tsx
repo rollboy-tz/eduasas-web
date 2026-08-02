@@ -132,10 +132,10 @@ export const RegisterForm = () => {
                             exit={{ opacity: 0, x: -20 }}
                         >
 
-                                <div className="h-10 flex items-center gap-1 overflow-hidden bg-neutral-100 rounded-md">
+                                <div className="h-10 flex items-center gap-1 overflow-hidden bg-muted-100 rounded-md">
                                     <button 
                                         onClick={() => setStep(1)}
-                                        className="h-full p-2 reounded-md flex items-ceter justify-center bg-neutral-200 cursor-pointer"
+                                        className="h-full p-2 reounded-md flex items-ceter justify-center bg-muted-200 cursor-pointer"
                                     >
                                         <ChevronLeft size={20}/>
                                     </button>

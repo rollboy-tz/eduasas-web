@@ -16,8 +16,18 @@ export interface DateConfig {
   monthType?: 'short' | 'long' | '2-digit';
 }
 
+export type DateDisplayFormat =
+  | "DD/MM/YYYY"
+  | "MM/DD/YYYY"
+  | "YYYY-MM-DD"
+  | "DD MMM YYYY"
+  | "MMM DD, YYYY"
+  | "MMMM YYYY"
+  | "YYYY";
+
+
 export class DateUtils {
-  
+
   /**
    * 1. FORMAT RELATIVE TIME
    * Inabadilisha timestamp kuwa maelezo ya kirafiki (mfano: "5m ago").
@@ -31,13 +41,13 @@ export class DateUtils {
     const diff = Math.floor((new Date().getTime() - dateObj.getTime()) / 1000);
     if (diff < 5) return "Just now";
     if (diff < 60) return `${diff}s ago`;
-    
+
     const minutes = Math.floor(diff / 60);
     if (minutes < 60) return `${minutes}m ago`;
-    
+
     const hours = Math.floor(minutes / 60);
     if (hours < 24) return `${hours}h ago`;
-    
+
     const days = Math.floor(hours / 24);
     if (days < 7) return `${days}d ago`;
 
@@ -141,5 +151,253 @@ export class DateUtils {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     return dateObj < today;
+  }
+
+
+  /**
+ * FORMAT DATE INPUT DISPLAY
+ *
+ * Database:
+ * 2026-07-31
+ *
+ * Display:
+ * 31 Jul 2026
+ */
+  static formatInputDate(
+    iso: string,
+    format: DateDisplayFormat = "DD MMM YYYY"
+  ): string {
+
+
+    if (!iso)
+      return "";
+
+
+    let dateObj: Date;
+
+
+    /**
+     * Prevent timezone shifting
+     *
+     * new Date("2026-07-31")
+     * inaweza kurudi siku tofauti kwenye timezone nyingine
+     */
+    if (
+      /^\d{4}-\d{2}-\d{2}$/.test(iso)
+    ) {
+
+      const [
+        year,
+        month,
+        day
+      ] = iso.split("-").map(Number);
+
+
+      dateObj =
+        new Date(
+          year,
+          month - 1,
+          day
+        );
+
+    }
+    else {
+
+      dateObj =
+        new Date(iso);
+
+    }
+
+
+    if (
+      isNaN(
+        dateObj.getTime()
+      )
+    )
+      return "Invalid date";
+
+
+
+    switch (format) {
+
+
+      case "YYYY":
+        return String(
+          dateObj.getFullYear()
+        );
+
+
+
+      case "MMMM YYYY":
+
+        return new Intl.DateTimeFormat(
+          USER_LOCALE,
+          {
+            month: "long",
+            year: "numeric",
+            timeZone: USER_TIMEZONE
+          }
+        )
+          .format(dateObj);
+
+
+
+      case "MM/DD/YYYY":
+
+        return new Intl.DateTimeFormat(
+          "en-US",
+          {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+          }
+        )
+          .format(dateObj);
+
+
+
+      case "YYYY-MM-DD":
+
+        return [
+          dateObj.getFullYear(),
+          String(
+            dateObj.getMonth() + 1
+          ).padStart(2, "0"),
+          String(
+            dateObj.getDate()
+          ).padStart(2, "0")
+        ].join("-");
+
+
+
+      case "MMM DD, YYYY":
+
+        return new Intl.DateTimeFormat(
+          "en-US",
+          {
+            month: "short",
+            day: "2-digit",
+            year: "numeric"
+          }
+        )
+          .format(dateObj);
+
+
+
+      case "DD/MM/YYYY":
+
+        return new Intl.DateTimeFormat(
+          "en-GB",
+          {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+          }
+        )
+          .format(dateObj);
+
+
+
+      case "DD MMM YYYY":
+      default:
+
+        return new Intl.DateTimeFormat(
+          USER_LOCALE,
+          {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            timeZone: USER_TIMEZONE
+          }
+        )
+          .format(dateObj);
+
+
+    }
+
+  }
+
+  /**
+   * DATE OBJECT TO ISO DATE
+   *
+   * Date
+   * ↓
+   * 2026-07-31
+   */
+  static toISODate(
+    date: Date
+  ): string {
+
+
+    return [
+
+      date.getFullYear(),
+
+      String(
+        date.getMonth() + 1
+      )
+        .padStart(2, "0"),
+
+
+      String(
+        date.getDate()
+      )
+        .padStart(2, "0")
+
+
+    ].join("-");
+
+
+  }
+
+
+
+
+
+  /**
+   * DATE OBJECT TO ISO MONTH
+   *
+   * Date
+   * ↓
+   * 2026-07
+   */
+  static toISOMonth(
+    date: Date
+  ): string {
+
+
+    return [
+
+      date.getFullYear(),
+
+      String(
+        date.getMonth() + 1
+      )
+        .padStart(2, "0")
+
+
+    ].join("-");
+
+
+  }
+
+
+
+
+  /**
+   * YEAR VALUE
+   *
+   * Date
+   * ↓
+   * 2026
+   */
+  static toISOYear(
+    date: Date
+  ): string {
+
+    return String(
+      date.getFullYear()
+    );
+
   }
 }

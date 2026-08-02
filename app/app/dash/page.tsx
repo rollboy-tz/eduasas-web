@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { EduAsasLogo } from "@/components/ui/edu-asas-logo"
-import { EduModernInput } from "@/components/ui/edu-modern-input";
+import { EduModernInput } from "@/components/fields/edu-modern-input";
 import { UserIcon } from "lucide-react";
 import { useToast } from "@/lib/store";
 

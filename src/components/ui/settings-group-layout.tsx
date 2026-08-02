@@ -11,11 +11,11 @@ interface SettingGroupProps {
 
 export const SettingGroup: React.FC<SettingGroupProps> = ({ title, description, children }) => {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       {/* Group Title & Subtitle (Optional) */}
       {(title || description) && (
         <div className="px-1 space-y-0.5">
-          {title && <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">{title}</h3>}
+          {title && <h3 className="text-xs font-bold tracking-wider text-gray-500 dark:text-gray-400">{title}</h3>}
           {description && <p className="text-xs text-gray-400 dark:text-gray-500">{description}</p>}
         </div>
       )}
@@ -43,7 +43,7 @@ export const SettingItem: React.FC<SettingItemProps> = ({ title, description, ic
       <div className="flex items-start gap-3.5 max-w-[75%]">
         {icon && <div className="mt-0.5 text-gray-500 dark:text-gray-400 shrink-0">{icon}</div>}
         <div className="space-y-0.5">
-          <h4 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100">{title}</h4>
+          <h4 className="text-xs sm:text-sm font-bold leading-relaxed text-gray-600 dark:text-gray-100">{title}</h4>
           {description && <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{description}</p>}
         </div>
       </div>

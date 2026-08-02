@@ -36,6 +36,10 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
         setIsMobileOpen(false);
         setIsProfilePanelOpen(false);
       }
+
+      if (window.innerWidth < 1024) {
+        setIsCollapsed(false);
+      }
     };
 
     window.addEventListener("resize", handleResize);

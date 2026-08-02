@@ -10,7 +10,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api/api-fetch";
-import {  MasterClassesResponse } from "@/types/portal/master-class";
+import {  MasterClassesResponse } from "@/types/school/master-class";
 
 /**
  * ### MasterClassesHookReturn

@@ -65,7 +65,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
         {/* Close Button */}
         <button 
           onClick={() => { setIsClosing(true); setTimeout(() => onDismiss(toast.id), 300); }}
-          className="text-neutral-400 hover:text-foreground cursor-pointer rounded-full p-1.5 hover:bg-neutral-200"
+          className="text-muted-400 hover:text-foreground cursor-pointer rounded-full p-1.5 hover:bg-muted-200"
         >
           <span><X size={18}/></span>
         </button>

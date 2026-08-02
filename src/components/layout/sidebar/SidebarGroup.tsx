@@ -1,109 +1,38 @@
 "use client";
 
-import {
-  ReactNode
-} from "react";
+import { ReactNode } from "react";
+import { SidebarGroupSeparetor } from "./siderbarGroupSeperator";
+import { cn } from "@/lib/utils/helper";
 
-import {
-  cn
-} from "@/lib/utils/helper";
-
-
+/**
+ * Props zinazohitajika na component ya `SidebarGroup`.
+ */
 interface SidebarGroupProps {
-
+  /** Lebo au kichwa cha kundi la menyu (optional) */
   label?: string;
-
+  /** Vipengele vya menyu vilivyopo ndani ya kundi hili */
   children: ReactNode;
-
+  /** Inafafanua kama sidebar imekunjwa (collapsed) au la */
   collapsed?: boolean;
-
+  /** CSS classes za ziada za Tailwind (optional) */
   className?: string;
-
 }
 
-
-
+/**
+ * Component inayokusanya na kuweka vipengele vya menyu kwenye makundi (Groups).
+ * 
+ * Inaonyesha lebo ya kundi juu ikiwa ipo na pale tu ambapo sidebar haijakunjwa (`collapsed = false`).
+ */
 export function SidebarGroup({
-
   label,
-
   children,
+  className,
+}: SidebarGroupProps) {
+  return (
+    <section className={cn("space-y-2", className)}>
+      <SidebarGroupSeparetor title={label || "group"}/>
 
-  collapsed=false,
-
-  className
-
-}:SidebarGroupProps){
-
-
-return (
-
-<section
-
-className={cn(
-
-"space-y-2",
-
-className
-
-)}
-
->
-
-
-{
-label && !collapsed && (
-
-<div
-
-className="
-px-3
-mb-1
-"
-
->
-
-<p
-
-className="
-text-[10px]
-font-semibold
-uppercase
-tracking-[0.12em]
-text-muted-400
-dark:text-muted-500
-"
-
->
-
-{label}
-
-</p>
-
-
-</div>
-
-)
-
-}
-
-
-
-<div
-
-className="
-space-y-1
-"
-
->
-
-{children}
-
-</div>
-
-
-</section>
-
-)
-
+      <div className="space-y-1">{children}</div>
+    </section>
+  );
 }

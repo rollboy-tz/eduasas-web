@@ -5,8 +5,7 @@ import { useSchoolSetupStore } from "@/store/school";
 import { useCompatibleGrading } from "@/hooks/school";
 import { CompatibleGradingRule, GradingRange } from "@/types/school";
 import { cn } from "@/lib/utils/helper";
-import { api, ApiResponse } from "@/lib/api";
-import { DateUtils } from "@/lib/utils";
+import { DateUtils, createEnhancer } from "@/lib/utils";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/lib/store/use-toast";
@@ -16,6 +15,7 @@ import { EduButton, EduScreenLoader } from "@/components/ui";
 import { EduLinearLoader, EduMainLoader } from "@/components/elements";
 import { EduModernDateInputV4, EduModernInputV2, EduModernSelect, EduRadioGroup } from "@/components/fields";
 import { EduFloatingGuide } from "@/components/modals";
+import { apiMutation } from "@/lib/api";
 
 export function SchoolSetupForm() {
     const router = useRouter();
@@ -41,6 +41,10 @@ export function SchoolSetupForm() {
     } = useSchoolSetupStore();
 
     const terms = useSchoolSetupStore((state) => state.terms);
+
+    // const gradingRules = enhance(globalRules, {
+    //     badge: (rule) => rule.
+    // })
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [hasTimedOut, setHasTimedOut] = useState(false);
@@ -205,7 +209,7 @@ export function SchoolSetupForm() {
         try {
             if (!currentSchool) return;
             const setupEndpointURL = `/school/setup?schoolUId=${currentSchool?.schoolUId}`;
-            const res = await api.post<any, ApiResponse>(setupEndpointURL, payload);
+            const res = await apiMutation("post", setupEndpointURL, payload);
 
             if (res.status === 'success') {
                 toast.show({ message: "School setup finalized successfully.", type: "success" });
@@ -236,33 +240,7 @@ export function SchoolSetupForm() {
                     </>
                 )}
             />
-            {selectedRule && (
-                <EduFloatingGuide
-                    title={`${selectedRule.name} Ranges`}
-                    buttonText="Preview ranges"
-                    buttonClassName="p-5 rounded-full max-w-50"
-                    titleClassName="p-2 text-foreground"
-                >
-                    <table className="w-full text-left border-separate border-spacing-0 bg-card">
-                        <thead>
-                            <tr className="bg-muted/40">
-                                <th className="p-4 text-[10px] font-black uppercase text-muted-foreground">Grade</th>
-                                <th className="p-4 text-[10px] font-black uppercase text-muted-foreground">Range</th>
-                                {hasPoints && <th className="p-4 text-[10px] font-black uppercase text-muted-foreground">Points</th>}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border/40">
-                            {selectedRule.ranges.map((r: GradingRange) => (
-                                <tr key={r.id} className="hover:bg-muted/10">
-                                    <td className={cn("p-4 text-sm font-bold", r.isPass ? "text-green-500" : "text-red-500")}>{r.grade}</td>
-                                    <td className="p-4 text-[11px] text-muted-foreground">{r.minMark} — {r.maxMark}</td>
-                                    {hasPoints && <td className="p-4 text-[11px] text-muted-foreground">{r.points || "0"}</td>}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </EduFloatingGuide>
-            )}
+            
         </motion.div>
     );
 
@@ -317,20 +295,6 @@ export function SchoolSetupForm() {
                 <div className="flex flex-col md:flex-row gap-4 bg-inherit">
                     <EduModernDateInputV4 value={term.startDate} onChange={(val) => updateTerm(index, { startDate: val })} />
                     <EduModernDateInputV4 value={term.endDate} onChange={(val) => updateTerm(index, { endDate: val })} />
-                </div>
-
-                <div className="space-y-4 w-full bg-inherit">
-                    <EduRadioGroup
-                        className="w-full flex-row justify-between bg-inherit"
-                        options={[
-                            { label: "Active Now", value: true },
-                            { label: "Scheduled", value: false }
-                        ]}
-                        value={term.isCurrent}
-                        valueKey="value"
-                        labelKey="label"
-                        onChange={(val) => updateTerm(index, { isCurrent: val.value })}
-                    />
                 </div>
             </motion.div>
         );
@@ -445,3 +409,36 @@ export function SchoolSetupForm() {
         </div>
     );
 }
+
+
+
+
+
+
+// {selectedRule && (
+//                 <EduFloatingGuide
+//                     title={`${selectedRule.name} Ranges`}
+//                     buttonText="Preview ranges"
+//                     buttonClassName="p-5 rounded-full max-w-50"
+//                     titleClassName="p-2 text-foreground"
+//                 >
+//                     <table className="w-full text-left border-separate border-spacing-0 bg-card">
+//                         <thead>
+//                             <tr className="bg-muted/40">
+//                                 <th className="p-4 text-[10px] font-black uppercase text-muted-foreground">Grade</th>
+//                                 <th className="p-4 text-[10px] font-black uppercase text-muted-foreground">Range</th>
+//                                 {hasPoints && <th className="p-4 text-[10px] font-black uppercase text-muted-foreground">Points</th>}
+//                             </tr>
+//                         </thead>
+//                         <tbody className="divide-y divide-border/40">
+//                             {selectedRule.ranges.map((r: GradingRange) => (
+//                                 <tr key={r.id} className="hover:bg-muted/10">
+//                                     <td className={cn("p-4 text-sm font-bold", r.isPass ? "text-green-500" : "text-red-500")}>{r.grade}</td>
+//                                     <td className="p-4 text-[11px] text-muted-foreground">{r.minMark} — {r.maxMark}</td>
+//                                     {hasPoints && <td className="p-4 text-[11px] text-muted-foreground">{r.points || "0"}</td>}
+//                                 </tr>
+//                             ))}
+//                         </tbody>
+//                     </table>
+//                 </EduFloatingGuide>
+//             )}

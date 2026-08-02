@@ -3,27 +3,83 @@
 import { JSX } from "react"
 import Link from "next/link";
 import { text } from "@/lib/string";
-import { capitalize, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { UserAffiliatedSchool } from "@/types/dash";
-import { AlertCircle, LucideIcon, MoreHorizontal, MoreVertical } from "lucide-react";
 import { CopyButton } from "@/components/elements";
-import { Link2Icon, School2, User, IdCardLanyard, ShieldCheckIcon, ShieldEllipsis } from "lucide-react";
+import { LucideIcon, MoreHorizontal, School2, User, IdCardLanyard, ShieldCheckIcon, ShieldEllipsis } from "lucide-react";
 
 interface SchoolCardProps {
     school: UserAffiliatedSchool;
 }
+
+const STATUS_STYLES: { [key: string]: string } = {
+    pending: "bg-blue-400 text-white",
+    active: "bg-green-700 text-white",
+    closed: "bg-red-700 text-white",
+    suspended: "bg-yellow-700 text-white"
+} as const;
+
+import {
+    AlertCircle,
+    CheckCircle2,
+    ShieldAlert,
+    Trash2,
+} from "lucide-react";
+
+
+
 export const SchoolCard = ({ school }: SchoolCardProps): JSX.Element => {
 
-    const statusClass: { [key: string]: string } = {
-        pending: "bg-blue-400 text-white",
-        active: "bg-green-700 text-white",
-        closed: "bg-red-700 text-white",
-        suspended: "bg-yellow-700 text-white"
-    }
-    const status = school.status.toLowerCase();
-    const roles = school.roles.map((r) => r.displayName).join(" | ");
+    const STATUS_INFO = {
+        pending: {
+            icon: AlertCircle,
+            className: "bg-blue-50 border-blue-200 text-blue-700",
+            message:
+                "Your school setup is incomplete. Complete the academic calendar and grading system configuration to activate your workspace.",
+        },
 
-    const link = `https://${school.slug}.eduasas.co.tz`
+        active: {
+            icon: CheckCircle2,
+            className: "bg-green-50 border-green-200 text-green-700",
+            message:
+                "Workspace is active and ready",
+        },
+
+        suspended: {
+            icon: ShieldAlert,
+            className: "bg-yellow-50 border-yellow-200 text-yellow-700",
+            message:
+                school.primaryRole.roleKey === "OWNER"
+                    ? "Your school has been suspended. Please contact support to resolve the issue and restore access."
+                    : "This school has been suspended by the owner or administrator. Please contact them for more information.",
+        },
+
+        closed: {
+            icon: AlertCircle,
+            className: "bg-red-50 border-red-200 text-red-700",
+            message:
+                school.primaryRole.roleKey === "OWNER"
+                    ? "This school is currently closed. You can reopen it at any time or permanently delete it if it is no longer needed."
+                    : "This school has been closed by its owner. Please contact the owner if you need access.",
+        },
+
+        trashed: {
+            icon: Trash2,
+            className: "bg-red-100 border-red-300 text-red-800",
+            message:
+                school.primaryRole.roleKey === "OWNER"
+                    ? "This school has been moved to the trash. You can restore it before it is permanently deleted."
+                    : "This school has been moved to the trash by its owner and is no longer accessible.",
+        },
+    } as const;
+
+    const status = school.status.toLowerCase();
+
+    //const status = "trashed"
+
+    const info = STATUS_INFO[status as keyof typeof STATUS_INFO];
+
+    const StatusIcon = info.icon;
     return (
         <div
             key={school.schoolUId}
@@ -37,11 +93,11 @@ export const SchoolCard = ({ school }: SchoolCardProps): JSX.Element => {
                     </div>
                 </div>
                 <div className="flex-1 flex flex-col gap-3 p-2">
-                    <div className="flex items-center ustify-between h-7">
+                    <div className="flex items-center justify-between h-7">
 
                         {/* School name & ID */}
                         <div className="flex-1 flex flex-col gap-1">
-                            <h3 className="text-xs font-black capitalize">{school.displayName || school.displayName}</h3>
+                            <h3 className="text-xs font-black capitalize">{school.displayName || school.name}</h3>
                             <div className="flex gap-1 items-center">
                                 <span className="text-[11px] font-bold">ID: </span>
                                 <span className="text-[10px] tracking-wider font-bold bg-muted-200 px-[2px] py-[1px] rounded-[2px] border border-muted-300">{school.schoolId}</span>
@@ -52,7 +108,7 @@ export const SchoolCard = ({ school }: SchoolCardProps): JSX.Element => {
                         {/* Scool status */}
                         <div>
                             <span className={cn("text-xs font-medium rounded-full px-3 py-1 tracking-wider",
-                                statusClass[status])}>{capitalize(school.status)}</span>
+                                STATUS_STYLES[status])}>{text.capitalize(status)}</span>
                         </div>
                     </div>
 
@@ -63,35 +119,49 @@ export const SchoolCard = ({ school }: SchoolCardProps): JSX.Element => {
                             <p className="text-[12px] text-blue-900 font-bold">Membership</p>
                         </div>
 
-                        <div className="flex flex-col px-2 py-3 rounded-sm p-2 gap-1">
-                            <Row icon={ShieldCheckIcon} value={text.capitalize(school.designation || school.primaryRole.displayName)} />
-                            <Row icon={IdCardLanyard} value={school.staffNumber} />
+                        <div className="flex flex-col px-2 py-3 rounded-sm p-2 gap-2.5">
+                            <Row
+                                icon={ShieldCheckIcon}
+                                label="Role"
+                                value={text.capitalize(
+                                    school.designation || school.primaryRole.displayName
+                                )}
+                            />
+                            <Row
+                                icon={IdCardLanyard}
+                                label="Staff ID"
+                                value={school.staffNumber}
+                                variant="code"
+                            />
                         </div>
                     </div>
 
                     {/* Action center */}
                     <div className="flex flex-col gap-1">
-                        {status === "pending" && (
-                            <div className="flex items-tart bg-muted-100 gap-1 border border-muted-300 p-2 rounded-md">
-                                <div>
-                                    <AlertCircle size={14} className="text-blue-900/70" />
-                                </div>
-                                <span className="text-muted-600 text-[11px]">
-                                    Your school is pending please click setup button and configure Academics calender and grading rule to activate it.
-                                    <Link href={"#"} className="text-[11px] text-primary-500 font-medium"> Learn more...</Link>
-                                </span>
-                            </div>)}
-                        {status === "closed" && (
-                            <div className="flex items-tart bg-muted-100 gap-1 border border-muted-300 p-2 rounded-md">
-                                <div>
-                                    <AlertCircle size={14} className="text-blue-900/70" />
-                                </div>
-                                <span className="text-muted-600 text-[11px]">
-                                    {school.primaryRole.roleKey === "OWNER" ? "Look like you closed this school please, yu can open or delete it, If you didn't it please contact suport for Further help. "
-                                        : "This school is currently closed by school owner please contact them fore more, or contatct support for any issue. "}
-                                    <Link href={"#"} className="text-[11px] text-primary-500 font-medium"> Learn more...</Link>
-                                </span>
-                            </div>)}
+                        <div
+                            className={cn(
+                                "flex items-start gap-2 rounded-md border p-2",
+                                info.className
+                            )}
+                        >
+                            <StatusIcon size={15} className="mt-0.5 shrink-0" />
+
+                            <p className="text-[11px] leading-5">
+                                {info.message}
+
+                                {status !== "active" && (
+                                    <>
+                                        {" "}
+                                        <Link
+                                            href="#"
+                                            className="font-semibold text-primary-500 hover:underline"
+                                        >
+                                            Learn more...
+                                        </Link>
+                                    </>
+                                )}
+                            </p>
+                        </div>
                         <div className="flex items-center justify-end gap-3">
 
                             <button className="rounded-full cursor-pointer text-xs tracking-wider font-semibold text-white bg-primary-500 px-3 py-1">
@@ -110,12 +180,52 @@ export const SchoolCard = ({ school }: SchoolCardProps): JSX.Element => {
     )
 }
 
-const Row = ({ icon, value, className }: { icon: LucideIcon; value: string; className?: string; }) => {
-    const Icon = icon;
-    return (
-        <div className="flex items-center gap-2">
-            <Icon className="text-blue-900" size={18} />
-            <span className={cn("text-[11px] font-bold tracking-wider", className)}>{value}</span>
-        </div>
-    )
+interface RowProps {
+    icon: LucideIcon;
+    value?: string | null;
+    label?: string;
+    className?: string;
+    variant?: "default" | "code";
 }
+
+export const Row = ({
+    icon: Icon,
+    value,
+    label,
+    className,
+    variant = "default",
+}: RowProps) => {
+    if (!value) return null;
+
+    return (
+        <div className="flex items-start gap-3">
+            <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted-100">
+                <Icon size={15} className="text-muted-600" />
+            </div>
+
+            <div className="min-w-0 flex-1">
+                {label && (
+                    <p className="text-[9px] font-medium uppercase tracking-wide text-muted-500">
+                        {label}
+                    </p>
+                )}
+
+                <p
+                    className={cn(
+                        "truncate text-sm text-foreground",
+
+                        variant === "default" &&
+                        "font-medium",
+
+                        variant === "code" &&
+                        "inline-flex w-fit rounded-md border border-muted-300 bg-muted-100 px-2 py-0.5 font-mono text-xs tracking-normal text-muted-700",
+
+                        className
+                    )}
+                >
+                    {value}
+                </p>
+            </div>
+        </div>
+    );
+};

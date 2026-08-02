@@ -1,23 +1,28 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans, Fira_Code } from "next/font/google";
 import "./globals.css";
 
-import { EduToaster } from "@/components/ui/toaster"; 
+import { EduToaster } from "@/components/ui/toaster";
 import { ReactQueryProvider, ThemeProvider } from "@/providers";
 import GlobalSystemWatcher from "@/lib/utils/global-system.watcher";
 import { AppFeedbackModal, AppConfirmModal } from "@/components/modals";
 
-const geist = Geist({
-    variable: "--font-geist",
-    subsets: ["latin"],
-    display: "swap",
+// 1. Font ya maandishi ya kawaida / Aya (Body)
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
 });
 
+// 2. Font ya Headings (Modern Sans) class font-heading
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-heading",
+});
 
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
-    display: "swap",
+// 3. Font ya Code / Mono class font-mono
+const firaCode = Fira_Code({
+  subsets: ["latin"],
+  variable: "--font-mono",
 });
 
 // 1. METADATA - AI-Ready & Industrial Branding
@@ -102,8 +107,9 @@ export default function RootLayout({
     <html
       lang="sw"
       className={`
-        ${geist.variable}
-        ${geistMono.variable}
+        ${inter.className}
+        ${jakarta.variable}
+        ${firaCode.variable}
         antialiased scroll-smoot
     `}
       suppressHydrationWarning

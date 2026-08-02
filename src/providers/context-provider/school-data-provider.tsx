@@ -11,7 +11,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useTenant } from "./tenant-provider";
 import { apiFetch } from "@/lib/api/api-fetch"; // Tunatumia ile utility tuliyoitengeneza
 import { SchoolContextResponse } from "@/types/school";
-import { useSwitchTenant } from "@/lib/helpers/tenant-switch";
 
 interface SchoolDataContextType {
   data: SchoolContextResponse | undefined;

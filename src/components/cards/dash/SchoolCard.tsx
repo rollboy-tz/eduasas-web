@@ -2,6 +2,7 @@
 
 import { JSX } from "react"
 import Link from "next/link";
+import { text } from "@/lib/string";
 import { capitalize, cn } from "@/lib/utils";
 import { UserAffiliatedSchool } from "@/types/dash";
 import { AlertCircle, LucideIcon, MoreHorizontal, MoreVertical } from "lucide-react";
@@ -63,7 +64,7 @@ export const SchoolCard = ({ school }: SchoolCardProps): JSX.Element => {
                         </div>
 
                         <div className="flex flex-col px-2 py-3 rounded-sm p-2 gap-1">
-                            <Row icon={ShieldCheckIcon} value={school.designation || school.primaryRole.displayName} />
+                            <Row icon={ShieldCheckIcon} value={text.capitalize(school.designation || school.primaryRole.displayName)} />
                             <Row icon={IdCardLanyard} value={school.staffNumber} />
                         </div>
                     </div>

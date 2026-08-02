@@ -1,26 +1,33 @@
+/**
+ * =============================================================================
+ * EduAsas String Utilities
+ * -----------------------------------------------------------------------------
+ * Public API entry point.
+ * =============================================================================
+ */
+
 import { Text } from "./text";
 import { transformers } from "./transform";
 import type { StringValue } from "./types";
 
-/**
- * Creates a fluent Text instance.
- *
- * @example
- * text("john doe")
- *   .titleCase()
- *   .toString();
- */
-export function text(value: StringValue): Text {
-  return new Text(value);
-}
+
+type TextAPI = {
+  (value: StringValue): Text;
+} & typeof transformers;
+
 
 /**
- * Direct helper methods.
+ * Main text utility function.
  *
- * Example:
+ * Supports both:
+ *@example
+ * Fluent:
+ * text("hello world").titleCase()
  *
- * text.titleCase(value)
+ * Direct:
+ * text.titleCase("hello world")
  */
-Object.assign(text, transformers);
-
-export default text;
+export const text = Object.assign(
+  (value: StringValue) => new Text(value),
+  transformers
+) as TextAPI;

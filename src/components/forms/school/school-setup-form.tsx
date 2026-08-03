@@ -218,7 +218,7 @@ export function SchoolSetupForm() {
         const hasActive = terms.some(t => t.isCurrent);
         if (!hasActive) return toast.show({ message: "Select the currently active term.", type: "error" });
 
-        setFinalView(false);
+        setFinalView(false)
         setIsSubmitting(true);
 
         try {
@@ -337,7 +337,7 @@ export function SchoolSetupForm() {
                     <AnimatePresence>{(isSubmitting || isLoading) && <EduLinearLoader height={3} />}</AnimatePresence>
                 </div>
 
-                <div className={cn("flex flex-col md:flex-row min-h-[400px] max-h-[400px] transition-all duration-300 bg-inherit", (isLoading || isSubmitting) && "opacity-0")}>
+                <div className={cn("flex flex-col md:flex-row min-h-[320px] max-h-[400px] transition-all duration-300 bg-inherit", (isLoading || isSubmitting) && "opacity-0")}>
                     {/* INFO SIDE */}
                     <div className="w-full md:w-[45%] p-12 flex flex-col justify-center bg-inherit">
                         <div className="text-[10px] font-black text-primary mb-2 tracking-[0.3em] uppercase opacity-70">

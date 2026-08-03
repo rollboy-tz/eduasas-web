@@ -6,3 +6,4 @@ export * from './helper';
 export * from './string-utils';
 export * from './time-utils';
 export * from './data-utils';
+export * from './enhence';

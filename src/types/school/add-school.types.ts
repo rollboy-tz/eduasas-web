@@ -1,3 +1,5 @@
+import { SchoolStatus } from "./user-schools.types";
+
 export type SchoolOwnership = "PRIVATE" | "GOVERNMENT";
 
 export interface SchoolFormData {
@@ -18,4 +20,27 @@ export interface AddSchoolStore extends SchoolFormData {
   nextStep: () => void;
   prevStep: () => void;
   resetStore: () => void;
+}
+
+export interface RegisteredSchool {
+  id: string;
+  schoolId: string;
+  name: string;
+  slug: string;
+  schoolType: SchoolOwnership;
+  creatorId: string;
+  lastUsedAt: string | null;
+  region: string | null;
+  district: string | null;
+  ward: string | null;
+  registrationNo: string;
+  status: string;
+  parentSchool: string | null;
+  createdAt: string;
+  setupMetadata: any;
+  updatedAt: string;
+}
+
+export interface SchoolRegistrationResponeData {
+  school: RegisteredSchool;
 }

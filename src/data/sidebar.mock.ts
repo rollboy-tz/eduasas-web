@@ -30,6 +30,12 @@ export const sidebarMockData: MenuGroup[] = [
         badge: 86,
       },
 
+      {
+        title: "Schools",
+        icon: "School2",
+        href: "/schools"
+      }
+
     ],
   },
 

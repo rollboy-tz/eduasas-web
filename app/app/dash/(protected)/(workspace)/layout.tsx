@@ -8,8 +8,10 @@ import Sidebar from "@/components/layout/sidebar/Sidebar";
 
 export default function DashWorkspaceLayout({
   children,
+  modal,
 }: {
   children: React.ReactNode;
+  modal: React.ReactNode;
 }) {
   return (
     <SidebarProvider>
@@ -25,6 +27,7 @@ export default function DashWorkspaceLayout({
             <Header />
             <main className="flex-1 overflow-y-auto px-2 sm:p-4">
               {children}
+              {modal}
             </main>
           </div>
         </div>

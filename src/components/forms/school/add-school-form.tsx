@@ -3,7 +3,7 @@
 import { useAddSchoolStore, useSchoolCategoriesStore } from "@/store/school";
 import { useCategories } from "@/hooks/school/use-categories-sync";
 import { EduModernInputV2, EduModernSelect } from "@/components/fields";
-import { showFeedback, showConfirm } from "@/components/modals";
+import { showFeedback, EduMainModal } from "@/components/modals";
 import { ArrowLeft, ArrowRight, Check, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { apiMutation } from "@/lib/api";
@@ -13,6 +13,8 @@ import { useUser } from "@/hooks/dash";
 import { useToast } from "@/lib/store";
 import { EduLinearLoader } from "@/components/elements";
 import { EduButton } from "@/components/ui";
+import { RegisteredSchool, SchoolRegistrationResponeData } from "@/types/school";
+import { SchoolAdddeCard } from "@/components/cards/dash/SchoolAddedCard";
 
 // 1. Define aina ya keys zinazoruhusiwa
 type ErrorFields = "name" | "registrationNumber" | "region" | "district" | "email" | "phone" | "schoolType" | "categoryIds";
@@ -42,7 +44,7 @@ export function AddSchoolForm({
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [registeredSchool, setRegisteredSchool] = useState<any>(null);
+    const [registeredSchool, setRegisteredSchool] = useState<RegisteredSchool>();
 
     // 3. ERROR HANDLERS (Zikae hapa nje ili fomu izione)
     const handleError = (field: string, message: string) => {
@@ -64,43 +66,23 @@ export function AddSchoolForm({
         const payload = { name, registrationNumber, schoolType, categoryIds, region, district, email, phone };
 
         try {
-            const res = await apiMutation("post", "/school/register", payload);
+            const res = await apiMutation<SchoolRegistrationResponeData>("post", "/school/register", payload);
 
             if (res.status === 'success') {
+                console.log("Res data", res.data)
+                setRegisteredSchool(res.data.school)
+                console.log("Settled school: ", registeredSchool)
+
                 mutate();
 
                 // ANGALIA HAPA: Maamuzi kulingana na Props
                 if (showSuccessModal) {
-
-                    showFeedback({
-                        type: "success",
-                        title: "School Added Successfully",
-                        message: "Your school has been registered successfully. You can set it up now or later.",
-                        actions: [
-                            {
-                                label: "Maybe Later",
-                                onClick: () => {
-                                    router.back();
-                                    resetStore();
-                                }
-                            },
-                            {
-                                label: "Setup now",
-                                variant: "primary",
-                                onClick: () => {
-                                    const sId = registeredSchool?.schoolId || registeredSchool?.school?.schoolId;
-                                    router.replace(`/school/setup?schoolId=${sId}`);
-                                    resetStore();
-                                }
-                            }
-                        ]
-                    })
-
+                    setIsModalOpen(true)
                     // Note: Hapa hatufanyi router.replace, tunasubiri user abonyeze button kwenye pop-up
                 } else {
                     // SCENARIO B: Silent Flow (Redirect moja kwa moja)
                     toast.show({ "message": "School added successfully!", "type": "success" });
-                    router.replace(`/s?schoolId=${res.data.school.schoolId}&need_setup=true`);
+                    router.replace(`/schools?refetch_data=needed`);
                     resetStore();
                 }
 
@@ -121,6 +103,12 @@ export function AddSchoolForm({
             setIsSubmitting(false);
         }
     };
+
+    const completeSetup = () => {
+        const sId = registeredSchool?.schoolId;
+        router.replace(`/school/setup?schoolId=${sId}`);
+        resetStore();
+    }
 
     const stepInfo = [
         { title: "School Identity", desc: "Enter the official school name and government-issued registration number to verify your institution." },
@@ -378,6 +366,16 @@ export function AddSchoolForm({
                     )}
                 </div>
             </div>
+            <EduMainModal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    resetStore()
+                    router.back()
+                    setIsModalOpen(false)
+                }}
+                className="p-3 border-muted-200 rounded-lg" size="sm">
+                <SchoolAdddeCard school={registeredSchool} onButtonClick={completeSetup} />
+            </EduMainModal>
         </>
     );
 }

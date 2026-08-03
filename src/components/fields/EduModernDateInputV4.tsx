@@ -164,7 +164,7 @@ export function EduModernDateInputV4({
    * @param {string} val - Selected date string.
    */
   function handleDate(val: string) {
-    updateValue(val);
+    updateValue(DateUtils.buildISODateTime(val));
     setViewDate(createDate(val));
     setOpen(false);
   }

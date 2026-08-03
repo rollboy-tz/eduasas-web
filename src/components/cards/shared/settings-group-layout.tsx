@@ -43,8 +43,8 @@ export const SettingItem: React.FC<SettingItemProps> = ({ title, description, ic
       <div className="flex items-start gap-3.5 max-w-[75%]">
         {icon && <div className="mt-0.5 text-gray-500 dark:text-gray-400 shrink-0">{icon}</div>}
         <div className="space-y-0.5">
-          <h4 className="text-xs sm:text-sm font-bold leading-relaxed text-gray-600 dark:text-gray-100">{title}</h4>
-          {description && <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{description}</p>}
+          <h4 className="text-xs sm:text-sm font-bold leading-relaxed text-gray-700 dark:text-gray-100">{title}</h4>
+          {description && <p className="text-xs sm:text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{description}</p>}
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { SettingGroup, SettingItem } from "@/components/ui/settings-group-layout";
+import { SettingGroup, SettingItem } from "@/components/cards/shared/settings-group-layout";
 import { SettingSelect, SettingToggle, SettingTimeInput } from "@/components/control";
 import { useUser } from "@/hooks/dash";
 import { EduScreenLoader } from "@/components/ui";
@@ -30,6 +30,7 @@ export const SettingsContent = () => {
                     description="Receive instant notifications in your browser or mobile device."
                     action={
                         <SettingToggle
+                            disabled={!settings?.pushEnabled}
                             checked={settings?.pushEnabled ?? false}
                             onChange={(value) => updateSettings({ pushEnabled: value })}
                         />
@@ -41,6 +42,7 @@ export const SettingsContent = () => {
                     description="Receive important notifications via email."
                     action={
                         <SettingToggle
+                            disabled={!settings?.emailEnabled}
                             checked={settings?.emailEnabled ?? false}
                             onChange={(value) => updateSettings({ emailEnabled: value })}
                         />
@@ -52,6 +54,7 @@ export const SettingsContent = () => {
                     description="Receive important notifications via SMS."
                     action={
                         <SettingToggle
+                            disabled={!settings?.smsEnabled}
                             checked={settings?.smsEnabled ?? false}
                             onChange={(value) => updateSettings({ smsEnabled: value })}
                         />
@@ -67,6 +70,7 @@ export const SettingsContent = () => {
                     action={
                         <SettingSelect
                             value={settings?.language ?? "en"}
+                            disabled={!settings?.language}
                             onChange={(value) => updateSettings({ language: value })}
                             options={[
                                 { label: "English", value: "en" },
@@ -84,6 +88,7 @@ export const SettingsContent = () => {
                     description="Pause notifications during selected hours."
                     action={
                         <SettingToggle
+                            disabled={!settings?.dndEnabled}
                             checked={settings?.dndEnabled ?? false}
                             onChange={(value) => updateSettings({ dndEnabled: value })}
                         />
@@ -97,6 +102,7 @@ export const SettingsContent = () => {
                     action={
                         <SettingTimeInput
                             value={startTime}
+                            disabled={!settings?.dndStartTime}
                             onChange={setStartTime}
                             onBlur={() =>
                                 updateSettings({
@@ -113,6 +119,7 @@ export const SettingsContent = () => {
                     action={
                         <SettingTimeInput
                             value={endTime}
+                            disabled={!settings?.dndEndTime}
                             onChange={setEndTime}
                             onBlur={() =>
                                 updateSettings({
@@ -133,6 +140,7 @@ export const SettingsContent = () => {
                     action={
                         <SettingSelect
                             multiple
+                            disabled={settings === undefined || settings.academicChannels.length === 0}
                             value={settings?.academicChannels ?? []}
                             onChange={(values) => {
                                 updateSettings({
@@ -165,6 +173,7 @@ export const SettingsContent = () => {
                     action={
                         <SettingSelect
                             multiple
+                            disabled={settings === undefined || settings.paymentChannels.length === 0}
                             value={settings?.paymentChannels ?? []}
                             onChange={(values) => {
                                 updateSettings({
@@ -196,6 +205,7 @@ export const SettingsContent = () => {
                     description="Choose where system updates are delivered."
                     action={
                         <SettingSelect
+                            disabled={settings === undefined || settings.systemChannels.length === 0}
                             multiple
                             value={settings?.systemChannels ?? []}
                             onChange={(values) => {

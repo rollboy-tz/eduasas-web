@@ -48,7 +48,7 @@ export default function Sidebar({
       {isMobileOpen && (
         <div
           onClick={toggleMobile}
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-white/5 backdrop-blur-sm lg:hidden"
         />
       )}
 
@@ -58,7 +58,7 @@ export default function Sidebar({
           "top-0 left-0",
           "h-screen",
           "z-50",
-          "flex flex-col",
+          "flex flex-col bg-white/80",
           "border-r border-border",
           "transition-all duration-300",
           // "overflow-hidden",

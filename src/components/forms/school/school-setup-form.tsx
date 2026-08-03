@@ -3,9 +3,9 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSchoolSetupStore } from "@/store/school";
 import { useCompatibleGrading } from "@/hooks/school";
-import { CompatibleGradingRule, GradingRange } from "@/types/school";
+import { CompatibleGradingRule } from "@/types/school";
 import { cn } from "@/lib/utils/helper";
-import { DateUtils, createEnhancer } from "@/lib/utils";
+import { DateUtils } from "@/lib/utils";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/lib/store/use-toast";
@@ -14,8 +14,10 @@ import { useUser } from "@/hooks/dash";
 import { EduButton, EduScreenLoader } from "@/components/ui";
 import { EduLinearLoader, EduMainLoader } from "@/components/elements";
 import { EduModernDateInputV4, EduModernInputV2, EduModernSelect, EduRadioGroup } from "@/components/fields";
-import { EduFloatingGuide } from "@/components/modals";
+import { EduMainModal } from "@/components/modals";
 import { apiMutation } from "@/lib/api";
+import { GadingPreviewCard, SetUpPreviewCard } from "@/components/cards/dash";
+import { SchoolSetuCompletdCard } from "@/components/cards/dash/SetupCompletedCard";
 
 export function SchoolSetupForm() {
     const router = useRouter();
@@ -42,12 +44,11 @@ export function SchoolSetupForm() {
 
     const terms = useSchoolSetupStore((state) => state.terms);
 
-    // const gradingRules = enhance(globalRules, {
-    //     badge: (rule) => rule.
-    // })
-
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [hasTimedOut, setHasTimedOut] = useState(false);
+    const [previewRange, setPreviewRange] = useState(false);
+    const [finalView, setFinalView] = useState(false);
+    const [setUpCopleted, setSetupComplted] = useState(false);
     const [modalView, setModalView] = useState<"NONE" | "SUCCESS" | "ERROR" | "ACTIVE_GUARD">("NONE");
 
     // Timeout protection
@@ -93,7 +94,6 @@ export function SchoolSetupForm() {
 
     const isLoading = (isLoadingSchools || isLoadingRules || isSubmitting) && !hasTimedOut;
     const selectedRule = globalRules?.find((r: CompatibleGradingRule) => r.code === primaryGrading);
-    const hasPoints = selectedRule?.ranges.some((r: GradingRange) => r.points !== null && r.points !== undefined);
 
     // 🛑 3. CONDITIONAL RETURNS ZOTE ZIKAE HAPA CHINI BAADA YA HOOKS ZOTE KUITWA!
     if (isLoadingSchools) {
@@ -182,29 +182,44 @@ export function SchoolSetupForm() {
         if (currentStep < totalSteps) nextStep();
     };
 
+    const openPreview = () => {
+        setFinalView(true);
+    }
+
+    const handleCurrentTerm = (order: number) => {
+        terms.forEach((term, index) => {
+            updateTerm(index, {
+                isCurrent: term.order === order
+            });
+        });
+    };
+
+    const payload = {
+        year: {
+            value: Number(year.value),
+            startDate: year.startDate,
+            endDate: year.endDate
+        },
+        terms: terms.map(t => ({
+            name: t.name,
+            startDate: t.startDate,
+            endDate: t.endDate,
+            order: t.order,
+            isCurrent: t.isCurrent
+        })),
+        ...((primaryGrading && globalRules.length > 1) && { primaryGrading })
+    };
+
     const handleSubmit = async () => {
-        if (!validateWizard()) return;
+        if (!validateWizard()) return toast.show({ message: "Data validation failed please retry", type: "error" });
+
+        console.log("Validated posting")
 
         const hasActive = terms.some(t => t.isCurrent);
         if (!hasActive) return toast.show({ message: "Select the currently active term.", type: "error" });
 
+        setFinalView(false);
         setIsSubmitting(true);
-
-        const payload = {
-            year: {
-                value: Number(year.value),
-                startDate: year.startDate,
-                endDate: year.endDate
-            },
-            terms: terms.map(t => ({
-                name: t.name,
-                startDate: t.startDate,
-                endDate: t.endDate,
-                order: t.order,
-                isCurrent: t.isCurrent
-            })),
-            ...((primaryGrading && globalRules.length > 1) && { primaryGrading })
-        };
 
         try {
             if (!currentSchool) return;
@@ -212,8 +227,8 @@ export function SchoolSetupForm() {
             const res = await apiMutation("post", setupEndpointURL, payload);
 
             if (res.status === 'success') {
-                toast.show({ message: "School setup finalized successfully.", type: "success" });
-                router.replace(`/s?schoolId=${currentSchool.schoolId}`);
+                setSetupComplted(true);
+                //router.replace(`/s?schoolId=${currentSchool.schoolId}`);
             }
         } catch (err) {
             toast.show({ message: "Setup failed. Please try again.", type: "error" });
@@ -240,7 +255,16 @@ export function SchoolSetupForm() {
                     </>
                 )}
             />
-            
+
+            <button className={cn(" rounded-md p-2 text-white transition-all duration-300",
+                selectedRule ? "bg-blue-500 cursor-pointer hover:bg-blue-400 active:scale-99" : "bg-blue-200"
+            )} onClick={() => selectedRule && setPreviewRange(true)}>
+                {selectedRule ?
+                    (<span className="text-sm font-semibold">Preview ranges & details</span>) :
+                    (<span className="text-xs">Select a grading rule to preview.</span>)}
+
+            </button>
+
         </motion.div>
     );
 
@@ -307,138 +331,144 @@ export function SchoolSetupForm() {
     };
 
     return (
-        <div className="w-full flex flex-col bg-inherit">
-            <div className="w-full h-1 relative overflow-hidden">
-                <AnimatePresence>{(isSubmitting || isLoading) && <EduLinearLoader height={3} />}</AnimatePresence>
-            </div>
+        <>
+            <div className="w-full flex flex-col bg-inherit">
+                <div className="w-full h-1 relative overflow-hidden">
+                    <AnimatePresence>{(isSubmitting || isLoading) && <EduLinearLoader height={3} />}</AnimatePresence>
+                </div>
 
-            <div className={cn("flex flex-col md:flex-row min-h-[400px] max-h-[400px] transition-all duration-300 bg-inherit", (isLoading || isSubmitting) && "opacity-0")}>
-                {/* INFO SIDE */}
-                <div className="w-full md:w-[45%] p-12 flex flex-col justify-center bg-inherit">
-                    <div className="text-[10px] font-black text-primary mb-2 tracking-[0.3em] uppercase opacity-70">
-                        Step {currentStep} / {totalSteps}
+                <div className={cn("flex flex-col md:flex-row min-h-[400px] max-h-[400px] transition-all duration-300 bg-inherit", (isLoading || isSubmitting) && "opacity-0")}>
+                    {/* INFO SIDE */}
+                    <div className="w-full md:w-[45%] p-12 flex flex-col justify-center bg-inherit">
+                        <div className="text-[10px] font-black text-primary mb-2 tracking-[0.3em] uppercase opacity-70">
+                            Step {currentStep} / {totalSteps}
+                        </div>
+
+                        <h3 className="text-2xl font-bold mb-4 text-foreground tracking-tight">
+                            {currentStep === 1 && "Grading Rules"}
+                            {currentStep === 2 && "Academic Year"}
+                            {currentStep > 2 && terms[currentStep - 3]?.name}
+                        </h3>
+
+                        <p className="text-sm text-wrap text-muted-foreground leading-relaxed mb-8">
+                            {currentStep === 1 && "Automate performance tracking and criteria. Select a standard framework to begin setup."}
+                            {currentStep === 2 && "Configure your corporate academic timelines and choose the operational terms count."}
+                            {currentStep > 2 && `Specify the opening and closing boundaries for ${terms[currentStep - 3]?.name}.`}
+                        </p>
+
+                        {/* Progress Dots */}
+                        <div className="flex gap-2">
+                            {Array.from({ length: totalSteps }).map((_, i) => (
+                                <div
+                                    key={i}
+                                    className={cn(
+                                        "h-1 rounded-full transition-all duration-500",
+                                        (i + 1) === currentStep ? "w-8 bg-primary" : "w-2 bg-muted-foreground/30"
+                                    )}
+                                />
+                            ))}
+                        </div>
                     </div>
 
-                    <h3 className="text-2xl font-bold mb-4 text-foreground tracking-tight">
-                        {currentStep === 1 && "Grading Rules"}
-                        {currentStep === 2 && "Academic Year"}
-                        {currentStep > 2 && terms[currentStep - 3]?.name}
-                    </h3>
-
-                    <p className="text-sm text-wrap text-muted-foreground leading-relaxed mb-8">
-                        {currentStep === 1 && "Automate performance tracking and criteria. Select a standard framework to begin setup."}
-                        {currentStep === 2 && "Configure your corporate academic timelines and choose the operational terms count."}
-                        {currentStep > 2 && `Specify the opening and closing boundaries for ${terms[currentStep - 3]?.name}.`}
-                    </p>
-
-                    {/* Progress Dots */}
-                    <div className="flex gap-2">
-                        {Array.from({ length: totalSteps }).map((_, i) => (
-                            <div
-                                key={i}
-                                className={cn(
-                                    "h-1 rounded-full transition-all duration-500",
-                                    (i + 1) === currentStep ? "w-8 bg-primary" : "w-2 bg-muted-foreground/30"
-                                )}
-                            />
-                        ))}
+                    {/* FORM SIDE */}
+                    <div className="flex-1 flex items-center justify-center p-8 bg-inherit">
+                        <div className="w-full max-w-[420px] bg-inherit">
+                            <AnimatePresence mode="wait">{renderStep()}</AnimatePresence>
+                        </div>
                     </div>
                 </div>
 
-                {/* FORM SIDE */}
-                <div className="flex-1 flex items-center justify-center p-8 bg-inherit">
-                    <div className="w-full max-w-[420px] bg-inherit">
-                        <AnimatePresence mode="wait">{renderStep()}</AnimatePresence>
-                    </div>
+                {/* FOOTER */}
+                <div className="p-8 border-t border-border/60 flex items-center gap-3 md:justify-end justify-between min-h-[100px] relative overflow-hidden bg-inherit">
+                    <AnimatePresence mode="wait">
+                        {!isLoading ? (
+                            <motion.div
+                                key="buttons"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.2 }}
+                                className="flex items-center gap-3 w-full md:justify-end justify-between bg-inherit"
+                            >
+                                <EduButton
+                                    variant="ghost"
+                                    onClick={prevStep}
+                                    disabled={currentStep === 1 || isSubmitting}
+                                    icon={ArrowLeft}
+                                    className="flex-1 md:flex-none min-w-40"
+                                >
+                                    Back
+                                </EduButton>
+
+                                <EduButton
+                                    onClick={currentStep < totalSteps ? handleNext : openPreview}
+                                    isLoading={isSubmitting}
+                                    icon={currentStep < totalSteps ? ArrowRight : CheckCircle2}
+                                    loadingText="Setting up"
+                                    className="flex-1 md:flex-none min-w-40"
+                                >
+                                    {currentStep < totalSteps ? "Continue" : "Finish up"}
+                                </EduButton>
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="loader"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 1.05 }}
+                                className="flex items-center gap-3 w-full justify-center md:justify-end bg-inherit"
+                            >
+                                <EduMainLoader size={24} />
+                                <motion.h3
+                                    initial={{ x: 10, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
+                                    transition={{ delay: 0.1 }}
+                                    className="text-muted-foreground text-sm tracking-tight"
+                                >
+                                    Finishing setup...
+                                </motion.h3>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
+            <EduMainModal
+                isOpen={previewRange}
+                size="lg"
+                className="p-3 border-muted-200 rounded-lg"
+                onClose={() => setPreviewRange(false)}
+                children={
+                    <GadingPreviewCard
+                        selectedRule={selectedRule}
+                    />
+                }
+            />
 
-            {/* FOOTER */}
-            <div className="p-8 border-t border-border/60 flex items-center gap-3 md:justify-end justify-between min-h-[100px] relative overflow-hidden bg-inherit">
-                <AnimatePresence mode="wait">
-                    {!isLoading ? (
-                        <motion.div
-                            key="buttons"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.2 }}
-                            className="flex items-center gap-3 w-full md:justify-end justify-between bg-inherit"
-                        >
-                            <EduButton
-                                variant="ghost"
-                                onClick={prevStep}
-                                disabled={currentStep === 1 || isSubmitting}
-                                icon={ArrowLeft}
-                                className="flex-1 md:flex-none min-w-40"
-                            >
-                                Back
-                            </EduButton>
+            <EduMainModal
+                isOpen={finalView}
+                size="md"
+                onClose={() => setFinalView(false)}
+                children={
+                    <SetUpPreviewCard
+                        onClose={() => setFinalView(false)}
+                        onTermChange={handleCurrentTerm}
+                        onSave={handleSubmit}
+                        dataPayload={payload}
+                    />
+                }
+                className="p-3 rounded-lg border-muted-200"
+            />
 
-                            <EduButton
-                                onClick={currentStep < totalSteps ? handleNext : handleSubmit}
-                                isLoading={isSubmitting}
-                                icon={currentStep < totalSteps ? ArrowRight : CheckCircle2}
-                                loadingText="Setting up"
-                                className="flex-1 md:flex-none min-w-40"
-                            >
-                                {currentStep < totalSteps ? "Continue" : "Finish up"}
-                            </EduButton>
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="loader"
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 1.05 }}
-                            className="flex items-center gap-3 w-full justify-center md:justify-end bg-inherit"
-                        >
-                            <EduMainLoader size={24} />
-                            <motion.h3
-                                initial={{ x: 10, opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                transition={{ delay: 0.1 }}
-                                className="text-muted-foreground text-sm tracking-tight"
-                            >
-                                Finishing setup...
-                            </motion.h3>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-        </div>
+            <EduMainModal
+                isOpen={setUpCopleted}
+                onClose={() => {
+                    //resetSetup();
+                    //router.back();
+                    setSetupComplted(false)
+                }}
+                className="p-3 border-muted-200 rounded-lg" size="sm">
+                <SchoolSetuCompletdCard school={currentSchool} />
+            </EduMainModal>
+        </>
     );
 }
-
-
-
-
-
-
-// {selectedRule && (
-//                 <EduFloatingGuide
-//                     title={`${selectedRule.name} Ranges`}
-//                     buttonText="Preview ranges"
-//                     buttonClassName="p-5 rounded-full max-w-50"
-//                     titleClassName="p-2 text-foreground"
-//                 >
-//                     <table className="w-full text-left border-separate border-spacing-0 bg-card">
-//                         <thead>
-//                             <tr className="bg-muted/40">
-//                                 <th className="p-4 text-[10px] font-black uppercase text-muted-foreground">Grade</th>
-//                                 <th className="p-4 text-[10px] font-black uppercase text-muted-foreground">Range</th>
-//                                 {hasPoints && <th className="p-4 text-[10px] font-black uppercase text-muted-foreground">Points</th>}
-//                             </tr>
-//                         </thead>
-//                         <tbody className="divide-y divide-border/40">
-//                             {selectedRule.ranges.map((r: GradingRange) => (
-//                                 <tr key={r.id} className="hover:bg-muted/10">
-//                                     <td className={cn("p-4 text-sm font-bold", r.isPass ? "text-green-500" : "text-red-500")}>{r.grade}</td>
-//                                     <td className="p-4 text-[11px] text-muted-foreground">{r.minMark} — {r.maxMark}</td>
-//                                     {hasPoints && <td className="p-4 text-[11px] text-muted-foreground">{r.points || "0"}</td>}
-//                                 </tr>
-//                             ))}
-//                         </tbody>
-//                     </table>
-//                 </EduFloatingGuide>
-//             )}

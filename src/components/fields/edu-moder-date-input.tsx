@@ -6,6 +6,16 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils/helper";
 
+
+
+const normalizeDateValue = (date: string) => {
+  if (!date) return "";
+
+  return date.includes("T")
+    ? date.split("T")[0]
+    : date;
+};
+
 /**
  * Props definition for the EduModernDateInput component.
  */
@@ -51,7 +61,9 @@ function validateDate(
 
   if (Number.isNaN(date.getTime())) return "Invalid date";
 
-  const [y, m, d] = value.split("-").map(Number);
+  const dateOnly = normalizeDateValue(value);
+
+  const [y, m, d] = dateOnly.split("-").map(Number);
   const check = new Date(y, m - 1, d);
 
   if (
@@ -62,8 +74,8 @@ function validateDate(
     return "Date does not exist";
   }
 
-  if (min && value < min) return `Date must be after ${min}`;
-  if (max && value > max) return `Date must be before ${max}`;
+  if (min && dateOnly < min) return `Date must be after ${min}`;
+  if (max && dateOnly > max) return `Date must be before ${max}`;
 
   return "";
 }
@@ -121,13 +133,22 @@ export const EduModernDateInput = ({
 
         <input
           type="date"
-          value={value}
+          value={normalizeDateValue(value)}
           disabled={disabled}
           min={min}
           max={max}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => {
+            const date = e.target.value;
+
+            if (!date) {
+              onChange("");
+              return;
+            }
+
+            onChange(`${date}T00:00:00Z`);
+          }}
           className="flex-1 bg-transparent py-2 text-sm text-white outline-none scheme-dark"
         />
 

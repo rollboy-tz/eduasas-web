@@ -4,6 +4,7 @@ import { JSX } from "react"
 import Link from "next/link";
 import { text } from "@/lib/string";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import { UserAffiliatedSchool } from "@/types/dash";
 import { CopyButton } from "@/components/elements";
 import { LucideIcon, MoreHorizontal, School2, User, IdCardLanyard, ShieldCheckIcon, ShieldEllipsis } from "lucide-react";
@@ -16,6 +17,7 @@ const STATUS_STYLES: { [key: string]: string } = {
     pending: "bg-blue-400 text-white",
     active: "bg-green-700 text-white",
     closed: "bg-red-700 text-white",
+    trashed: "bg-red-700 text-white",
     suspended: "bg-yellow-700 text-white"
 } as const;
 
@@ -29,6 +31,8 @@ import {
 
 
 export const SchoolCard = ({ school }: SchoolCardProps): JSX.Element => {
+
+    const router = useRouter();
 
     const STATUS_INFO = {
         pending: {
@@ -73,26 +77,57 @@ export const SchoolCard = ({ school }: SchoolCardProps): JSX.Element => {
         },
     } as const;
 
+    const BUTTON_ITEMS = {
+        pending: {
+            onclick: () => router.push(`/school/setup?schoolId=${school.schoolId}&request_src=school_card`),
+            text: "Setup Now",
+            className: ""
+        },
+
+        active: {
+            onclick: () => router.push(`/school/getin?school_slug=${school.slug}&request_src=school_card`),
+            text: "Open Workspace",
+            className: ""
+        },
+
+        closed: {
+            onclick: () => console.log("Closed"),
+            text: school.primaryRole.roleKey === "OWNER" ? "Retrieve" : "Contact Support",
+            className: "",
+        },
+
+        trashed: {
+            onclick: () => console.log("Trashed"),
+            text: school.primaryRole.roleKey === "OWNER" ? "Restore" : "Contact Support",
+            className: "",
+        },
+
+        suspended: {
+            onclick: () => console.log("Suspended"),
+            text: school.primaryRole.roleKey === "OWNER" ? "Review Reason" : "Contact Support",
+            className: ""
+        }
+    } as const;
+
     const status = school.status.toLowerCase();
 
-    //const status = "trashed"
+    //const status = "closed"
 
     const info = STATUS_INFO[status as keyof typeof STATUS_INFO];
+    const buttonStatus = BUTTON_ITEMS[status as keyof typeof BUTTON_ITEMS]
 
     const StatusIcon = info.icon;
     return (
         <div
-            key={school.schoolUId}
-            className="w-full max-w-md rounded-md bg-white shadow-sm py-2 px-2.5 flex flex-col overflow-hidden"
+            className="w-full max-w-md rounded-md bg-white shadow-sm p-4 flex flex-col overflow-hidden"
         >
-
             <div className="flex items-start">
                 <div className="border-r border-gray-200 px-2">
                     <div className="rounded bg-blue-900 p-2 rounded-full">
                         <School2 className="h-5 w-5 text-white" />
                     </div>
                 </div>
-                <div className="flex-1 flex flex-col gap-3 p-2">
+                <div className="flex-1 flex flex-col space-y-5 p-2">
                     <div className="flex items-center justify-between h-7">
 
                         {/* School name & ID */}
@@ -106,13 +141,18 @@ export const SchoolCard = ({ school }: SchoolCardProps): JSX.Element => {
                         </div>
 
                         {/* Scool status */}
-                        <div>
-                            <span className={cn("text-xs font-medium rounded-full px-3 py-1 tracking-wider",
-                                STATUS_STYLES[status])}>{text.capitalize(status)}</span>
+                        <div className="flex items-center gap-2">
+                            <span className={cn("text-xs font-medium rounded-full px-3 py-1 tracking-wider", STATUS_STYLES[status])}>
+                                {text.capitalize(status)}
+                            </span>
+
+                            <div className="bg-muted-300 p-1 rounded-full cursor-pointer">
+                                <MoreHorizontal size={18} />
+                            </div>
                         </div>
                     </div>
 
-                    {/* Position center */}
+                    {/* Position center
                     <div className="flex flex-col py-2 relative rounded-md border border-primary-300 mt-6">
                         <div className="flex items-center gap-1 absolute -top-4 left-2 border bg-primary-100 border-primary-300 px-3 py-1 rounded">
                             <User className="text-blue-900" size={19} />
@@ -134,7 +174,7 @@ export const SchoolCard = ({ school }: SchoolCardProps): JSX.Element => {
                                 variant="code"
                             />
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Action center */}
                     <div className="flex flex-col gap-1">
@@ -162,15 +202,14 @@ export const SchoolCard = ({ school }: SchoolCardProps): JSX.Element => {
                                 )}
                             </p>
                         </div>
-                        <div className="flex items-center justify-end gap-3">
+                        <div className="flex items-center justify-end gap-3 mt-4">
 
-                            <button className="rounded-full cursor-pointer text-xs tracking-wider font-semibold text-white bg-primary-500 px-3 py-1">
-                                Get in
+                            <button
+                                onClick={buttonStatus.onclick}
+                                className="rounded-md cursor-pointer text-xs tracking-wider font-semibold text-white bg-primary-500 px-5 py-2"
+                            >
+                                {buttonStatus.text}
                             </button>
-
-                            <div className="bg-muted-300 p-1 rounded-full cursor-pointer">
-                                <MoreHorizontal size={18} />
-                            </div>
 
                         </div>
                     </div>

@@ -43,7 +43,12 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
 
   return (
     <div className={cn(
-      "pointer-events-auto bg-card border border-border py-2 px-4 rounded-lg shadow-lg flex items-center justify-between gap-4",
+      "pointer-events-auto border py-2 px-4 rounded-lg shadow-lg flex items-center justify-between gap-4",
+      toast.type === "error" && "bg-red-700 text-white border-red-600",
+      toast.type === "success" && "bg-blue-600 text-white border-blue-600",
+      toast.type === "warning" && "bg-yellow-50 text-yellow-800",
+      toast.type === "info" && "bg-blue-900 text-white",
+      toast.type === "loading" && "bg-yellow-100 text-yellow-700",
       isClosing && "animate-out slide-out-to-right-4 fade-out"
     )}>
       <div className="flex items-center gap-3">
@@ -65,7 +70,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
         {/* Close Button */}
         <button 
           onClick={() => { setIsClosing(true); setTimeout(() => onDismiss(toast.id), 300); }}
-          className="text-muted-400 hover:text-foreground cursor-pointer rounded-full p-1.5 hover:bg-muted-200"
+          className="text-muted-100 hover:text-foreground cursor-pointer rounded-full p-1.5 hover:bg-muted-200"
         >
           <span><X size={18}/></span>
         </button>

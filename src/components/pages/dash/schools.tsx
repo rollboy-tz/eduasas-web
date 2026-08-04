@@ -84,7 +84,7 @@ export const SchoolsPageContents = () => {
             }
 
             <div className="flex flex-col">
-                {schools?.map((school) => ( <SchoolCard school={school}/> ))}
+                {schools?.map((school, key) => ( <SchoolCard school={school} key={key}/> ))}
             </div>
         </div>
     )

@@ -34,12 +34,12 @@ const DashPage = () => {
                 <section className="flex-1 flex items-center justify-center">
                     <div className="flex flex-col items-center justify-center gap-4 bg-card p-5">
                         <EduModernInput
-                            type="phone"
+                            type="text"
                             onChange={(v) => setValuem(v as string ?? "")}
                             value={valem}
                             icon={UserIcon}
                             showActionBtn={true}
-                            actionClick={() => toast.show({ message: valem, type: "success" })}
+                            actionClick={() => toast.show({ message: valem, type: "loading" })}
                         />
                     </div>
                 </section>

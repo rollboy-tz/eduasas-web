@@ -19,7 +19,8 @@ export const SchoolSetuCompletdCard = ({ school, onButtonClick }: SetupCompleted
                 <h2 className="font-heading font-black text-xl text-green-600 my-2">Setup Completed!</h2>
                 <h3 className="font-heading font-bold text-sm">{text.upperCase(school.name)}</h3>
                 <p className="text-xs text-muted-500">Is now active and workspace is ready to use.</p>
-                <div className="rounded-md flex items-center justify-between gap-10 bg-green-100 border border-green-500 p-2 mt-6">
+                
+                <div className="rounded-md flex items-center justify-between gap-10 bg-green-50 border border-green-500 p-2 mt-6">
                     <div className="flex items-center gap-2">
                         <LayersPlusIcon size={20} className="text-green-900" />
                         <h3 className="font-heading font-bold text-sm text-green-900">Add school</h3>
@@ -30,7 +31,7 @@ export const SchoolSetuCompletdCard = ({ school, onButtonClick }: SetupCompleted
                     </div>
                 </div>
 
-                <div className="rounded-md flex items-center justify-between gap-7 bg-green-100 border border-green-500 p-2 mt-1">
+                <div className="rounded-md flex items-center justify-between gap-7 bg-green-50 border border-green-500 p-2 mt-1">
                     <div className="flex items-center gap-2">
                         <LayersPlusIcon size={20} className="text-green-900" />
                         <h3 className="font-heading font-bold text-sm text-green-900">Setup school</h3>

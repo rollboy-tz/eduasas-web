@@ -39,7 +39,7 @@ export function useMasterClasses() {
 
   // 2. Logic: Hakikisha data ipo, kama haipo tunarudisha array tupu
   // Hapa unaweza kuongeza sort logic kama kuna kipaumbele cha madarasa (e.g. Form 1 -> Form 4)
-  const classes = data?.data ? [...data.data] : [];
+  const classes = data ?? [];
 
   return {
     classes,

@@ -68,9 +68,9 @@ export function EduMainLoader({
 
       {/* LOADING TEXT - Inatokea tu kama imepitishwa */}
       {loadingText && (
-        <span className="text-[10px] font-black text-muted animate-pulse">
+        <p className="text-xs text-muted animate-pulse">
           {capitalize(loadingText)}...
-        </span>
+        </p>
       )}
     </div>
   );

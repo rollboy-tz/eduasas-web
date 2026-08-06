@@ -1,10 +1,11 @@
 // app/(dashboard)/layout.tsx
-import { SidebarProvider } from "@/context/sidebar-context";
+import { SidebarProvider } from "@/components/layout/SideBarV2";
 import { SearchProvider } from "@/context/search-context";
 import { GlobalSearch } from "@/components/ui/global-search";
 import MobileProfilePanel from "@/components/layout/profilepanel/mobile-profilepanel";
-import Header from "@/components/layout/topbar/header";
-import Sidebar from "@/components/layout/sidebar/Sidebar";
+import { Header } from "@/components/layout/HeaderV2";
+import { SidebarLayout } from "@/components/layout/SideBarV2/ui";
+import { sidebarMockData } from "@/data/sidebar.mock";
 
 export default function DashWorkspaceLayout({
   children
@@ -16,18 +17,11 @@ export default function DashWorkspaceLayout({
       <SearchProvider>
         {/* Global Search Dialog Modal */}
         <GlobalSearch />
-        <MobileProfilePanel />
-
-        <div className="flex h-screen overflow-hidden ">
-          <Sidebar />
-
           <div className="flex flex-1 flex-col overflow-hidden">
-            <Header />
-            <main className="flex-1 overflow-y-auto px-2 sm:p-4">
+            <SidebarLayout data={sidebarMockData} header={<Header />}>
               {children}
-            </main>
+            </SidebarLayout>
           </div>
-        </div>
       </SearchProvider>
     </SidebarProvider>
   );

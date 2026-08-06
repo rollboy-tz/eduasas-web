@@ -6,6 +6,7 @@ import MobileProfilePanel from "@/components/layout/profilepanel/mobile-profilep
 import Header from "@/components/layout/topbar/header";
 import Sidebar from "@/components/layout/sidebar/Sidebar";
 import { AuthProvider } from "@/providers";
+import { SchoolMockSidebar } from "@/data/school-mock-links-data";
 
 export default function SchoolWorkspaceLayout({
   children,
@@ -20,8 +21,8 @@ export default function SchoolWorkspaceLayout({
           <GlobalSearch />
           <MobileProfilePanel />
 
-          <div className="flex h-screen overflow-hidden bg-gray-50">
-            <Sidebar />
+          <div className="flex h-screen overflow-hidden">
+            <Sidebar menuData={SchoolMockSidebar} />
 
             <div className="flex flex-1 flex-col overflow-hidden">
               <Header />

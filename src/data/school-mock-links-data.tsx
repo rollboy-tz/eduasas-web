@@ -1,26 +1,26 @@
+import { Users } from "lucide-react";
 import { MenuGroup } from "../components/layout/sidebar/sidebar-composer";
 
-export const mockSidebar: MenuGroup[] = [
+export const SchoolMockSidebar: MenuGroup[] = [
   {
     label: "MAIN",
     items: [
       {
         title: "Dashboard",
         href: "/dashboard",
-        icon: "LayoutDashboard",
-      },
-      {
-        title: "Notifications",
-        href: "/notifications",
-        icon: "Bell",
-        badge: 5,
-      },
+        icon: "Layout",
+      }
     ],
   },
 
   {
     label: "ACADEMIC",
     items: [
+      {
+        title: "Classes",
+        href: "/classes",
+        icon: "School",
+      },
       {
         title: "Students",
         icon: "Users",
@@ -36,10 +36,19 @@ export const mockSidebar: MenuGroup[] = [
         ],
       },
       {
-        title: "Classes",
-        href: "/classes",
-        icon: "School",
-      },
+        title: "Members",
+        icon: "Users",
+        items: [
+          {
+            title: "Staff",
+            href: "/members/members"
+          },
+          {
+            title: "Invitations",
+            href: "/members/invitations"
+          }
+        ]
+      }
     ],
   },
 

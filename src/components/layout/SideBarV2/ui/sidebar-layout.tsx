@@ -38,10 +38,7 @@ export function SidebarLayout({
         variant,
     );
 
-    const contentOffset =
-        shouldPush && isOpen
-            ? SIDEBAR_WIDTH[size] + 16
-            : 8;
+    const contentOffset = shouldPush && isOpen ? SIDEBAR_WIDTH[size] : 0;
 
     return (
         <div
@@ -66,14 +63,12 @@ export function SidebarLayout({
                 "
                 style={{
                     marginLeft: contentOffset,
-                    marginRight: 8,
                 }}
             >
                 {header && (
                     <header
                         className="
                             sticky
-                            top-1
                             z-40
                             shrink-0
                         "

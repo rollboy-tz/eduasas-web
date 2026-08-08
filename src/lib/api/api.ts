@@ -11,7 +11,7 @@ import { ClientDevice } from "@/lib/utils/ClientDevice";
 import { ApiError } from "./errors";
 import { logoutAndRedirect } from "../helpers/logout-and-redirect";
 import { ApiResponse, ResponseAction } from "./api-respone";
-import { useSessionValidation, validateSessionApi } from "../helpers";
+import { validateSessionApi } from "../helpers";
 
 /* =========================================================
    TYPE AUGMENTATION
@@ -47,15 +47,33 @@ const REFRESH_TIMEOUT_MS = 15000;
    ========================================================= */
 
 /**
- * Generates a request id, with a fallback for environments where
- * `crypto.randomUUID` isn't available (older browsers, some edge
- * runtimes).
+ * Generates a human-readable request id — mfano `REQ-20260808-143022-4KD9F`.
+ *
+ * Kwa nini si UUID ghafi (`a3f9c1e2-8b4d-...`): UUID haina maana
+ * inapoonekana kwenye logs, support tickets, au unapohitaji kumwambia
+ * mtu kwa simu. Muundo huu una faida tatu:
+ *
+ * - **Inasomeka** — tarehe/saa zinaonekana wazi mtu akiiona logs
+ * - **Inapangika (sortable)** — request ID mbili zikilinganishwa kama
+ *   string, iliyotokea kwanza itatangulia kialfabeti pia
+ * - **Bado ina uhakika wa kutosha** dhidi ya collision — sehemu ya
+ *   mwisho (base36, herufi 5) inatoa ~60M combinations kwa sekunde
+ *   moja, ya kutosha kabisa kwa client-side request IDs
  */
 function generateRequestId(): string {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-    return crypto.randomUUID();
-  }
-  return `req_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+  const now = new Date();
+  const pad = (n: number, len = 2) => String(n).padStart(len, "0");
+
+  const datePart = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+  const timePart = `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+
+  const randomPart = (
+    typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID().replace(/-/g, "").slice(0, 5)
+      : Math.random().toString(36).slice(2, 7)
+  ).toUpperCase();
+
+  return `REQ-${datePart}-${timePart}-${randomPart}`;
 }
 
 /**
@@ -129,6 +147,15 @@ function withTimeout<T>(promise: Promise<T>, ms: number, timeoutMessage: string)
  *
  * Guarded to fire at most once: multiple concurrent 401s / logout
  * actions should never trigger overlapping redirects.
+ *
+ * MUHIMU: `isLoggingOut` haijawahi kurudishwa `false` kwa makusudi —
+ * inategemea `logoutAndRedirect()` kufanya FULL page navigation
+ * (`window.location.href = ...`), ambayo inafuta module state yote
+ * kiotomatiki kwenye page load ijayo. Kama `logoutAndRedirect()` ni
+ * client-side router navigation TU (mfano `router.push`, bila reload),
+ * flag hii itabaki `true` milele kwa session hiyo ya JS — mtumiaji
+ * akiingia tena bila full reload, hardLogout() ijayo haitafanya kazi.
+ * Hakikisha `logoutAndRedirect()` inafanya reload halisi.
  */
 let isLoggingOut = false;
 const hardLogout = () => {
@@ -166,6 +193,13 @@ const api: AxiosInstance = axios.create({
 /* =========================================================
    REFRESH QUEUE
    Inashikilia requests zilizoshindwa wakati refresh inaendelea.
+
+   NOTE: Hakuna token halisi inayozunguka hapa (session ni cookie-based,
+   `withCredentials: true`) — `resolve()` haihitaji thamani. Parameter
+   ya `token` imebaki tu kwa mfumo wa kawaida wa "refresh queue"
+   (unaotumika sana na Bearer-token auth), lakini si lazima hapa.
+   Imeachwa kwa makusudi (haina madhara), lakini si kitu cha kuiga
+   ukiandika refresh queue mpya isiyo ya cookie-based.
    ========================================================= */
 
 interface QueuedRequest {
@@ -192,6 +226,10 @@ api.interceptors.request.use(
     config._startTime = Date.now();
 
     try {
+      // ClientDevice.getPlatform() tayari iko ndani ya getAuditHeaders()
+      // (key "X-Client-Platform") — usiiandike upya baada ya hapa, la
+      // sivyo unaifuta thamani halisi (mfano "Browser-mobile(EduAsas)")
+      // na kuiacha string ya jumla isiyo na maana ya kiuchunguzi.
       const auditHeaders = ClientDevice.getAuditHeaders() || {};
 
       // Tunatumia `.set()` badala ya kubadilisha `config.headers` yote —
@@ -200,7 +238,6 @@ api.interceptors.request.use(
       Object.entries(auditHeaders).forEach(([key, value]) => {
         config.headers.set(key, value as string);
       });
-      config.headers.set("X-Client-Platform", "EduAsas Web-App");
       config.headers.set("X-Request-ID", requestId);
     } catch (e) {
       console.warn("⚠️ [API] Failed to attach audit headers, proceeding anyway.", e);
@@ -241,7 +278,19 @@ api.interceptors.response.use(
     const apiResponse = response.data as ApiResponse;
     if (!apiResponse || typeof apiResponse !== "object") {
       console.error(`🚨 [API-ERR] ${requestId} | Malformed response structure`);
-      return Promise.reject(new Error("Invalid response format from server"));
+      // Ilikuwa `Promise.reject(new Error(...))` — inavunja mkataba
+      // "callers wanapata ApiError daima" (isApiError() ingekosa hii).
+      return Promise.reject(
+        new ApiError({
+          success: false,
+          status: "error",
+          message: "Invalid response format from server",
+          action: "NONE",
+          data: null,
+          timestamp: new Date().toISOString(),
+          errorCode: "MALFORMED_RESPONSE",
+        } as ApiResponse)
+      );
     }
 
     const { status, action, message, data } = apiResponse;
@@ -253,7 +302,10 @@ api.interceptors.response.use(
 
       if (IMMEDIATE_LOGOUT_ACTIONS.includes(action)) {
         hardLogout();
-        return Promise.reject(apiResponse);
+        // Ilikuwa `Promise.reject(apiResponse)` — object ghafi, si ApiError.
+        // apiMutation/apiFetch's isApiError() ingeikosa hii kabisa na
+        // ujumbe halisi wa backend ungepotea kwenye fallback yao ya mwisho.
+        return Promise.reject(new ApiError(apiResponse));
       }
 
       if (!skipToast) {
@@ -261,7 +313,8 @@ api.interceptors.response.use(
         //status === "warning" ? toast.warning(msg) : toast.error(msg);
       }
 
-      return action === "NONE" ? apiResponse : Promise.reject(apiResponse);
+      // Vivyo hivyo hapa — ApiError, si apiResponse ghafi.
+      return action === "NONE" ? apiResponse : Promise.reject(new ApiError(apiResponse));
     }
 
     // ENTERPRISE SIDE-EFFECT ENGINE

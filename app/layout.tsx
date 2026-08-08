@@ -4,8 +4,9 @@ import "./globals.css";
 
 import { EduToaster } from "@/components/ui/toaster";
 import { ReactQueryProvider, ThemeProvider } from "@/providers";
-import GlobalSystemWatcher from "@/lib/utils/global-system.watcher";
+//import GlobalSystemWatcher from "@/lib/utils/global-system.watcher";
 import { AppFeedbackModal, AppConfirmModal } from "@/components/modals";
+import { Providers } from "./providers";
 
 // 1. Font ya maandishi ya kawaida / Aya (Body)
 const inter = Inter({
@@ -122,16 +123,18 @@ export default function RootLayout({
         `}
         suppressHydrationWarning={true}
       >
-        <GlobalSystemWatcher /> {/* Hii ni lazima */}
+        {/* <GlobalSystemWatcher /> Hii ni lazima */}
         <ThemeProvider
           attribute="class"        // Inatumia class="dark" kwenye html tag
-          defaultTheme="system"    // Inaanza na kile OS inachotaka
+          defaultTheme="light"    // Inaanza na kile OS inachotaka
           enableSystem={true}      // Inaruhusu kusoma settings za PC/Simu
           disableTransitionOnChange // Inazuia rangi "kuteleza" wakati wa kubadili (fastest load)
         >
           {/* HAPA NDIPO TUNAFUNGA SECURITY GUARD WETU */}
           <ReactQueryProvider>
-            {children}
+            <Providers>
+              {children}
+            </Providers>
             <AppFeedbackModal />
             <AppConfirmModal />
             <EduToaster />

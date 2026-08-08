@@ -35,9 +35,9 @@ export function useSchoolStaffInvitations() {
 
   // 1. Fetching (GET)
   const { data, isLoading, error } = useQuery<InstitutionalInvitation[]>({
-    queryKey: INVITE_KEY,
+    queryKey: ["INVITE_KEY"], //TODO: Keep actuary key
     queryFn: () => apiFetch<InstitutionalInvitation[]>("/school/staff/invitations/sent"),
-    enabled: !!tenant?.school.slug && !!profile?.id,
+    enabled: true,//!!tenant?.school.slug && !!profile?.id, //TODO: Keepe layer hia
     staleTime: 1000 * 60 * 3, 
   });
 

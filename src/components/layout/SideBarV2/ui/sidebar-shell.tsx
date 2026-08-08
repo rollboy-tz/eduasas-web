@@ -74,7 +74,6 @@ export function SidebarShell({
 }: SidebarShellProps) {
 
 
-
     const {
 
         device,
@@ -88,11 +87,6 @@ export function SidebarShell({
     } = useSidebar();
 
 
-
-
-
-
-
     const isDocked =
         variant === "docked";
 
@@ -102,11 +96,6 @@ export function SidebarShell({
         variant === "floating";
 
 
-
-
-
-
-
     const width =
         size === "expanded"
 
@@ -114,22 +103,10 @@ export function SidebarShell({
 
             : SIDEBAR_WIDTH.minimal;
 
-
-
-
-
-
-
-
-
     const shouldHide =
         device === "mobile" &&
         isFloating &&
         !isOpen;
-
-
-
-
 
 
 
@@ -145,7 +122,6 @@ export function SidebarShell({
 
                 "z-50",
 
-
                 /**
                  * Animation
                  */
@@ -156,9 +132,6 @@ export function SidebarShell({
                 "ease-out",
 
 
-
-
-
                 /**
                  * Structure
                  */
@@ -167,8 +140,6 @@ export function SidebarShell({
                 "flex",
 
                 "flex-col",
-
-
 
 
 
@@ -186,11 +157,6 @@ export function SidebarShell({
 
                 "backdrop-blur-xl",
 
-
-
-
-
-
                 /**
                  * Docked Card
                  *
@@ -199,69 +165,41 @@ export function SidebarShell({
                  */
                 isDocked && [
                     "fixed",
-                    "left-[5px]",
-                    "inset-y-1",
-                    "rounded-lg",
-                    "shadow-sm",
+                    "left-0",
+                    "border-r",
+                    "inset-y-0",
+                    "border-border"
                 ],
-
-
-
-
-
-
 
                 /**
                  * Floating Card
                  */
                 isFloating && [
 
-
                     "fixed",
-
 
                     "left-3",
 
-
                     "top-2",
-
 
                     "bottom-2",
 
-
                     "rounded-xl",
-
-
 
                     "shadow-2xl",
 
-
-
-                    "bg-background/70",
+                    "bg-white",
 
 
                 ],
-
-
-
-
-
-
 
                 /**
                  * Mobile drawer
                  */
                 shouldHide && [
 
-
                     "-translate-x-[120%]",
-
-
                 ],
-
-
-
-
 
 
 

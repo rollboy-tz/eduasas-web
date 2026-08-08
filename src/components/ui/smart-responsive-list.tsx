@@ -2,141 +2,243 @@
 
 import React, { useState } from "react";
 import { cn } from "@/lib/utils/helper";
-import { useAppStore } from "@/store/layout"; // Hakikisha path ni sahihi
+import { useAppStore } from "@/store/layout";
 import { CollectionHelper } from "@/lib/utils";
 
-export interface Column<T> {
+/**
+ * Mfumo wa usanidi wa safu (Column Configuration) ya SmartResponsiveList.
+ * @template T Aina ya data inayowekwa kwenye list/table.
+ */
+export interface ResponsiveListColumn<T> {
+  /** Jina au anwani ya safu inayotokea kwenye header */
   header: string;
-  /** Class name ya colum */
+
+  /** ClassName za Tailwind kwa ajili ya kuseti upana au mtindo wa column kwny Desktop */
   className?: string;
-  /** Hii hutumika na vitu vyenye priority ya pili kwanza ni hama main title status */
+
+  /** 
+   * Ikiwa `true`, data hii itatumika kama kichwa kikuu cha kadi kwenye mwonekano wa simu (Mobile Card Header).
+   */
   isPrimary?: boolean;
-  /** Hii hutumika na vitu vyenye priority ya pili kama status */
+
+  /** 
+   * Ikiwa `true`, data hii itawekwa pembeni ya kichwa kikuu kwenye mwonekano wa simu (mf. Status Badge).
+   */
   isSecondary?: boolean;
-  /** Pitisha true ni muhimu kwa ajili ya mpangilio wa card view hii itatuonesha kuwa ni action button */
+
+  /** 
+   * Ikiwa `true`, itachukuliwa kama kitufe cha vitendo (Action Button) kwenye kadi ya simu na kuwekwa kulia juu.
+   */
   isAction?: boolean;
-  /** Pitisha primary ikiwa data hii sio lazima kuonekana kwenye card mode itaweka vie more */
+
+  /** 
+   * Inafafanua jinsi safu inavyoonekana kwenye mwonekano wa simu:
+   * - `summary`: Itaonekana mara moja.
+   * - `expanded`: Itafichwa hadi mtumiaji abonyeze "View more".
+   */
   mobileMode?: "summary" | "expanded";
-  /** ClassName za data cells wakati wa card view */
+
+  /** ClassName za Tailwind kwa ajili ya kisanduku cha data (Data cell) kwenye mwonekano wa kadi */
   dataCellClasses?: string;
-  /** ClassName za header cells wakati wa card view */
+
+  /** ClassName za Tailwind kwa ajili ya lebo ya header kwenye mwonekano wa kadi */
   headerCellClasses?: string;
-  /** ClassName za date rows za card view wakati column zip in card mode*/
+
+  /** ClassName za Tailwind kwa ajili ya safu nzima ya kadi (Card Row) */
   cardRowClasses?: string;
-  /** Remder vell contents */
+
+  /** 
+   * Function inayorejesha Element ya React/JSX ya kutoa data husika kwenye seli.
+   * @param item Object ya data husika.
+   * @param index Nambari ya nafasi ya data kwenye mfululizo.
+   */
   render: (item: T, index: number) => React.ReactNode;
 }
 
+/**
+ * Props za component ya SmartResponsiveList.
+ * @template T Aina ya data inayowekwa kwenye mfululizo.
+ */
 interface SmartResponsiveListProps<T> {
+  /** Mfululizo wa data unaotakiwa kuonyeshwa */
   data: T[];
-  columns: Column<T>[];
+
+  /** Usanidi wa safu (Columns Configuration) */
+  columns: ResponsiveListColumn<T>[];
+
+  /** 
+   * Ufunguo wa kipekee kwa kila safu. Inaweza kuwa jina la field mf. `"id"` au function `.
+   */
   rowKey: keyof T | ((item: T, index: number) => string);
+
+  /** Hali ya upakiaji wa data (Loading State) */
   isLoading?: boolean;
+
+  /** Tendo linalotokea mtumiaji akibonyeza safu/kadi */
   onRowClick?: (item: T) => void;
-  /** Table body / card wrapper bo effect kwe vioo vidogo */
+
+  /** ClassName za ziada kwa ajili ya mwili wa table (Table Body) */
   bodyClassName?: string;
-  /** Table-row kwa vifaa vikubwa */
+
+  /** ClassName za ziada kwa ajili ya kila safu (Table Row) kwenye Desktop */
   rowClassName?: string;
-  /** Card view classname in small device */
+
+  /** ClassName za ziada kwa ajili ya muundo wa kadi kwenye simu */
   cardClassName?: string;
-  /** card header point classNames */
+
+  /** ClassName za ziada kwa ajili ya sehemu ya juu ya kadi (Card Header) */
   cardHeaderClassName?: string;
-  /** Card rows classes */
+
+  /** ClassName za ziada kwa ajili ya mstari wa data kwenye kadi */
   cardRowsClassName?: string;
-  /** Card class name */
+
+  /** ClassName za ziada kwa ajili ya Header iliyoganda juu (Sticky Header) */
   stickyHeaderClassName?: string;
-  /** Container class name */
+
+  /** ClassName kuu ya kontena zima */
   className?: string;
-  /** Dis-Able table */
+
+  /** Ikiwa `true`, italazimisha mwonekano wa Kadi (Mobile View) bila kujali ukubwa wa skrini */
   disAbleTable?: boolean;
-  /** Empty state content */
+
+  /** Component ya kuonyesha iwapo hakuna data iliyopatikana */
   EmptyState?: React.ReactNode;
 }
 
+/**
+ * Component inayobadilika kiotomatiki kati ya Table (kwa skrini kubwa) na Cards (kwa skrini ndogo/simu).
+ * 
+ * @example
+ * ```tsx
+ * <SmartResponsiveList * columns="{userColumns}" data="{users}" rowKey="id"/>
+ * ```
+ */
 export function SmartResponsiveList<T>({
-  data, columns, rowKey, isLoading, onRowClick, disAbleTable,
-  bodyClassName, rowClassName, stickyHeaderClassName, className,
-  EmptyState, cardClassName, cardHeaderClassName, cardRowsClassName
+  data,
+  columns,
+  rowKey,
+  isLoading,
+  onRowClick,
+  disAbleTable,
+  bodyClassName,
+  rowClassName,
+  stickyHeaderClassName,
+  className,
+  EmptyState,
+  cardClassName,
+  cardHeaderClassName,
+  cardRowsClassName,
 }: SmartResponsiveListProps<T>) {
-
   const isMobile = disAbleTable ?? useAppStore((state) => state.isMobileView);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
-  const toggleExpand = (id: string) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
-  const getKey = (item: T, index: number) => typeof rowKey === "function" ? rowKey(item, index) : String(item[rowKey]);
+  const toggleExpand = (id: string) =>
+    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
 
-  // Render Skeleton
+  const getKey = (item: T, index: number) =>
+    typeof rowKey === "function" ? rowKey(item, index) : String(item[rowKey]);
+
+  // Loading Skeleton
   if (isLoading) {
     return (
-      <div className={cn("w-full card-surface bg-card border border-border/40 shadow-sm", className)}>
+      <div className={cn("card-surface bg-card border-border/40 w-full border shadow-sm", className)}>
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="flex items-center py-4 px-5 gap-4 border-b border-border">
-            {columns.map((col, j) => <div key={j} className={cn("h-4 rounded skeleton animate-shimmer", col.className || "flex-1")} />)}
+          <div key={i} className="border-border flex items-center gap-4 border-b px-5 py-4">
+            {columns.map((col, j) => (
+              <div
+                key={j}
+                className={cn("skeleton animate-shimmer h-4 rounded", col.className || "flex-1")}
+              />
+            ))}
           </div>
         ))}
       </div>
     );
   }
 
+  // Empty State
   if (!isLoading && (!data || data.length === 0)) {
-    return <>{EmptyState ? EmptyState : <div className="bg-card w-full h-full p-10 grid place-items-center text-center text-lg font-bold text-primary-foreground">No Data Found!</div>}</>
+    return (
+      <>
+        {EmptyState ? (
+          EmptyState
+        ) : (
+          <div className="bg-card text-primary-foreground grid h-full w-full place-items-center p-10 text-center text-lg font-bold">
+            No Data Found!
+          </div>
+        )}
+      </>
+    );
   }
 
-  // CARD VIEW (Mobile Mode)
+  // MOBILE CARD VIEW
   if (isMobile) {
     return (
-      <div className={cn("flex flex-col gap-3")}>
+      <div className="flex flex-col gap-3">
         {data.map((item, index) => {
           const id = getKey(item, index);
           const isExpanded = expanded[id];
-          const primary = columns.find(c => c.isPrimary);
-          const secondary = columns.find(c => c.isSecondary);
-          const action = columns.find(c => c.isAction);
-          const hasSummary = columns.some(c => c.mobileMode === "summary");
+          const primary = columns.find((c) => c.isPrimary);
+          const secondary = columns.find((c) => c.isSecondary);
+          const action = columns.find((c) => c.isAction);
+          const hasExpandedFields = columns.some((c) => c.mobileMode === "expanded");
 
           return (
-            <div key={id} onClick={() => onRowClick?.(item)} className={cn("bg-card border border-border p-1 rounded shadow-sm", cardClassName)}>
-              {/* Header: Primary, Secondary, Action */}
-              <div className={cn("flex justify-between items-center mb-4", cardHeaderClassName)}>
-                <div className="font-bold flex-1">{primary?.render(item, index)}</div>
-                <div className="flex items-center gap-3">
+            <div
+              key={id}
+              onClick={() => onRowClick?.(item)}
+              className={cn("bg-card border-border p-3 rounded-lg border shadow-sm", cardClassName)}
+            >
+              {/* Header: Primary Title, Secondary Badge, Action */}
+              <div className={cn("mb-3 flex items-center justify-between gap-2", cardHeaderClassName)}>
+                <div className="font-bold flex-1 truncate">{primary?.render(item, index)}</div>
+                <div className="flex items-center gap-2">
                   {secondary?.render(item, index)}
                   {action?.render(item, index)}
                 </div>
               </div>
 
-              {/* Data Grid */}
+              {/* Data Rows */}
               <div className="space-y-2">
                 {columns
                   .filter((c) => {
                     if (c.isPrimary || c.isSecondary || c.isAction) return false;
-                    if (isExpanded) { return true } else { return c.mobileMode !== "summary" }
+                    return isExpanded ? true : c.mobileMode !== "expanded";
                   })
                   .map((col, i, filteredArray) => (
-                    <div key={i} className={
-                      cn("flex justify-between border-b border-border py-1",
-                      CollectionHelper.isLast(filteredArray, i) && "border-b-0",
-                      cardRowsClassName, col.cardRowClasses
-                      )}>
-                      <span className={cn("flex-1 text-sm font-medium", col.headerCellClasses)}>
+                    <div
+                      key={i}
+                      className={cn(
+                        "border-border flex justify-between py-1.5 border-b text-sm",
+                        CollectionHelper.isLast(filteredArray, i) && "border-b-0",
+                        cardRowsClassName,
+                        col.cardRowClasses
+                      )}
+                    >
+                      <span className={cn("text-muted-foreground font-medium", col.headerCellClasses)}>
                         {col.header}
                       </span>
-                      <span className={cn("flex-1 text-sm font-medium", col.dataCellClasses)}>
+                      <span className={cn("font-medium text-right", col.dataCellClasses)}>
                         {col.render(item, index)}
                       </span>
                     </div>
                   ))}
               </div>
 
-              {hasSummary && (
-                <div className="w-full flex items-center justify-center p-2">
+              {/* View More / View Less Toggle */}
+              {hasExpandedFields && (
+                <div className="mt-2 flex w-full items-center justify-center pt-1">
                   <button
-                    onClick={(e) => { e.stopPropagation(); toggleExpand(id); }}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleExpand(id);
+                    }}
                     className={cn(
-                      "text-sm font-medium rounded-full px-3 py-1.5 text-center",
-                      "text-primary-foreground/90 hover:text-primary-foreground ",
-                      "hover:bg-ring hover:shadow-sm transision-all duration-300"
-                    )}>
+                      "text-xs font-semibold rounded-full px-3 py-1 transition-all duration-200",
+                      "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    )}
+                  >
                     {isExpanded ? "View less" : "View more"}
                   </button>
                 </div>
@@ -148,17 +250,34 @@ export function SmartResponsiveList<T>({
     );
   }
 
-  // DESKTOP/TABLET VIEW (Sticky Column Table)
+  // DESKTOP TABLE VIEW
   return (
-    <div className={cn("w-full card-surface overflow-hidden bg-card border border-border/40 shadow-sm", className)}>
-      <div className={cn("sticky top-0 z-20 flex items-center bg-secondary border-b border-border py-3.5 px-5", stickyHeaderClassName)}>
-        {columns.map((col, i) => <div key={i} className={cn("text-[13px] font-semibold uppercase opacity-80", col.className || "flex-1")}>{col.header}</div>)}
+    <div className={cn("card-surface bg-card border-border/40 w-full overflow-hidden rounded-lg border shadow-sm", className)}>
+      {/* Sticky Header */}
+      <div className={cn("bg-secondary border-border sticky top-0 z-20 flex items-center border-b px-5 py-3.5", stickyHeaderClassName)}>
+        {columns.map((col, i) => (
+          <div
+            key={i}
+            className={cn("text-[13px] font-semibold uppercase opacity-80", col.className || "flex-1")}
+          >
+            {col.header}
+          </div>
+        ))}
       </div>
 
-      <div className={cn("w-full divide-y border-t border-border", bodyClassName)}>
+      {/* Body Rows */}
+      <div className={cn("border-border divide-y border-t w-full", bodyClassName)}>
         {data.map((item, index) => (
-          <div key={getKey(item, index)} onClick={() => onRowClick?.(item)} className={cn("flex items-center py-4 px-5 hover:bg-item-hover", rowClassName)}>
-            {columns.map((col, i) => <div key={i} className={cn("min-w-0 truncate", col.className || "flex-1")}>{col.render(item, index)}</div>)}
+          <div
+            key={getKey(item, index)}
+            onClick={() => onRowClick?.(item)}
+            className={cn("hover:bg-accent/50 flex items-center px-5 py-4 transition-colors cursor-pointer", rowClassName)}
+          >
+            {columns.map((col, i) => (
+              <div key={i} className={cn("min-w-0 truncate", col.className || "flex-1")}>
+                {col.render(item, index)}
+              </div>
+            ))}
           </div>
         ))}
       </div>

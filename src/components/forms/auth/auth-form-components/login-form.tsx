@@ -2,7 +2,8 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { resetuserKey } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
-import { EduModernInput } from "@/components/fields/edu-modern-input";
+import { EduModernInput } from "@/components/fields";
+import { InputLabel } from "@/components/ui";
 import { AuthButtons } from "./action-section";
 import { LockIcon, UserIcon } from "lucide-react";
 import { useToast } from "@/lib/store";
@@ -98,7 +99,7 @@ export const LoginForm = () => {
 
             <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-[3px]">
-                    <label htmlFor="username" className="text-sm">Enter email or phone</label>
+                    <InputLabel label="Enter email or phone"/>
                     <EduModernInput
                         value={formData.identity}
                         type="contact"
@@ -108,7 +109,7 @@ export const LoginForm = () => {
                     />
                 </div>
                 <div className="flex flex-col gap-[3px]">
-                    <label htmlFor="password" className="text-sm">Enter password</label>
+                    <InputLabel label="Enter password"/>
                     <EduModernInput
                         value={formData.password}
                         type="password"

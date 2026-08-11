@@ -5,9 +5,10 @@ import { EduMainLoader } from "@/components/elements";
 import { useEffect, useRef, useState } from "react";
 import { EduButton } from "@/components/ui";
 import { useToast } from "@/lib/store";
-import { apiMutation } from "@/lib/api";
+import { apiMutation, isApiError } from "@/lib/api";
 import { cn, resetuserKey } from "@/lib/utils";
 
+type VerifyRes = { resetToken: string } | null
 
 export const VerifyForm = () => {
 
@@ -122,7 +123,7 @@ export const VerifyForm = () => {
         setIsLoading(true);
 
         try {
-            const res = await apiMutation("post", "/auth/verify", {
+            const res = await apiMutation<VerifyRes>("post", "/auth/verify", {
                 identity,
                 otp: fullOtp
             });
@@ -138,11 +139,12 @@ export const VerifyForm = () => {
 
                 if (otp_reason === "reset") {
 
-                    if (identity === null) return;
+                    if (identity === null || res.data === null) return;
+                    const token = res.data.resetToken
 
                     // Bind data za reset
                     params.set("identity", identity); // Rudisha identity kwa ajili ya reset page
-                    params.set("token", res.data.resetToken);
+                    params.set("token", token);
                     router.replace(`/auth/reset?${params.toString()}`);
                 } else {
                     // Flow ya Dashboard
@@ -179,10 +181,11 @@ export const VerifyForm = () => {
                 toast.show({ message, type: "error" });
                 router.back();
             }
-        } catch (error: any) {
-            const message = error.message || "Error occured while verifying."
-            toast.show({ message, type: "error" })
-            // Error handling yako
+        } catch (error) {
+            if (isApiError(error)) {
+                const message = error.message || "Error occured while verifying."
+                toast.show({ message, type: "error" })
+            }
         } finally {
             setIsLoading(false);
         }
@@ -204,7 +207,12 @@ export const VerifyForm = () => {
                 setOtpValues(["", "", "", "", "", ""]);
                 inputRefs.current[0]?.focus();
             }
-        } catch (error) { } finally { setIsResending(false); }
+        } catch (error) {
+            if (isApiError(error)) {
+                const message = error.message || "Something went wrong please retry"
+                toast.show({ message, type: "error" })
+            }
+        } finally { setIsResending(false); }
     };
 
     // Njia ya kurudi nyuma yenye kubeba state

@@ -1,19 +1,28 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { EduButton, EduModernInput } from "@/components/ui";
-import { apiMutation } from "@/lib/api";
+import { EduModernInputV2 } from "@/components/fields";
+import { EduButton, InputLabel } from "@/components/ui";
+import { apiMutation, isApiError } from "@/lib/api";
 import { Lock, LockKeyhole } from "lucide-react";
 import { useToast } from "@/lib/store";
 
 export const ResetForm = () => {
     const toast = useToast();
+    const params = useSearchParams();
+    const router = useRouter();
     const [formData, setFormData] = useState({ password: "", confirm: "" })
     const [submiting, setSubmiting] = useState(false);
 
-    const handleSubmit = () => {
+    const token = params.get("token");
+    const identity = params.get("identity");
 
-        console.log("Date: ", formData)
-
+    useEffect(() => {
+        if(!token?.trim()) {
+            toast.show({ message: "Unauthorized access", type: "error" })
+            router.replace("/auth/login");
+        }
+    })
+    const handleSubmit = async () => {
 
         if(!formData.password || !formData.confirm) {
             toast.show({ message: "Please fill out all fields", type: "error" })
@@ -26,10 +35,21 @@ export const ResetForm = () => {
         }
 
         setSubmiting(true)
+        
         try {
-            console.log("Simulating API form passwprd reset. DATA: ", formData);
-            toast.show({ message: `Passowrd changed sucessfull to ${formData.password}`, type: "success" })
-        } catch (error) { } finally {
+            const { password: newPass } =  formData;
+            const response = await apiMutation("patch", "/auth/reset-password", { resetToken: token, newPassword: formData.password });
+            if(response.status === "success") {
+                toast.show({ message: `Passowrd changed sucessfull please log in to continue`, type: "success" })
+                router.replace(`/auth/login?identity=${identity}`)
+;            }
+            
+        } catch (error) {
+            if(isApiError(error)){
+                const message = error.message ||"Something went wrong please retry"
+                toast.show({ message, type: "error" })
+            }
+        } finally {
             setSubmiting(false)
         }
     }
@@ -44,8 +64,8 @@ export const ResetForm = () => {
 
             <div className="flex flex-col justify-center gap-5">
                 <div className="flex flex-col gap-[3px]">
-                    <label htmlFor="password">Enter new password</label>
-                    <EduModernInput
+                    <InputLabel label="Enter new password" required/>
+                    <EduModernInputV2
                         type="password"
                         value={formData.password}
                         onChange={(val) => setFormData({ ...formData, password: val })}
@@ -55,8 +75,8 @@ export const ResetForm = () => {
                     />
                 </div>
                 <div className="flex flex-col gap-[3px]">
-                    <label htmlFor="password">Confirm new password</label>
-                    <EduModernInput
+                    <InputLabel label="Confirm new password" required/>
+                    <EduModernInputV2
                         value={formData.confirm}
                         type="password"
                         required={true}

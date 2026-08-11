@@ -1,8 +1,8 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { EduButton } from "@/components/ui";
-import { EduModernInput } from "@/components/ui";
+import { EduButton, InputLabel } from "@/components/ui";
+import { EduModernInput } from "@/components/fields";
 import { AuthButtons } from "./action-section";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "@/lib/store";
@@ -98,21 +98,23 @@ export const RegisterForm = () => {
                             exit={{ opacity: 0, x: -20 }}
                         >
                             <div className="flex flex-col gap-[3px]">
-                                <label htmlFor="identity" className="text-sm">First name</label>
+                                <InputLabel label="First name" required/>
                                 <EduModernInput
                                     value={formData.firstName}
                                     type="name"
                                     transform="capitalize"
                                     className="h-10"
                                     icon={UserIcon}
+                                    required
                                     onChange={(val) => setFormData({ ...formData, firstName: val })}
                                 />
                             </div>
                             <div className="flex flex-col gap-[3px]">
-                                <label htmlFor="name" className="text-sm">Last name</label>
+                                <InputLabel label="Last name" required/>
                                 <EduModernInput
                                     value={formData.lastName}
                                     type="name"
+                                    required
                                     transform="capitalize"
                                     className="h-10"
                                     icon={UserIcon}
@@ -143,7 +145,7 @@ export const RegisterForm = () => {
                                     <h3 className="font-bold px-2">Finish creating account.</h3>
                                 </div>
                                 <div className="flex flex-col gap-[3px]">
-                                    <label htmlFor="username" className="text-sm">Email or Phone</label>
+                                    <InputLabel label="Email or Phone" required/>
                                     <EduModernInput
                                         value={contactValue}
                                         type="contact"
@@ -153,7 +155,7 @@ export const RegisterForm = () => {
                                     />
                                 </div>
                                 <div className="flex flex-col gap-[3px]">
-                                    <label htmlFor="identity" className="text-sm">Password</label>
+                                    <InputLabel label="Password" required/>
                                     <EduModernInput
                                         value={formData.password}
                                         type="password"
@@ -163,7 +165,7 @@ export const RegisterForm = () => {
                                     />
                                 </div>
                                 <div className="flex flex-col gap-[3px]">
-                                    <label htmlFor="identity" className="text-sm">Confirm password</label>
+                                    <InputLabel label="Confirm password" required/>
                                     <EduModernInput
                                         value={""}
                                         type="password"

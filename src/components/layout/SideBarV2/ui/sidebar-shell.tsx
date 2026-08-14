@@ -1,257 +1,70 @@
+"use client";
+
+import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
+import { SIDEBAR_WIDTH } from "../sidebar-rules";
+import { useSidebar } from "../use-sidebar";
+
 /**
  * ============================================================================
  * EduAsas Sidebar V2 - Sidebar Shell
  * ============================================================================
  *
- * Visual container ya Sidebar V2.
+ * Container ya muonekano (Visual container) ya Sidebar V2.
  *
- * Responsibilities:
+ * Majukumu (Responsibilities):
+ * - Kuweka nafasi (Positioning) na kusimamia upana (Width handling).
+ * - Ku-render muundo wa Docked au Floating kulingana na mazingira.
+ * - Kusimamia mionekano ya responsive visibility na animations.
  *
- * - Positioning
- * - Width handling
- * - Docked/Floating rendering
- * - Responsive visibility
- * - Animation
- *
- * Haitawali:
- *
- * - State mutations
- * - Navigation
- * - Permissions
+ * Haitawali (Non-responsibilities):
+ * - State mutations.
+ * - Navigation logic au Permissions.
  *
  * @version 2.1.0
  */
 
-
-"use client";
-
-
-import type {
-    ReactNode,
-} from "react";
-
-
-import {
-    cn,
-} from "@/lib/utils";
-
-
-import {
-    SIDEBAR_WIDTH,
-} from "../sidebar-rules";
-
-
-import {
-    useSidebar,
-} from "../use-sidebar";
-
-
-
-
-
 interface SidebarShellProps {
-
-
-    children: ReactNode;
-
-
-    className?: string;
-
+  /** Maudhui yatakayokuwa ndani ya shell ya sidebar. */
+  children: ReactNode;
+  /** Custom Tailwind CSS classes. */
+  className?: string;
 }
 
+export function SidebarShell({ children, className }: SidebarShellProps) {
+  const { device, variant, size, isOpen } = useSidebar();
 
+  const isDocked = variant === "docked";
+  const isFloating = variant === "floating";
 
+  const width =
+    size === "expanded" ? SIDEBAR_WIDTH.expanded : SIDEBAR_WIDTH.minimal;
 
+  const shouldHide = device === "mobile" && isFloating && !isOpen;
 
+  return (
+    <aside
+      style={{ width }}
+      className={cn(
+        "z-50 flex flex-col border bg-white backdrop-blur-xl",
+        "transition-[width,transform] duration-300 ease-out",
 
+        // Docked Mode Layout
+        isDocked && "fixed left-0 inset-y-0 border-r border-border",
 
-export function SidebarShell({
+        // Floating Mode Layout
+        isFloating && "fixed left-3 top-2 bottom-2 rounded-xl bg-white shadow-2xl",
 
-    children,
+        // Hide animation kwa ajili ya mobile drawer
+        shouldHide && "-translate-x-[120%]",
 
-    className,
+        // Mobile responsiveness adjustment
+        device === "mobile" && "max-w-[calc(100vw-32px)]",
 
-}: SidebarShellProps) {
-
-
-    const {
-
-        device,
-
-        variant,
-
-        size,
-
-        isOpen,
-
-    } = useSidebar();
-
-
-    const isDocked =
-        variant === "docked";
-
-
-
-    const isFloating =
-        variant === "floating";
-
-
-    const width =
-        size === "expanded"
-
-            ? SIDEBAR_WIDTH.expanded
-
-            : SIDEBAR_WIDTH.minimal;
-
-    const shouldHide =
-        device === "mobile" &&
-        isFloating &&
-        !isOpen;
-
-
-
-    return (
-
-
-        <aside
-
-            style={{
-                width: width
-            }}
-            className={cn(
-
-                "z-50",
-
-                /**
-                 * Animation
-                 */
-                "transition-[width,transform]",
-
-                "duration-300",
-
-                "ease-out",
-
-
-                /**
-                 * Structure
-                 */
-                // "overflow-hidden",
-
-                "flex",
-
-                "flex-col",
-
-
-
-
-                /**
-                 * Premium surface
-                 */
-                "border",
-
-                "bg-white",
-
-                "backdrop-blur-xl",
-
-                /**
-                 * Docked Card
-                 *
-                 * Layout bado inasukumwa,
-                 * lakini visual ni card.
-                 */
-                isDocked && [
-                    "fixed",
-                    "left-0",
-                    "border-r",
-                    "inset-y-0",
-                    "border-border"
-                ],
-
-                /**
-                 * Floating Card
-                 */
-                isFloating && [
-
-                    "fixed",
-
-                    "left-3",
-
-                    "top-2",
-
-                    "bottom-2",
-
-                    "rounded-xl",
-
-                    "shadow-2xl",
-
-                    "bg-white",
-
-
-                ],
-
-                /**
-                 * Mobile drawer
-                 */
-                shouldHide && [
-
-                    "-translate-x-[120%]",
-                ],
-
-
-
-                /**
-                 * Mobile safety
-                 */
-                device === "mobile" && [
-
-
-                    "max-w-[calc(100vw-32px)]",
-
-
-                ],
-
-
-
-
-
-                className,
-
-
-            )}
-
-
-        >
-
-
-
-            <div
-
-
-                className="
-
-                    flex
-
-                    h-full
-
-                    min-h-0
-
-                    flex-col
-
-                "
-
-
-            >
-
-                {children}
-
-
-            </div>
-
-
-
-        </aside>
-
-
-    );
-
+        className
+      )}
+    >
+      <div className="flex h-full min-h-0 flex-col">{children}</div>
+    </aside>
+  );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ElementType } from "react";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 
@@ -27,7 +27,7 @@ interface SidebarCollapsibleProps {
   /** Jina kuu la menyu inayoweza kufunguka/kufungwa */
   title: string;
   /** Component au jina la ikoni ya menyu */
-  icon: any;
+  icon: ElementType;
   /** Orodha ya sub-items zilizo ndani ya menyu hii */
   items: SidebarChild[];
   /** Inafafanua kama sidebar imekunjwa (collapsed) au la */
@@ -40,19 +40,19 @@ interface SidebarCollapsibleProps {
  * Component inayowakilisha menyu yenye sub-items zinazoweza kufunguka au kukunjwa (Collapsible Menu).
  * 
  * - Inafungua menyu kiotomatiki ikiwa moja ya sub-items ipo active kulingana na `currentPath`.
- * - Inabadilika kuwa icon yenye Tooltip pindi sidebar inapokuwa kwenye mode ya `collapsed`.
+ * - Inabadilika kuwa icon yenye Tooltip & Floating Submenu pindi sidebar inapokuwa kwenye mode ya `minimal`.
  */
 export function SidebarCollapsible({
   title,
   icon,
   items,
-  collapsed = false,
+  collapsed: propsCollapsed,
   currentPath = "",
 }: SidebarCollapsibleProps) {
-
   const { size } = useSidebar();
 
-  collapsed = size === "minimal";
+  // Inapendelea state ya useSidebar kama haijapitishwa kupitia props
+  const isCollapsed = propsCollapsed ?? size === "minimal";
 
   // Inakagua kama kuna mtoto (sub-item) yeyote aliye active kwa sasa
   const hasActiveChild = items.some(
@@ -69,51 +69,45 @@ export function SidebarCollapsible({
     }
   }, [hasActiveChild]);
 
-  // Muundo wa ndani wa batani wakati sidebar ipo wazi (Not Collapsed)
-  const content = (
-    <div className="flex items-center gap-3 w-full cursor-pointer">
-      <SidebarIcon component={icon} />
-
-      {!collapsed && (
-        <>
-          <span className="flex-1 text-left truncate">{title}</span>
-
-          <ChevronDown
-            size={16}
-            className={cn(
-              "transition-transform duration-200",
-              open && "rotate-180"
-            )}
-          />
-        </>
-      )}
-    </div>
-  );
-
   return (
-    <div>
-      {/* COLLAPSED MODE vs EXPANDED MODE */}
-      {collapsed ? (
-        <div className="flex itms-center justify-center">
+    <div className="w-full">
+      {/* COLLAPSED / MINIMAL MODE */}
+      {isCollapsed ? (
+        <div className="flex items-center justify-center">
           <EduTooltip content={title} side="right">
             <EduFloatingDiv
               side="right"
-              spacing={10}
+              spacing={12}
               trigger={
-                <button className="w-full flex items-center justify-center h-8 cursor-pointer rounded-md text-muted-500 hover:bg-primary-50 hover:text-primary-600 transition-colors">
+                <button
+                  type="button"
+                  aria-label={title}
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200 cursor-pointer",
+                    hasActiveChild
+                      ? "bg-primary-100/80 text-primary-600 dark:bg-primary-950/40"
+                      : "text-muted-500 hover:bg-muted-100 hover:text-muted-900"
+                  )}
+                >
                   <SidebarIcon
                     component={icon}
                     className={cn(
-                      "shrink-0",
-                      hasActiveChild ? "text-primary-600" : "text-muted-700"
+                      "h-5 w-5 shrink-0 transition-colors",
+                      hasActiveChild ? "text-primary-600" : "text-muted-600"
                     )}
                   />
                 </button>
-
               }
             >
-              <>
-                <div className="mt-1 ml-5 pl-3 border-l border-border space-y-1 rounded-md bg-white p-2 shadow-2xl">
+              {/* Premium Modern Popout Card */}
+              <div className="min-w-[200px] rounded-xl border border-border/60 bg-white p-1.5 shadow-xl backdrop-blur-md dark:bg-slate-900">
+                {/* Popout Header Title */}
+                <div className="px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-400 border-b border-border/40 mb-1">
+                  {title}
+                </div>
+
+                {/* Popout Items */}
+                <div className="space-y-0.5">
                   {items.map((child) => {
                     const active =
                       currentPath === child.href ||
@@ -124,10 +118,10 @@ export function SidebarCollapsible({
                         key={child.href}
                         href={child.href}
                         className={cn(
-                          "flex items-center h-8 px-3 rounded-lg text-sm transition-colors",
+                          "flex items-center h-8 px-2.5 rounded-lg text-xs font-medium transition-all duration-150",
                           active
-                            ? "bg-primary-500 text-white"
-                            : "text-muted-500 hover:bg-muted-100 hover:text-muted-900"
+                            ? "bg-primary-500 text-white shadow-sm"
+                            : "text-muted-600 hover:bg-muted-100 hover:text-muted-900"
                         )}
                       >
                         {child.title}
@@ -135,27 +129,46 @@ export function SidebarCollapsible({
                     );
                   })}
                 </div>
-              </>
+              </div>
             </EduFloatingDiv>
           </EduTooltip>
         </div>
       ) : (
+        /* EXPANDED MODE BUTTON */
         <button
+          type="button"
           onClick={() => setOpen((v) => !v)}
           className={cn(
-            "flex items-center w-full h-8 px-3 rounded-md text-sm font-medium transition-colors",
+            "flex items-center justify-between w-full h-9 px-3 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer group",
             hasActiveChild
-              ? "bg-primary-50 text-primary-600"
-              : "text-muted-600 hover:bg-muted-200"
+              ? "bg-primary-50/80 text-primary-600 font-semibold"
+              : "text-muted-600 hover:bg-muted-100 hover:text-muted-900"
           )}
         >
-          {content}
+          <div className="flex items-center gap-3 truncate">
+            <SidebarIcon
+              component={icon}
+              className={cn(
+                "h-4 w-4 shrink-0 transition-colors",
+                hasActiveChild ? "text-primary-600" : "text-muted-500 group-hover:text-muted-800"
+              )}
+            />
+            <span className="truncate">{title}</span>
+          </div>
+
+          <ChevronDown
+            size={16}
+            className={cn(
+              "shrink-0 text-muted-400 transition-transform duration-200",
+              open && "rotate-180 text-muted-700"
+            )}
+          />
         </button>
       )}
 
-      {/* SUB-ITEMS (CHILDREN) AREA */}
-      {!collapsed && open && (
-        <div className="mt-1 ml-5 pl-3 border-l border-border space-y-1">
+      {/* EXPANDED SUB-ITEMS AREA */}
+      {!isCollapsed && open && (
+        <div className="mt-1 ml-4 pl-3 border-l-2 border-border/60 space-y-1">
           {items.map((child) => {
             const active =
               currentPath === child.href ||
@@ -166,13 +179,17 @@ export function SidebarCollapsible({
                 key={child.href}
                 href={child.href}
                 className={cn(
-                  "flex items-center h-8 px-3 rounded-lg text-sm transition-colors",
+                  "flex items-center h-8 px-3 rounded-lg text-xs font-medium transition-all duration-150 relative group",
                   active
-                    ? "bg-primary-500 text-white"
-                    : "text-muted-500 hover:bg-muted-100 hover:text-muted-900"
+                    ? "bg-primary-500 text-white font-semibold shadow-xs"
+                    : "text-muted-600 hover:bg-muted-100 hover:text-muted-900"
                 )}
               >
-                {child.title}
+                {/* Visual Active Indicator Bar */}
+                {active && (
+                  <span className="absolute -left-[15px] top-1/2 -translate-y-1/2 w-1 h-4 bg-primary-500 rounded-r-full" />
+                )}
+                <span className="truncate">{child.title}</span>
               </Link>
             );
           })}

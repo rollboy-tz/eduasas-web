@@ -7,8 +7,6 @@ export * from './sidebar-layout';
 export * from './sidebar-navigation';
 export * from './sidebar-overlay';
 export * from './sidebar-shell';
-export * from './sidebar-submenu-popover';
-export * from './sidebar-tooltip';
 export * from './sidebar';
 export * from './SidebarCollapsible';
 export * from './SidebarGroup';

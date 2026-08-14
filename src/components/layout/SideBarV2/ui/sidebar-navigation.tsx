@@ -1,161 +1,63 @@
+"use client";
+
+import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
+import { useSidebar } from "../use-sidebar";
+
 /**
  * ============================================================================
  * EduAsas Sidebar V2 - Sidebar Navigation
  * ============================================================================
  *
- * Container kuu ya sidebar navigation area.
+ * Container kuu ya eneo la Sidebar Navigation.
  *
- * Responsibilities:
+ * Majukumu (Responsibilities):
+ * - Kushikilia vikundi vya menyu za sidebar (Sidebar groups).
+ * - Kusimamia mianya ya wima (Vertical spacing).
+ * - Kusimamia mienendo ya kuteleza (Scroll behavior).
+ * - Responsive padding kulingana na ukubwa wa sidebar (Sidebar size).
  *
- * - Kushikilia sidebar groups.
- * - Kusimamia vertical spacing.
- * - Scroll behavior.
- * - Responsive padding kulingana na sidebar size.
- *
- * Haitawali:
- *
- * - Menu data.
- * - Active state.
- * - Routing.
- * - Permissions.
- * - Sidebar mutations.
+ * Haitawali (Non-responsibilities):
+ * - Menu data au Active state logic.
+ * - Navigation Routing au Permissions.
+ * - Sidebar state mutations.
  *
  * @version 2.3.0
  */
 
-
-"use client";
-
-
-import type {
-    ReactNode,
-} from "react";
-
-
-import {
-    cn,
-} from "@/lib/utils";
-
-
-import {
-    useSidebar,
-} from "../use-sidebar";
-
-
-
-
-
 interface SidebarNavigationProps {
-
-
-    /**
-     * Navigation content.
-     */
-    children: ReactNode;
-
-
-
-    /**
-     * Extra classes.
-     */
-    className?: string;
-
+  /** Navigation content (menu items, groups, etc.). */
+  children: ReactNode;
+  /** Extra Tailwind CSS classes. */
+  className?: string;
 }
 
-
-
-
-
-
-
 export function SidebarNavigation({
-
-    children,
-
-    className,
-
+  children,
+  className,
 }: SidebarNavigationProps) {
+  const { size } = useSidebar();
+  const isMinimal = size === "minimal";
 
+  return (
+    <nav
+      className={cn(
+        // Layout & Flexbox
+        "flex flex-1 min-h-0 flex-col",
 
+        // Scroll Behavior
+        "overflow-y-auto overscroll-contain custom-scrollbar",
 
-    const {
+        // Dynamic Padding based on size state
+        isMinimal ? "px-2 py-3 gap-2" : "px-3 py-4 gap-3",
 
-        size,
+        // Smooth Transitions
+        "transition-[padding] duration-300 ease-out",
 
-    } = useSidebar();
-
-
-
-
-
-    const isMinimal =
-        size === "minimal";
-
-
-
-
-
-
-    return (
-
-
-        <nav
-
-
-            className={cn(
-
-
-
-                /**
-                 * Layout
-                 */
-                "flex",
-
-                "flex-1",
-
-                "min-h-0",
-
-                "flex-col",
-
-
-
-
-
-                /**
-                 * Scroll
-                 */
-                "overflow-y-auto",
-
-                "overscroll-contain",
-
-                "custom-scrollbar",
-
-
-
-
-
-                /**
-                 * Smooth transition
-                 */
-                "transition-[padding]",
-
-                "duration-300",
-
-                "ease-out",
-
-                className,
-
-            )}
-
-        >
-
-
-            {children}
-
-
-        </nav>
-
-
-    );
-
+        className
+      )}
+    >
+      {children}
+    </nav>
+  );
 }

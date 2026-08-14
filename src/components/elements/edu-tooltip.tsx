@@ -109,7 +109,7 @@ export  function EduTooltip({
               className="
                 relative 
                 py-1.5 px-3
-                rounded-md
+                rounded-xl
                 whitespace-nowrap
                 bg-zinc-700 
                 text-zinc-50 
@@ -135,7 +135,7 @@ export  function EduTooltip({
                   absolute 
                   w-[6px] h-[6px] 
                   rotate-45 
-                  bg-zinc-900 
+                  bg-zinc-700 
                   dark:bg-zinc-100 
                   border-border
                 `}

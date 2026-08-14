@@ -15,6 +15,8 @@ interface SidebarIconProps {
   className?: string;
   /** Ukubwa wa ikoni kwa pixels (default: 20) */
   size?: number;
+  /**Rangi ya */
+  fill?: string;
 }
 
 /**
@@ -26,12 +28,14 @@ export function SidebarIcon({
   component: Icon,
   className,
   size = 20,
+  fill = ""
 }: SidebarIconProps) {
   const IconComponent = Icon || HelpCircle;
 
   return (
     <IconComponent
       size={size}
+      fill={fill || "none"}
       className={cn("shrink-0", className)}
     />
   );

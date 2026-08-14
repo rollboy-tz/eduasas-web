@@ -31,7 +31,6 @@ export function SidebarGroup({
   return (
     <section className={cn("space-y-2", className)}>
       <SidebarGroupSeparator title={label || "group"}/>
-
       <div className="space-y-1">{children}</div>
     </section>
   );

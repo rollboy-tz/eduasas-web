@@ -25,7 +25,6 @@ import type {
 } from "./sidebar.types";
 
 
-
 /* ============================================================================
  * Widths
  * ========================================================================== */
@@ -33,12 +32,9 @@ import type {
 
 export const SIDEBAR_WIDTH = {
 
+    expanded: 230,
 
-    expanded: 280,
-
-
-    minimal: 84,
-
+    minimal: 50,
 
 } as const;
 

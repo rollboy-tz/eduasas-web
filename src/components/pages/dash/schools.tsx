@@ -9,7 +9,7 @@ export const SchoolsPageContents = () => {
     const { schools, isLoading, refresh } = useUser();
 
     return (
-        <div className="flex flex-col gap-4 px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-4">
             {/* Welcome Header */}
             <div className="
                     relative overflow-hidden

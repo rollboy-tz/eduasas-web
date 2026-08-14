@@ -24,7 +24,8 @@
 
 
 import {
-    Building2,
+    SidebarIcon,
+    SidebarClose
 } from "lucide-react";
 
 
@@ -37,7 +38,9 @@ import {
     useSidebar,
 } from "../use-sidebar";
 
-
+import {
+    EduAsasLogo
+} from "@/components/ui";
 
 
 
@@ -70,10 +73,6 @@ interface SidebarHeaderProps {
 
 export function SidebarHeader({
 
-    title = "EduAsas",
-
-    subtitle = "Workspace",
-
     className,
 
 }: SidebarHeaderProps) {
@@ -83,6 +82,16 @@ export function SidebarHeader({
     const {
 
         size,
+        isDesktop,
+        isTablet,
+        isMobile,
+
+        variant,
+        isOpen,
+
+        setSize,
+        open,
+        close,
 
     } = useSidebar();
 
@@ -94,24 +103,65 @@ export function SidebarHeader({
         size === "minimal";
 
 
+    const handleClick = () => {
 
+        /**
+         * Desktop
+         *
+         * expanded <-> minimal
+         */
+        if (isDesktop) {
+            setSize(
+                size === "expanded"
+                    ? "minimal"
+                    : "expanded"
+            );
 
+            return;
+        }
+
+        /**
+         * Tablet
+         *
+         * docked -> floating
+         * floating -> restore
+         */
+        if (isTablet) {
+            if (variant === "floating") {
+                close();
+            } else {
+                open();
+            }
+
+            return;
+        }
+
+        /**
+         * Mobile
+         *
+         * drawer
+         */
+        if (isMobile) {
+            isOpen
+                ? close()
+                : open();
+        }
+    };
 
     return (
 
         <header
 
             className={cn(
+                "group",
 
                 "flex",
 
-                "h-16",
+                "py-2",
+
+                "shrink-0",
 
                 "items-center",
-
-                "border-b",
-
-                "border-border/50",
 
                 "transition-all",
 
@@ -144,98 +194,32 @@ export function SidebarHeader({
             )}
 
         >
+            <>
+
+                {
+                    isMinimal ? (
+                        // Wen sidebar is minimal when mouse is over header
+                        
+                        <div className="flex">
+                            <EduAsasLogo className="group-hover:hidden" titleHiden={true}/>
+                            <button className="hidden group-hover:flex rounded-md p-1 hover:bg-muted-200 transition-all cursor-pointer duration-300"
+                            onClick={handleClick}>
+                                <SidebarIcon size={19} className="text-muted-800"/>
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-between w-full">
+                            <EduAsasLogo titleClasses="font-heading font-black" />
+                            <button className="rounded-md p-1 hover:bg-muted-200 transition-all cursor-pointer duration-300"
+                            onClick={handleClick}>
+                                <SidebarIcon size={19} className="text-muted-800"/>
+                            </button>
+                        </div>
+                    )
+                }
 
 
-
-
-
-            {/* Logo Container */}
-
-            <div
-
-                className="
-                    flex
-                    h-10
-                    w-10
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-xl
-                    bg-primary/10
-                    text-primary
-                "
-
-            >
-
-                <Building2
-
-                    size={22}
-
-                    strokeWidth={2}
-
-                />
-
-            </div>
-
-
-
-
-
-
-
-            {/* Brand Text */}
-
-            {!isMinimal && (
-
-                <div
-
-                    className="
-                        flex
-                        min-w-0
-                        flex-col
-                    "
-
-                >
-
-                    <span
-
-                        className="
-                            truncate
-                            text-sm
-                            font-semibold
-                            tracking-tight
-                        "
-
-                    >
-
-                        {title}
-
-                    </span>
-
-
-
-                    <span
-
-                        className="
-                            truncate
-                            text-xs
-                            text-muted-foreground
-                        "
-
-                    >
-
-                        {subtitle}
-
-                    </span>
-
-
-                </div>
-
-            )}
-
-
-
-
+            </>
 
         </header>
 

@@ -128,7 +128,7 @@ export function SidebarNavigation({
 
                 "overscroll-contain",
 
-                "scrollbar-thin",
+                "custom-scrollbar",
 
 
 
@@ -142,39 +142,6 @@ export function SidebarNavigation({
                 "duration-300",
 
                 "ease-out",
-
-
-
-
-
-                /**
-                 * Spacing
-                 */
-                isMinimal
-
-                    ? [
-
-                        "px-2",
-
-                        "py-3",
-
-                        "gap-2",
-
-                    ]
-
-                    : [
-
-                        "px-3",
-
-                        "py-4",
-
-                        "gap-3",
-
-                    ],
-
-
-
-
 
                 className,
 

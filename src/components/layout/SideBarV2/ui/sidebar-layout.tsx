@@ -52,18 +52,8 @@ export function SidebarLayout({
             <Sidebar itemsData={data} />
 
             <section
-                className="
-                    flex
-                    min-w-0
-                    flex-1
-                    flex-col
-                    transition-[margin]
-                    duration-300
-                    ease-out
-                "
-                style={{
-                    marginLeft: contentOffset,
-                }}
+                className="flex min-w-0 px-2 sm:px-4 md:px-6 lg:px-8 flex-1 flex-col transition-[margin] duration-300 ease-out"
+                style={{ marginLeft: contentOffset }}
             >
                 {header && (
                     <header
@@ -71,6 +61,7 @@ export function SidebarLayout({
                             sticky
                             z-40
                             shrink-0
+                            mb-1
                         "
                     >
                         {header}

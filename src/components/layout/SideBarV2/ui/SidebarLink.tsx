@@ -42,21 +42,24 @@ export function SidebarLink({
 
   const { size } = useSidebar();
 
+  const aciveColor = active ? "blue-500" : "none";
+
   collapsed = size === "minimal";
 
   const link = (
     <Link
       href={href}
       className={cn(
-        "relative flex items-center w-full h-10 rounded-md transition-colors text-sm font-medium",
-        collapsed ? "justify-center px-0" : "gap-3 px-3",
+        "relative flex items-center w-full h-8 rounded-md transition-colors text-sm font-medium",
+        collapsed ? "justify-center px-1 shrink-0" : "gap-3 px-3",
         active
           ? "bg-primary-50 text-primary-600"
-          : "text-muted-600 hover:bg-muted-100 hover:text-muted-900"
+          : "text-muted-600 hover:bg-muted-200 hover:text-muted-900"
       )}
     >
       <SidebarIcon
         component={icon}
+        fill={aciveColor}
         className={cn(
           "shrink-0",
           active ? "text-primary-600" : "text-muted-700"

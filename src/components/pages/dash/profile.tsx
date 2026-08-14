@@ -9,7 +9,7 @@ export const ProfilePageContents = () => {
     const { profile: user } = useUser();
 
     return(
-        <div className="mx-auto max-w-5xl flex flex-col gap-6 px-3 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-5xl flex flex-col gap-6">
                 <ProfileHeader size="lg" bannerClasses="rounded-xl" avatarPosition="left"/>
                 <div className="flex flex-col gap-1 w-full px-4 bg-white rounded-xl shadow-sm">
                     <h2 className="text-md font-bold">{user?.firstName} {user?.lastName}</h2>

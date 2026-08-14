@@ -135,7 +135,7 @@ export function SidebarShell({
                 /**
                  * Structure
                  */
-                "overflow-hidden",
+                // "overflow-hidden",
 
                 "flex",
 
@@ -149,11 +149,7 @@ export function SidebarShell({
                  */
                 "border",
 
-                "border-black/5",
-
-                "dark:border-white/10",
-
-                "bg-background/80",
+                "bg-white",
 
                 "backdrop-blur-xl",
 

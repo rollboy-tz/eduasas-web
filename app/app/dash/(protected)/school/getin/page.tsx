@@ -126,7 +126,7 @@ function SwitchContextContent() {
   if (isUserLoading || !currentSchool) {
     return (
       <div className="flex flex-col items-center justify-center space-y-4">
-        <EduMainLoader size={30} loadingText="Loading school details..." />
+        <EduMainLoader size={30} loadingText="Looking for school details" />
       </div>
     );
   }

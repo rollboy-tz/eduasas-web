@@ -17,10 +17,11 @@ const { size } = useSidebar()
           className="flex items-center w-full gap-3"
         >
           {/* Maandishi ya Group (e.g., ACADEMICS) */}
+          <span className="text-[9px] text-muted-500 font-medium select-none">{title}</span>
 
           
           {/* Mstari wa Kulia unaoziba nafasi iliyobaki */}
-          <div className="h-[1px] flex-1 bg-foreground/10" />
+          {/* <div className="h-[1px] flex-1 bg-foreground/10" /> */}
         </motion.div>
       ) : (
         /* Hali ya Minimal (50px) - Mstari mmoja tu ulionyooka katikati */

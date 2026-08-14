@@ -170,11 +170,14 @@ export function Sidebar({
                     - Takes remaining space
 
                 */}
+          <SidebarNavigation>
+            <SidebarComposer
+              menuData={itemsData ?? SchoolMockSidebar}
+              currentPath=""
+            />
+          </SidebarNavigation>
 
-          <SidebarComposer
-            menuData={itemsData ?? SchoolMockSidebar}
-            currentPath=""
-          />
+
 
 
 

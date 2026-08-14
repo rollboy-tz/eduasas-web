@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils/helper";
 import { SidebarIcon } from "./SidebarIcon";
 import { EduTooltip } from "@/components/elements/edu-tooltip";
 import { useSidebar } from "../use-sidebar";
+import { EduFloatingDiv } from "@/components/modals";
 
 /**
  * Inawakilisha kiunganishi cha chini (sub-item) ndani ya collapsible menu.
@@ -93,25 +94,59 @@ export function SidebarCollapsible({
     <div>
       {/* COLLAPSED MODE vs EXPANDED MODE */}
       {collapsed ? (
-        <EduTooltip content={title} side="right">
-          <button className="w-full flex items-center justify-center h-10 cursor-pointer rounded-md text-muted-500 hover:bg-primary-50 hover:text-primary-600 transition-colors">
-            <SidebarIcon
-              component={icon}
-              className={cn(
-                "shrink-0",
-                hasActiveChild ? "text-primary-600" : "text-muted-700"
-              )}
-            />
-          </button>
-        </EduTooltip>
+        <div className="flex itms-center justify-center">
+          <EduTooltip content={title} side="right">
+            <EduFloatingDiv
+              side="right"
+              spacing={10}
+              trigger={
+                <button className="w-full flex items-center justify-center h-8 cursor-pointer rounded-md text-muted-500 hover:bg-primary-50 hover:text-primary-600 transition-colors">
+                  <SidebarIcon
+                    component={icon}
+                    className={cn(
+                      "shrink-0",
+                      hasActiveChild ? "text-primary-600" : "text-muted-700"
+                    )}
+                  />
+                </button>
+
+              }
+            >
+              <>
+                <div className="mt-1 ml-5 pl-3 border-l border-border space-y-1 rounded-md bg-white p-2 shadow-2xl">
+                  {items.map((child) => {
+                    const active =
+                      currentPath === child.href ||
+                      currentPath.startsWith(`${child.href}/`);
+
+                    return (
+                      <Link
+                        key={child.href}
+                        href={child.href}
+                        className={cn(
+                          "flex items-center h-8 px-3 rounded-lg text-sm transition-colors",
+                          active
+                            ? "bg-primary-500 text-white"
+                            : "text-muted-500 hover:bg-muted-100 hover:text-muted-900"
+                        )}
+                      >
+                        {child.title}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </>
+            </EduFloatingDiv>
+          </EduTooltip>
+        </div>
       ) : (
         <button
           onClick={() => setOpen((v) => !v)}
           className={cn(
-            "flex items-center w-full h-11 px-3 rounded-xl text-sm font-medium transition-colors",
+            "flex items-center w-full h-8 px-3 rounded-md text-sm font-medium transition-colors",
             hasActiveChild
               ? "bg-primary-50 text-primary-600"
-              : "text-muted-600 hover:bg-muted-100"
+              : "text-muted-600 hover:bg-muted-200"
           )}
         >
           {content}
@@ -131,7 +166,7 @@ export function SidebarCollapsible({
                 key={child.href}
                 href={child.href}
                 className={cn(
-                  "flex items-center h-9 px-3 rounded-lg text-sm transition-colors",
+                  "flex items-center h-8 px-3 rounded-lg text-sm transition-colors",
                   active
                     ? "bg-primary-500 text-white"
                     : "text-muted-500 hover:bg-muted-100 hover:text-muted-900"

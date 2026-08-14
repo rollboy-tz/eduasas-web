@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@/hooks/dash";
 import { useToast } from "@/lib/store";
 import { EduLinearLoader } from "@/components/elements";
-import { EduButton } from "@/components/ui";
+import { EduButton, InputLabel } from "@/components/ui";
 import { RegisteredSchool, SchoolRegistrationResponeData } from "@/types/school";
 import { SchoolAdddeCard } from "@/components/cards/dash/SchoolAddedCard";
 
@@ -166,7 +166,7 @@ export function AddSchoolForm({
                 return (
                     <motion.div key="step1" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-1 gap-4 bg-card" >
                         <div className="col-span-1 flex flex-col gap-1">
-                            <label htmlFor="name" className="font-medium text-sm">School name</label>
+                            <InputLabel label="School name" className="text-sm font-medium" required/>
                             <EduModernInputV2
                                 required={true}
                                 restrict="alphanumeric"
@@ -175,11 +175,12 @@ export function AddSchoolForm({
                                 value={name}
                                 onChange={(val) => { clearError('name'); setStepData({ name: val }) }}
                                 onError={(err) => handleError("name", err)} //Error ni string
+                                className="border border-muted-200"
                             />
                         </div>
 
                         <div className="col-span-1 flex flex-col gap-1">
-                            <label htmlFor="registrationNumber" className="font-medium text-sm">Registration number</label>
+                            <InputLabel label="Registration number" className="text-sm font-medium" required/>
                             <EduModernInputV2
                                 required={true}
                                 restrict="alphanumeric"
@@ -188,6 +189,7 @@ export function AddSchoolForm({
                                 value={registrationNumber}
                                 onChange={(val) => { clearError("registrationNumber"); setStepData({ registrationNumber: val }) }}
                                 onError={(err) => handleError("registrationNumber", err)}
+                                className="border border-muted-200"
                             />
                         </div>
                     </motion.div>
@@ -196,7 +198,7 @@ export function AddSchoolForm({
                 return (
                     <motion.div key="step2" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-1 gap-6 relative z-50 bg-card">
                         <div className="col-span-1 flex flex-col gap-1">
-                            <label htmlFor="schoolType" className="font-medium text-sm">School ownership</label>
+                            <InputLabel label="School ownership" className="text-sm font-medium" required/>
                             <EduModernSelect
                                 labelKey="label"
                                 valueKey="value"
@@ -205,7 +207,7 @@ export function AddSchoolForm({
                             />
                         </div>
                         <div className="col-span-1 flex flex-col gap-1">
-                            <label htmlFor="categoryIds" className="font-medium text-sm">School level</label>
+                            <InputLabel label="School level" className="text-sm font-medium" required/>
                             <EduModernSelect
                                 options={categories.map(c => ({ label: c.name, value: c.id }))}
                                 labelKey="label" valueKey="value"
@@ -222,7 +224,7 @@ export function AddSchoolForm({
                     <motion.div key="step3" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-1 gap-4 bg-card">
 
                         <div className="col-span-1 flex flex-col gap-1">
-                            <label htmlFor="region" className="font-medium text-sm">Located region</label>
+                            <InputLabel label="Located region" className="text-sm font-medium"/>
                             <EduModernInputV2
                                 restrict="letters"
                                 transform="capitalize"
@@ -233,7 +235,7 @@ export function AddSchoolForm({
                         </div>
 
                         <div className="col-span-1 flex flex-col gap-1">
-                            <label htmlFor="district" className="font-medium text-sm">Located district</label>
+                            <InputLabel label="Located district" className="text-sm font-medium"/>
                             <EduModernInputV2
                                 restrict="letters"
                                 transform="capitalize"

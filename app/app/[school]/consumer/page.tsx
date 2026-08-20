@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { EduScreenLoader } from "@/components/ui";
 import { useSearchParams, useRouter } from "next/navigation";
 
-export default function SchoolConsumePage() {
+export default function SchoolConsumerPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -16,7 +16,7 @@ export default function SchoolConsumePage() {
 
   // 2. Tumia React Query kufanya authentication backend kama token ipo
   const { data, error, isLoading, isSuccess } = useQuery({
-    queryKey: ["auth-consume", token],
+    queryKey: ["auth-consumer", token],
     queryFn: () => apiFetch(`/auth/consume?token=${token}`),
     enabled: !!token, // Ita-execute PEKEE kama token ipo
   });

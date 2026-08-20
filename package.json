@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "next dev --turbopack",
     "build": "next build --webpack",
     "clean:server": "rm -rf .next && clear",
     "re:dev": "npm run clean:server && npm run dev",
@@ -18,6 +18,7 @@
     "@radix-ui/react-popover": "^1.1.19",
     "@tanstack/react-query": "^5.101.2",
     "axios": "^1.18.1",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.42.2",
     "libphonenumber-js": "^1.13.8",

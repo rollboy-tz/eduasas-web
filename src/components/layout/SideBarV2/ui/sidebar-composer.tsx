@@ -89,7 +89,7 @@ export const SidebarComposer = memo(
             key={group.label}
             label={group.label}
             collapsed={collapsed}
-            className="mb-3 px-2"
+            className="mb-2 px-2"
           >
             {group.items.map((item) => {
               // Ikiwa item ina watoto (sub-items), rendered kama collapsible menu

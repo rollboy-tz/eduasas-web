@@ -74,11 +74,12 @@ export function SidebarCollapsible({
       {/* COLLAPSED / MINIMAL MODE */}
       {isCollapsed ? (
         <div className="flex items-center justify-center">
-          <EduTooltip content={title} side="right">
+          
             <EduFloatingDiv
               side="right"
               spacing={12}
               trigger={
+                <EduTooltip content={title} side="right">
                 <button
                   type="button"
                   aria-label={title}
@@ -97,10 +98,12 @@ export function SidebarCollapsible({
                     )}
                   />
                 </button>
+                </EduTooltip>
+                
               }
             >
               {/* Premium Modern Popout Card */}
-              <div className="min-w-[200px] rounded-xl border border-border/60 bg-white p-1.5 shadow-xl backdrop-blur-md dark:bg-slate-900">
+              <div className="min-w-[200px] rounded-xl border border-border/60 bg-white p-1.5 shadow-xl backdrop-blur-md">
                 {/* Popout Header Title */}
                 <div className="px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-400 border-b border-border/40 mb-1">
                   {title}
@@ -131,7 +134,7 @@ export function SidebarCollapsible({
                 </div>
               </div>
             </EduFloatingDiv>
-          </EduTooltip>
+          
         </div>
       ) : (
         /* EXPANDED MODE BUTTON */

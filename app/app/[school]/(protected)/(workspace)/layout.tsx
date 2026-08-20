@@ -1,38 +1,24 @@
 // app/(dashboard)/layout.tsx
-import { SidebarProvider } from "@/context/sidebar-context";
-import { SearchProvider } from "@/context/search-context";
-import { GlobalSearch } from "@/components/ui/global-search";
-import MobileProfilePanel from "@/components/layout/profilepanel/mobile-profilepanel";
-import Header from "@/components/layout/topbar/header";
-import Sidebar from "@/components/layout/sidebar/Sidebar";
-import { AuthProvider } from "@/providers";
-import { SchoolMockSidebar } from "@/data/school-mock-links-data";
+'use client'
+import { WorkspaceLayout } from "@/components/layout/WorkspaceLayout";
+import { EduScreenLoader } from "@/components/ui";
+import { useMenuData } from "@/hooks/layout/use-sidebar-data";
 
-export default function SchoolWorkspaceLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashWorkspaceLayout({ children } : {
+  
+  children: React.ReactNode }) {
+    const { menuGroups, isLoading } = useMenuData("school", 'id')
+
+    if(isLoading) return(
+      <EduScreenLoader loadingText="Loading workspace data"/>
+    )
   return (
-    <AuthProvider>
-      <SidebarProvider>
-        <SearchProvider>
-          {/* Global Search Dialog Modal */}
-          <GlobalSearch />
-          <MobileProfilePanel />
+    <WorkspaceLayout
+      menuData={menuGroups}
+      inContext
+    >
+      {children}
+    </WorkspaceLayout>
 
-          <div className="flex h-screen overflow-hidden">
-            <Sidebar menuData={SchoolMockSidebar} />
-
-            <div className="flex flex-1 flex-col overflow-hidden">
-              <Header />
-              <main className="flex-1 overflow-y-auto p-4 sm:p-6">
-                {children}
-              </main>
-            </div>
-          </div>
-        </SearchProvider>
-      </SidebarProvider>
-    </AuthProvider>
   );
 }

@@ -1,7 +1,7 @@
 // path: src/middleware.ts
 
 import { NextRequest } from "next/server";
-import { authProxy } from "@/middleware/auth-proxy";
+import { authProxy } from "@/middleware/auth-middlewere";
 import { handleRouting } from "@/middleware/subdomain-router";
 
 /**

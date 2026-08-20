@@ -63,6 +63,7 @@ export const SchoolsPageContents = () => {
                             title="You haven't any connected school yet"
                             description="This is either your associated school not roaed yet  or no associated one found. Try reloading or add one."
                             icon={University}
+                            className="bg-muted-100"
                             iconClassName="text-white"
                             iconContainerClassName="bg-blue-500"
                             hasSlash={true}

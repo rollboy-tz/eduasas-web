@@ -83,7 +83,7 @@ export function EmptyState({
       {/* 📦 ICON MATRIX WITH DYNAMIC SLASH (/) */}
       <div
         className={cn(
-          "relative w-14 h-14 rounded-full bg-secondary text-foreground flex items-center justify-center mb-4 border border-border/60",
+          "relative w-14 h-14 rounded-full flex items-center justify-center mb-4 border border-border/60",
           
           // UCHUCHU WA MSTARI: Kama hasSlash ikiwa true, tunapiga spana ya pseudo-element hapa hapa
           hasSlash && [

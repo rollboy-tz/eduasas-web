@@ -1,8 +1,8 @@
 /**
  * @file use-badges.ts
- * @description Hook ya kitalamu inayounganisha live counts kutoka vyanzo mbalimbali (Notifications, Invitations).
- * Inasoma data kutoka kwenye SWR Cache pekee, hivyo haina mzigo wowote wa ziada kwenye server.
- * @author Rollboy TZ(EduAsas Tech)
+ * @description Hook rahisi na ya wazi ya kusimamia hesabu za notification na jumla ya alert zote.
+ * Inasoma data kutoka kwenye SWR Cache pekee (Zero Network Overhead).
+ * @author Rollboy TZ (EduAsas Tech)
  */
 
 'use client'
@@ -11,58 +11,29 @@ import { useNotifications, useUserStaffInvitations } from "@/hooks/dash";
 
 /**
  * useBadges
- * Hook kuu ya kusimamia idadi ya alama za taarifa (badges) katika mfumo mzima.
- * * @returns {Object} 
- * - getBadgeCount: (href: string) => number (Hutoa idadi kulingana na link)
- * - totalAlerts: number (Jumla ya alerts zote mpya)
- * - hasAnyPending: boolean (Kama kuna chochote kinasubiri kufanyiwa kazi)
+ * Hook inayorudisha idadi sahihi ya notification na mialiko inayohitaji umakini.
  */
 export function useBadges() {
-  // 1. Kuvuta data kutoka kwenye SWR Cache (Zero Network Overhead)
-  const { unreadCount } = useNotifications();
-  const { invitations } = useUserStaffInvitations();
+  // Kuvuta data kutoka kwenye SWR Cache
+  const { unreadCount = 0 } = useNotifications();
+  const { invitations = [] } = useUserStaffInvitations();
 
-  /**
-   * Kokotoa mialiko ya kazi:
-   * Tunachuja mialiko inayohitaji action (PENDING) na ambayo haijafichwa (NOT ARCHIVED).
-   */
+  // Kukokotoa mialiko mipya/inayosubiri (Pending & Not Archived)
   const pendingInvitationsCount = invitations.filter(
     (inv) => inv.status === "PENDING" && !inv.archived
   ).length;
 
-  /**
-   * @constant badgeMap
-   * Ramani inayounganisha URL path na data ya badge.
-   * Ongeza path mpya hapa kadiri mfumo unavyokua.
-   */
-  const badgeMap: Record<string, number> = {
-    // Notifications mapping
-    "/notifications": unreadCount,
-    "/dashboard/notifications": unreadCount,
-
-    // Staff Invitations mapping
-    "/invitations": pendingInvitationsCount,
-    "/dashboard/invitations": pendingInvitationsCount,
-    
-    // Mfano wa kutumia kama boolean (dot pekee)
-    // "/settings": pendingInvitationsCount > 0 ? 1 : 0,
-  };
-
-  /**
-   * getBadgeCount
-   * Inatafuta idadi ya badge kwa ajili ya link husika.
-   * @param {string} href - Link ya menu item (e.g. "/notifications")
-   */
-  const getBadgeCount = (href?: string): number => {
-    if (!href) return 0;
-    
-    // Tunatafuta match kamili au tunarudisha 0
-    return badgeMap[href] || 0;
-  };
-
   return { 
-    getBadgeCount,
+    // Hesabu maalum za notifications pekee
+    notificationCount: unreadCount,
+    
+    // Hesabu maalum za mialiko (invitations) pekee
+    invitationCount: pendingInvitationsCount,
+    
+    // Jumla kuu ya taarifa zote zinazohitaji kuonekana
     totalAlerts: unreadCount + pendingInvitationsCount,
+    
+    // Hali ya kuangalia kama kuna kitu chochote kipya kinachosubiri
     hasAnyPending: (unreadCount + pendingInvitationsCount) > 0
   };
 }

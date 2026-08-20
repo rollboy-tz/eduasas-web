@@ -50,8 +50,8 @@ export function SidebarLink({
     <Link
       href={href}
       className={cn(
-        "relative flex items-center w-full h-8 rounded-md transition-colors text-sm font-medium",
-        collapsed ? "justify-center px-1 shrink-0" : "gap-3 px-3",
+        "flex items-center w-full h-8 rounded-md transition-colors text-sm font-medium",
+        collapsed ? "w-full justify-center shrink-0" : "gap-3 px-3",
         active
           ? "bg-primary-50 text-primary-600"
           : "text-muted-600 hover:bg-muted-200 hover:text-muted-900"
@@ -89,7 +89,7 @@ export function SidebarLink({
 
   if (collapsed) {
     return (
-      <EduTooltip content={title} side="right">
+      <EduTooltip content={`${title}${badge ? ` (${badge})` : ""}`} side="right">
         {link}
       </EduTooltip>
     );

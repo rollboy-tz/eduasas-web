@@ -11,18 +11,21 @@ import { Providers } from "./providers";
 // 1. Font ya maandishi ya kawaida / Aya (Body)
 const inter = Inter({
   subsets: ["latin"],
+  display: "swap",
   variable: "--font-sans",
 });
 
-// 2. Font ya Headings (Modern Sans) class font-heading
+// 2. Font ya Headings (Modern Sans)
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
+  display: "swap",
   variable: "--font-heading",
 });
 
-// 3. Font ya Code / Mono class font-mono
+// 3. Font ya Code / Mono
 const firaCode = Fira_Code({
   subsets: ["latin"],
+  display: "swap",
   variable: "--font-mono",
 });
 

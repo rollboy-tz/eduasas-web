@@ -10,7 +10,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api/api-fetch";
-import {  MasterClassesResponse } from "@/types/school/master-class";
+import {  MasterClass, MasterClassesResponse } from "@/types/school/master-class";
 
 /**
  * ### MasterClassesHookReturn
@@ -26,9 +26,9 @@ import {  MasterClassesResponse } from "@/types/school/master-class";
  */
 export function useMasterClasses() {
   // 1. Fetching (GET)
-  const { data, error, isLoading } = useQuery<MasterClassesResponse>({
+  const { data, error, isLoading } = useQuery<MasterClass[]>({
     queryKey: ['master-classes', 'discovery'],
-    queryFn: () => apiFetch<MasterClassesResponse>("/school/academic/classes/discovery"),
+    queryFn: () => apiFetch<MasterClass[]>("/school/academic/classes/discovery"),
     
     // Performance: Madarasa hayabadiliki kila sekunde, 
     // tunaiweka cache iwe ya muda mrefu (dakika 30)

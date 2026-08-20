@@ -89,8 +89,8 @@ function SwitchContextContent() {
         toast.show({ message: "Workspace switched successfully. Redirecting...", type: "success" });
 
         // 4. REDIRECT WITH TOKEN & REDIRECT_TO PARAMETERS
-        // Inampeleka mtumiaji kwenye consume page ya subdomain mfano: https://school-a.eduasas.co.tz/consume?token=XYZ&redirect_to=/dashboard
-        const destinationUrl = `${PROTOCOL}://${slug}.${DOMAIN}/consume?token=${generatedToken}&redirect_to=${encodeURIComponent(pushTo)}`;
+        // Inampeleka mtumiaji kwenye consumer page ya subdomain mfano: https://school-a.eduasas.co.tz/consumer?token=XYZ&redirect_to=/dashboard
+        const destinationUrl = `${PROTOCOL}://${slug}.${DOMAIN}/consumer?token=${generatedToken}&redirect_to=${encodeURIComponent(pushTo)}`;
         
         window.location.href = destinationUrl;
 

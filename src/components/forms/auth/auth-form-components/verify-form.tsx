@@ -3,22 +3,19 @@ import { AlertCircle, Timer, CheckCircle, Clock, ShieldCheck, RefreshCcw, ArrowL
 import { useSearchParams, useRouter } from "next/navigation";
 import { EduMainLoader } from "@/components/elements";
 import { useEffect, useRef, useState } from "react";
-import { EduButton } from "@/components/ui";
+import { EduButton, InputLabel } from "@/components/ui";
 import { useToast } from "@/lib/store";
 import { apiMutation, isApiError } from "@/lib/api";
 import { cn, resetuserKey } from "@/lib/utils";
 
-type VerifyRes = { resetToken: string } | null
+type VerifyRes = { resetToken: string } | null;
 
 export const VerifyForm = () => {
-
-    // Utilities extractions
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams.toString());
 
-    //Params & Quaries extractions
     const url_token = params.get("token");
-    const reset_token = params.get("reset_token")
+    const reset_token = params.get("reset_token");
     const otp_reason = params.get("reason");
     const identity = params.get("identity");
 
@@ -32,14 +29,12 @@ export const VerifyForm = () => {
     const [tokenTimer, setTokenTimer] = useState(300);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-    // 1. Security Check: Kama identity haipo, rudi mwanzo (Invalid Access)
     useEffect(() => {
         if (!identity) {
             router.back();
         }
     }, [identity, otp_reason, router]);
 
-    // Timer logic
     useEffect(() => {
         const interval = setInterval(() => {
             setResendTimer((prev) => (prev > 0 ? prev - 1 : 0));
@@ -48,39 +43,11 @@ export const VerifyForm = () => {
         return () => clearInterval(interval);
     }, []);
 
-    // Auto-verify wakati namba zote zimejaa
     useEffect(() => {
-        if (otpValues.every(val => val !== "") && !isLoading && tokenTimer > 0) {
+        if (otpValues.every((val) => val !== "") && !isLoading && tokenTimer > 0) {
             handleVerify();
         }
     }, [otpValues]);
-
-    const getStatusStyles = () => {
-        if (tokenTimer === 0) {
-            return {
-                container: "bg-[var(--error-bg)] border-[var(--error-border)] text-destructive",
-                text: "text-destructive",
-                icon: <AlertCircle size={32} />,
-                label: "session expired"
-            };
-        }
-        if (tokenTimer < 60) {
-            return {
-                container: "bg-amber-500/10 border-amber-500/20 text-amber-600",
-                text: "text-amber-600 animate-pulse",
-                icon: <Clock size={32} className="animate-pulse" />,
-                label: "expiring soon"
-            };
-        }
-        return {
-            container: "bg-[var(--info-primary-bg)] border-[var(--info-primary-border)] text-primary",
-            text: "text-[var(--icon-color)]",
-            icon: <ShieldCheck size={32} />,
-            label: "expires in"
-        };
-    };
-
-    const status = getStatusStyles();
 
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
@@ -94,7 +61,9 @@ export const VerifyForm = () => {
         const pastedData = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
         if (pastedData.length > 0) {
             const newOtp = [...otpValues];
-            pastedData.split("").forEach((num, idx) => { if (idx < 6) newOtp[idx] = num; });
+            pastedData.split("").forEach((num, idx) => {
+                if (idx < 6) newOtp[idx] = num;
+            });
             setOtpValues(newOtp);
             inputRefs.current[pastedData.length < 6 ? pastedData.length : 5]?.focus();
         }
@@ -114,11 +83,12 @@ export const VerifyForm = () => {
         }
     };
 
-    const handleVerify = async (e?: React.SubmitEvent) => {
+    const handleVerify = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
-        if (tokenTimer === 0) return toast.show({ message: "verification code has expired.", type: "error" });
-        if (otpValues.includes("")) return toast.show({ message: "please enter the complete 6-digit code.", type: "error" });
+        if (tokenTimer === 0) return toast.show({ message: "Verification code has expired.", type: "error" });
+        if (otpValues.includes("")) return toast.show({ message: "Please enter the complete 6-digit code.", type: "error" });
 
+        // Backend expects code formatted like EAO-XXXXXX or direct 6-digit depending on api schema, matching user original format
         const fullOtp = `EAO-${otpValues.join("")}`;
         setIsLoading(true);
 
@@ -128,63 +98,53 @@ export const VerifyForm = () => {
                 otp: fullOtp
             });
 
-            if (res.status === 'success') {
-                const message = `${res.message || "Verified successfull!"}`;
+            if (res.status === "success") {
+                const message = `${res.message || "Verified successfully!"}`;
                 toast.show({ message, type: "success" });
 
-                // 2. Hapa ndipo tunasafisha abiria ambao kazi yao imeisha
                 params.delete("identity");
                 params.delete("reason");
                 params.set("new", "true");
 
                 if (otp_reason === "reset") {
+                    if (!identity || !res.data) return;
+                    const token = res.data.resetToken;
 
-                    if (identity === null || res.data === null) return;
-                    const token = res.data.resetToken
-
-                    // Bind data za reset
-                    params.set("identity", identity); // Rudisha identity kwa ajili ya reset page
+                    params.set("identity", identity);
                     params.set("token", token);
                     router.replace(`/auth/reset?${params.toString()}`);
                 } else {
-                    // Flow ya Dashboard
-                    let return_url = params.get("return_url") || "/";
+                    let return_url = params.get("return_url") || "/home";
 
-                    // 2. MTEGO WA LOOP: Zuia callback isijielekeze kwenye login/auth tena
                     if (return_url?.includes("/auth/login") || return_url?.startsWith("/auth/")) {
-                        return_url = "/";
+                        return_url = "/home";
                     }
 
-                    // 3. SAFISHA PARAMS (Don't carry over auth-specific params)
                     const finalParams = new URLSearchParams(searchParams.toString());
-                    const authParams = ["identity", "reason", "token", "return_url", "error", "code", "reason", "utm_source", "utm_campagain", "reset_token"];
-                    authParams.forEach(p => finalParams.delete(p));
+                    const authParams = ["identity", "reason", "token", "return_url", "error", "code", "utm_source", "utm_campaign", "reset_token"];
+                    authParams.forEach((p) => finalParams.delete(p));
 
-                    // 4. JENGA DESTINATION SAHIHI
                     const queryString = finalParams.toString();
                     const destination = queryString
-                        ? `${return_url}${return_url.includes('?') ? '&' : '?'}${queryString}`
+                        ? `${return_url}${return_url.includes("?") ? "&" : "?"}${queryString}`
                         : return_url;
 
-                    // 5. SHTUA EVENT LISTENA KUFUTA DATA KWENYE CACHE KUNA USER MPYA
                     const event = new CustomEvent("eduasas:login");
                     window.dispatchEvent(event);
                     resetuserKey();
 
-                    // Tumia replace badala ya push ili kufuta historia ya verify loop
                     router.replace(destination);
                 }
-            }
-
-            else if (res.status === 'error') {
-                const message = res.message || "Something went wrong. Unable to verify the OTP"
+            } else if (res.status === "error") {
+                const message = res.message || "Something went wrong. Unable to verify the OTP.";
                 toast.show({ message, type: "error" });
-                router.back();
             }
         } catch (error) {
             if (isApiError(error)) {
-                const message = error.message || "Error occured while verifying."
-                toast.show({ message, type: "error" })
+                const message = error.message || "Error occurred while verifying.";
+                toast.show({ message, type: "error" });
+            } else {
+                toast.show({ message: "Network error. Please check your connection.", type: "error" });
             }
         } finally {
             setIsLoading(false);
@@ -199,8 +159,8 @@ export const VerifyForm = () => {
                 identity,
                 purpose: otp_reason === "reset" ? "FORGOT_PASSWORD" : "VERIFICATION"
             });
-            if (res.status === 'success') {
-                const message = res.message || "a new code has been sent.";
+            if (res.status === "success") {
+                const message = res.message || "A new code has been sent.";
                 toast.show({ message, type: "success" });
                 setResendTimer(180);
                 setTokenTimer(300);
@@ -209,96 +169,122 @@ export const VerifyForm = () => {
             }
         } catch (error) {
             if (isApiError(error)) {
-                const message = error.message || "Something went wrong please retry"
-                toast.show({ message, type: "error" })
+                const message = error.message || "Something went wrong please retry";
+                toast.show({ message, type: "error" });
             }
-        } finally { setIsResending(false); }
+        } finally {
+            setIsResending(false);
+        }
     };
 
-    // Njia ya kurudi nyuma yenye kubeba state
-    const backUrl = otp_reason === "reset" ? `/auth/forgot-password?${params.toString()}` : `/auth/sign-up?${params.toString()}`;
-    const info_text = otp_reason === "reset" ? "To verify its you please enter OTP Code" : "To verify your new account enter OTP Code";
+    const getCleanParams = (currentIdentity: string | null) => {
+        const newParams = new URLSearchParams(searchParams.toString());
+        if (currentIdentity) {
+            newParams.set("identity", currentIdentity);
+        } else {
+            newParams.delete("identity");
+        }
+        newParams.delete("reason");
+        return newParams.toString();
+    };
+
+    const cleanParamsString = getCleanParams(identity);
+    const backUrl = otp_reason === "reset" ? `/auth/forgot?${cleanParamsString}` : `/auth/register?${cleanParamsString}`;
+    const info_text = otp_reason === "reset" ? "Please enter the 6-digit OTP code to reset your password." : "Please enter the 6-digit OTP code to verify your account.";
+
     return (
-        <div className="flex flex-col items-center justify-center p-2 h-full w-full">
+        <div className="flex flex-col justify-center w-full max-w-[380px] mx-auto py-4">
+            <div className="space-y-6">
+                {/* Header Section */}
+                <div className="space-y-1.5 text-center sm:text-left">
+                    <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+                        Verify OTP Code
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                        {info_text} Sent to <strong className="text-slate-900">{identity}</strong>
+                    </p>
+                </div>
 
-            <div className="flex flex-col gap-1">
-                <h2 className="font-black text-lg">Verify OTP</h2>
-                <p className="text-sm">{info_text}<br />Sent to: <strong>{identity}</strong></p>
-            </div>
-
-            <div className="">
-                <form onSubmit={handleVerify} className="mt-10 space-y-8">
-                    <div className="flex flex-col items-center gap-6">
-                        <div className="flex items-center justify-center gap-3">
-                            <div className="flex gap-1.5">
-                                {otpValues.map((val, i) => (
-                                    <input
-                                        key={i}
-                                        ref={(el) => { inputRefs.current[i] = el; }}
-                                        type="text"
-                                        inputMode="numeric"
-                                        maxLength={1}
-                                        value={val}
-                                        disabled={tokenTimer === 0 || isLoading}
-                                        onPaste={handlePaste}
-                                        onChange={(e) => handleChange(i, e.target.value)}
-                                        onKeyDown={(e) => handleKeyDown(i, e)}
-                                        className={cn("w-10 h-10 border rounded text-center text-xl font-bold outline-none transition-all",
-                                            tokenTimer === 0
-                                                ? "bg-background border-border text-muted-300"
-                                                : "bg-transparent border-border focus:border-primary-500 focus:ring-1 focus:ring-primary-400"
-                                        )}
-                                    />
-                                ))}
-                            </div>
+                <form onSubmit={handleVerify} className="space-y-6">
+                    <div className="flex flex-col items-center gap-4">
+                        {/* OTP Inputs */}
+                        <div className="flex items-center justify-center gap-2">
+                            {otpValues.map((val, i) => (
+                                <input
+                                    key={i}
+                                    ref={(el) => {
+                                        inputRefs.current[i] = el;
+                                    }}
+                                    type="text"
+                                    inputMode="numeric"
+                                    maxLength={1}
+                                    value={val}
+                                    disabled={tokenTimer === 0 || isLoading}
+                                    onPaste={handlePaste}
+                                    onChange={(e) => handleChange(i, e.target.value)}
+                                    onKeyDown={(e) => handleKeyDown(i, e)}
+                                    className={cn(
+                                        "w-11 h-12 rounded-xl border text-center text-xl font-bold outline-none transition-all",
+                                        tokenTimer === 0
+                                            ? "bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed"
+                                            : "bg-slate-50/50 border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-slate-900"
+                                    )}
+                                />
+                            ))}
                         </div>
 
-                        <div className={`flex items-center gap-2 text-[11px] font-bold tracking-widest uppercase px-4 py-1.5 rounded border border-border bg-background/50 transition-colors duration-500`}>
+                        {/* Timer Badge */}
+                        <div className="flex items-center gap-2 text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
                             {tokenTimer > 0 ? (
                                 <>
-                                    <Timer size={14} className={status.text} />
-                                    <span className={status.text}>{status.label}: {formatTime(tokenTimer)}</span>
+                                    <Timer size={14} className="text-indigo-600" />
+                                    <span>Code expires in <strong className="text-slate-900">{formatTime(tokenTimer)}</strong></span>
                                 </>
                             ) : (
-                                <span className="text-destructive flex items-center gap-1.5">
+                                <span className="text-red-600 flex items-center gap-1">
                                     <AlertCircle size={14} /> Session expired
                                 </span>
                             )}
                         </div>
                     </div>
 
-                    <EduButton
-                        disabled={isLoading || tokenTimer === 0}
-                        isLoading={isLoading}
-                        icon={CheckCircle}
-                        loadingText="Verifing"
-                        className="w-full h-12">
-                        verify & continue
-                    </EduButton>
+                    <div className="pt-2">
+                        <EduButton
+                            disabled={isLoading || tokenTimer === 0}
+                            isLoading={isLoading}
+                            loadingText="Verifying..."
+                            className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold shadow-sm transition-all cursor-pointer"
+                        >
+                            Verify & Continue
+                        </EduButton>
+                    </div>
                 </form>
 
-                <div className="mt-10 space-y-6">
+                {/* Resend & Back actions */}
+                <div className="space-y-4 pt-2 text-center">
                     <button
                         type="button"
                         onClick={handleResend}
                         disabled={resendTimer > 0 || isResending}
-                        className={`text-[11px] font-bold flex items-center justify-center gap-2 mx-auto uppercase tracking-widest transition-all bg-transparent border-none p-0 ${resendTimer > 0 ? 'text-[var(--icon-muted)] opacity-50' : 'text-primary hover:opacity-80 cursor-pointer'}`}
+                        className={cn(
+                            "text-xs font-semibold flex items-center justify-center gap-1.5 mx-auto transition-colors bg-transparent border-none p-0 cursor-pointer",
+                            resendTimer > 0 ? "text-slate-400 cursor-not-allowed" : "text-indigo-600 hover:text-indigo-500"
+                        )}
                     >
-                        {isResending ? <EduMainLoader size={20} /> : <RefreshCcw size={14} />}
-                        {resendTimer > 0 ? `resend code (${formatTime(resendTimer)})` : "request new code"}
+                        {isResending ? <EduMainLoader size={16} /> : <RefreshCcw size={14} />}
+                        {resendTimer > 0 ? `Resend code in (${formatTime(resendTimer)})` : "Request new code"}
                     </button>
 
-                    <div className="pt-6 border-t border-border">
+                    <div className="pt-4 border-t border-slate-100">
                         <Link
                             href={backUrl}
-                            className="text-[11px] text-[var(--icon-color)] hover:text-primary flex items-center justify-center gap-2 font-bold uppercase tracking-widest transition-colors cursor-pointer"
+                            className="text-xs font-semibold text-slate-600 hover:text-indigo-600 flex items-center justify-center gap-1.5 transition-colors"
                         >
-                            <ArrowLeft size={14} /> back to {otp_reason === "reset" ? "forgot password" : "registration"}
+                            <ArrowLeft size={14} /> Back to {otp_reason === "reset" ? "Forgot Password" : "Registration"}
                         </Link>
                     </div>
                 </div>
-
             </div>
         </div>
-    )
-}
+    );
+};

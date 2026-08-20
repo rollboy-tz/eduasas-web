@@ -8,6 +8,7 @@ import { SidebarHeader } from "./sidebar-header";
 import { SidebarNavigation } from "./sidebar-navigation";
 import { SidebarOverlay } from "./sidebar-overlay";
 import { SidebarShell } from "./sidebar-shell";
+import { useSidebar } from "../use-sidebar";
 
 /**
  * ============================================================================
@@ -47,6 +48,11 @@ export interface SidebarProps {
  * ```
  */
 export function Sidebar({ children, itemsData }: SidebarProps) {
+
+  const { size } = useSidebar();
+
+  const collapsed = size === "minimal";
+
   return (
     <>
       {/* Dynamic Overlay for mobile/tablet floating modes */}
@@ -63,6 +69,7 @@ export function Sidebar({ children, itemsData }: SidebarProps) {
             <SidebarComposer
               menuData={itemsData ?? SchoolMockSidebar}
               currentPath=""
+              collapsed={collapsed}
             />
           </SidebarNavigation>
 

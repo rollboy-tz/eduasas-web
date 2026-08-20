@@ -12,8 +12,8 @@ import { SidebarComposer } from "./sidebar-composer";
 import { sidebarMockData } from "@/data/sidebar.mock";
 import { EduAsasLogo } from "@/components/ui";
 import { EduFloatingDiv } from "@/components/modals";
-import { DesktopProfilePanel } from "../profilepanel/desktop-profilepanel";
-import { DesktopPanelTrigger } from "../profilepanel/desktop-panel-trigger";
+import { DesktopProfilePanel } from "../ProfilePanel/desktop-profilepanel";
+import { DesktopPanelTrigger } from "../ProfilePanel/desktop-panel-trigger";
 
 /**
  * Props zinazohitajika na component ya `Sidebar`.

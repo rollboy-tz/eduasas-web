@@ -25,13 +25,7 @@ export const WorkspaceLayout = ({ children, menuData, inContext = false }: Works
                             <SidebarLayout data={menuData} header={<Header />}>
                                 {children}
                             </SidebarLayout>
-
-                            <ProfilePanel>
-                                <div className="p-4 space-y-4">
-                                    <h3 className="font-bold text-sm text-slate-800">Taarifa za Profaili</h3>
-                                    <p className="text-xs text-slate-500">Weka vipengele au fomu zako hapa.</p>
-                                </div>
-                            </ProfilePanel>
+                            <ProfilePanel />
                         </div>
                     </ProfilePanelProvider>
                 </SearchProvider>

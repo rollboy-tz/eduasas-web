@@ -4,12 +4,18 @@ import { useBadges } from "@/hooks/layout/use-badges";
 import { Bell, Mail, User } from "lucide-react";
 import { useState } from "react";
 
-export const ProfilePanelHeader = () => {
+type ActiveTab = "NOTIFICATIONS" | "INVITATIONS" | "PROFILE";
+
+interface ProfilePanelHeaderProps {
+    activeTab: ActiveTab;
+    onChangeTab: (tab: ActiveTab) => void
+}
+
+export const ProfilePanelHeader = ( { activeTab, onChangeTab }: ProfilePanelHeaderProps ) => {
     const { notificationCount, invitationCount } = useBadges();
-    const [activeTab, setActiveTab] = useState<"NOTIFICATIONS" | "INVITATIONS" | "PROFILE">("PROFILE");
 
     const tabs: Array<{
-        id: "PROFILE" | "NOTIFICATIONS" | "INVITATIONS";
+        id: ActiveTab;
         icon: typeof User;
         count?: number;
     }> = [
@@ -29,7 +35,7 @@ export const ProfilePanelHeader = () => {
                     return (
                         <button
                             key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
+                            onClick={() => onChangeTab(tab.id)}
                             className={`relative p-2 rounded-lg transition-all duration-200 cursor-pointer flex items-center justify-center ${
                                 isActive 
                                     ? "text-indigo-800 after after:content-[''] after:absolute after:h-[3px] after:w-full after:bottom-0 after:bg-indigo-600 after:rounded-full" 

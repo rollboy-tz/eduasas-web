@@ -7,10 +7,11 @@ import { EduButton } from "@/components/ui";
 import { useToast } from "@/lib/store";
 import { useSchoolStaffInvitations } from "@/hooks/school";
 import { AlertCircle } from "lucide-react";
+import { ApiError, ApiResponse, isApiError } from "@/lib/api";
 
 interface InvitationFormProps {
-    onSucess?: () => void;
-    onError?: () => void;
+    onSucess?: (data: ApiResponse) => void;
+    onError?: (error: ApiError) => void;
 }
 
 export const StaffInvitationForm = ({ onSucess, onError }: InvitationFormProps) => {
@@ -23,14 +24,20 @@ export const StaffInvitationForm = ({ onSucess, onError }: InvitationFormProps) 
     const { sendInvitation } = useSchoolStaffInvitations();
 
     const handleSubmit = async () => {
+        const loadingToastId = toast.show({ message: "Invitating a member...", type: "loading" })
         if (!contact.trim()) {
             toast.show({ message: "Please enter invitee email or phone number.", type: "error" })
+            toast.dismiss(loadingToastId);
             return;
         }
 
         const parsed = parseContact(contact);
 
-        if (!parsed.isValid) return toast.show({ message: "Please enter valid email phone number.", type: "error" });
+        if (!parsed.isValid || !parsed.value) {
+            toast.show({ message: "Please enter valid email phone number.", type: "error" });
+            toast.dismiss(loadingToastId);
+            return;
+        }
 
         if (parsed.isValid && parsed.type === "EMAIL") {
             setFormData({ ...formData, email: parsed.value })
@@ -38,12 +45,32 @@ export const StaffInvitationForm = ({ onSucess, onError }: InvitationFormProps) 
             setFormData({ ...formData, phone: parsed.value })
         }
 
-        if (!formData.name.trim()) return toast.show({ message: "Please enter invitee name, Eg: Sir John", type: "error" })
-        if (!formData.roleId.trim()) return toast.show({ message: "Role not selected yet. Please select invitee role.", type: "error" })
-
-        const response = await sendInvitation(formData);
-
-        console.log(response)
+        if (!formData.name.trim()) {
+            toast.show({ message: "Please enter invitee name, Eg: Sir John", type: "error" });
+            toast.dismiss(loadingToastId);
+            return
+        }
+        if (!formData.roleId.trim()) {
+            toast.show({ message: "Role not selected yet. Please select invitee role.", type: "error" })
+            toast.dismiss(loadingToastId);
+            return
+        }
+        try {
+            const response = await sendInvitation(formData);
+            if(response.status === "success") {
+                if(onSucess) {
+                    onSucess(response)
+                }
+            }
+        } catch (err) {
+            if(isApiError(err)){
+                if(onError){
+                    onError(err)
+                }
+            }
+        } finally {
+            toast.dismiss(loadingToastId);
+        };
 
     }
 
@@ -106,7 +133,7 @@ export const StaffInvitationForm = ({ onSucess, onError }: InvitationFormProps) 
                     />
                 </div>
                 <div className="flex flex-col gap-1">
-                    <span className="text-[10px] text-muted-600 bg-muted- border border-muted-300 rounded px-2 py-1">By submiting your agree this member to access your workspace.</span>
+                    {/* <span className="text-[10px] text-muted-600 bg-muted- border border-muted-300 rounded px-2 py-1">By submiting your agree this member to access your workspace.</span> */}
                     <EduButton className="h-10" onClick={handleSubmit}>Submit invite</EduButton>
                 </div>
             </div>

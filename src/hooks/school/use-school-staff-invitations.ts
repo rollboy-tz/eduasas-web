@@ -10,7 +10,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api/api-fetch";
-import { api }  from "@/lib/api";
+import { api, apiMutation }  from "@/lib/api";
 import { useSchoolData } from "@/providers/context-provider";
 import { useUser } from "../dash";
 import { InstitutionalInvitation, SendInvitationPayload } from "@/types/school";
@@ -64,13 +64,7 @@ export function useSchoolStaffInvitations() {
    * @function sendInvitation
    * @description Inatuma mwaliko mpya kwenda backend.
    */
-  const sendInvitation = async (payload: SendInvitationPayload) => {
-    return mutation.mutateAsync({ 
-      url: "/school/staff/invitations/send", 
-      method: 'post', 
-      body: payload 
-    });
-  };
+  const sendInvitation = async (payload: any) => await apiMutation("post", "/school/staff/invitations/send", payload);
 
   /**
    * @function cancelInvitation

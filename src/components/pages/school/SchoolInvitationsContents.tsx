@@ -1,39 +1,43 @@
 "use client";
 
-import { useState } from "react";
-import { JSX } from "react/jsx-runtime";
+import { useEffect, useState } from "react";
 import { EduMainModal } from "@/components/modals";
-import { useIsMobileView } from "@/store/layout";
 import { SmartResponsiveList, SmartFlexTable } from "@/components/ui";
 import { StaffInvitationForm } from "@/components/forms/school/StaffInvitationsForm";
 import { useSchoolStaffInvitations } from "@/hooks/school";
-import { SettingCheckbox } from "@/components/control";
 import { text } from "@/lib/string";
 import { cn } from "@/lib/utils";
+import { InstitutionalInvitation } from "@/types/school";
+import { useToast } from "@/lib/store";
+import { useWorkspace } from "@/providers";
 
-const STATUS_STYLES: { [key: string]: string } = {
-    pending: "bg-blue-400 text-white",
-    joined: "bg-green-700 text-white",
-    cancelled: "bg-red-700 text-white",
-    declined: "bg-red-700 text-white",
-    expired: "bg-yellow-700 text-white"
+const STATUS_STYLES: Record<string, string> = {
+    pending: "bg-blue-100 text-blue-700 font-medium",
+    joined: "bg-emerald-100 text-emerald-700 font-medium",
+    cancelled: "bg-rose-100 text-rose-700 font-medium",
+    declined: "bg-rose-100 text-rose-700 font-medium",
+    expired: "bg-amber-100 text-amber-700 font-medium"
 } as const;
 
-export const SchoolInvitationContents = (): JSX.Element => {
+export const SchoolInvitationContents = () => {
     const [formOpen, setFormOpen] = useState(false);
-    const isMobile = useIsMobileView();
-    console.log("Is Mobile", isMobile)
-    const { invitations } = useSchoolStaffInvitations();
+    const { setWorkspaceHeader } = useWorkspace();
+    const toast = useToast();
+    const { invitations = [], refresh } = useSchoolStaffInvitations();
+    const [selectedInviteIds, setSelectedInviteIds] = useState<Set<string>>(new Set());
 
-    console.log("Invitations", invitations)
+
+    useEffect(() => {
+        setWorkspaceHeader({ title: "Members Invitates" });
+    }, [setWorkspaceHeader]);
 
 
     return (
         <div className="flex w-full flex-col items-center justify-center">
+            {/* Banner Section */}
             <div className="w-full">
                 <div className="relative w-full overflow-hidden rounded-lg border border-slate-200 bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-6 shadow-sm">
-                    {/* Decorative Shapes */}
-                    <div className="absolute inset-0 opacity-40">
+                    <div className="absolute inset-0 opacity-40 pointer-events-none">
                         <div className="absolute -top-10 right-0 h-40 w-40 rounded-full border border-blue-200" />
                         <div className="absolute -bottom-16 -left-10 h-48 w-48 rounded-full border border-indigo-200" />
                         <div className="absolute top-8 right-20 h-2 w-2 rounded-full bg-blue-300" />
@@ -58,7 +62,7 @@ export const SchoolInvitationContents = (): JSX.Element => {
 
                         <button
                             onClick={() => setFormOpen(true)}
-                            className="inline-flex shrink-0 items-center justify-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-95"
+                            className="inline-flex shrink-0 items-center justify-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-95 shadow-sm"
                         >
                             Invite Members
                         </button>
@@ -66,84 +70,81 @@ export const SchoolInvitationContents = (): JSX.Element => {
                 </div>
             </div>
 
-            {/* Invitations */}
-            <div className="w-full mt-2">
-                {isMobile ? (
-                    <SmartResponsiveList
-                        rowKey="id"
-                        data={invitations}
-                        columns={[
-                            {
-                                isPrimary: true,
-                                header: "", render: (invite) => (<>{invite.name}</>)
-                            },
-                            {
-                                isSecondary: true,
-                                header: "",
-                                render: (invite) => (
-                                    <span className={cn("text-xs rounded-full px-4 py-1",
-                                        STATUS_STYLES[text.lowerCase(invite.status)])}
-                                    >
-                                        {text.capitalize(invite.status)}
-                                    </span>
-                                )
-                            },
-                            {
-                                header: "",
-                                isAction: true,
-                                render: (iinvite) => (<SettingCheckbox onChange={() => console.log()} checked={false} />)
-                            },
-                            {
-                                header: "Contact",
-                                render: (invite) => (<>{}</>)
-                            }
-                        ]}
-                    />
+            {/* Invitations Table / List */}
+            <div className="w-full mt-4">
+                {invitations.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 p-8 text-center bg-white">
+                        <p className="text-sm text-slate-500">No invitations sent yet.</p>
+                    </div>
                 ) : (
-                    <SmartFlexTable
-                        headerClassName="bg-white"
-                        tableBodyClassName="bg-white/50"
+                    <SmartResponsiveList<InstitutionalInvitation>
+                        data={invitations}
+                        className="rounded-md shadow-sm"
                         rowKey="id"
+                        selectedKeys={selectedInviteIds} // State yako ya ID zilizochaguliwa (Set au Array)
+                        onSelectionChange={setSelectedInviteIds} // Function ya kuseti selected IDs
+                        cardClassName="bg-white"
+                        cardRowsClassName="text-sm text-slate-800 font-semibold"
+                        bodyClassName="bg-white"
                         columns={[
                             {
-                                className: "w-20",
-                                sticky: true,
-                                header: "",
-                                render: (iinvite) => (<SettingCheckbox onChange={() => console.log()} checked={false} />)
+                                header: "Invitee",
+                                isPrimary: true, // Kichwa kikuu cha kadi kwenye mobile
+                                render: (invite) => (
+                                    <div className="flex flex-col gap-0.5">
+                                        <span className="font-semibold text-slate-900">{invite.name}</span>
+                                        <span className="text-xs text-slate-500">{invite.email || invite.phone}</span>
+                                    </div>
+                                ),
                             },
                             {
+                                header: "Invited As",
                                 className: "flex-1",
-                                header: "Name",
-                                render: (invite) => (<div>{invite.name}</div>)
+                                headerCellClasses: "flex-1",
+                                dataCellClasses: "flex-1 text-left",
+                                render: (invite) => <span>{invite.role.displayName}</span>
                             },
                             {
-                                header: "Role",
-                                className: "flex-1",
-                                render: (invite) => (<span>{invite.role.displayName}</span>),
+                                header: "Invited By",
+                                className: "flex-1 text-start",
+                                headerCellClasses: "flex-1",
+                                dataCellClasses: "flex-1 text-left",
+                                render: (invite) => <span>{invite.sender.firstName + " " + invite.sender.lastName}</span>,
                             },
                             {
                                 header: "Status",
+                                isSecondary: true, // Badge inayokaa kulia juu kwenye mobile
+                                className: "w-18 text-end",
                                 render: (invite) => (
-                                    <span className={cn("text-xs rounded-full px-4 py-1",
-                                        STATUS_STYLES[text.lowerCase(invite.status)])}
+                                    <span
+                                        className={cn(
+                                            "text-xs font-medium rounded-full px-3 py-1 inline-block",
+                                            STATUS_STYLES[text.lowerCase(invite.status)] || "bg-slate-100 text-slate-700"
+                                        )}
                                     >
                                         {text.capitalize(invite.status)}
                                     </span>
-                                )
+                                ),
                             }
                         ]}
-                        data={invitations}
                     />
                 )}
             </div>
 
+            {/* Modal */}
             <EduMainModal
                 isOpen={formOpen}
                 size="sm"
                 onClose={() => setFormOpen(false)}
                 className="rounded-lg border-gray-100 p-1"
             >
-                <StaffInvitationForm />
+                <StaffInvitationForm
+                    onSucess={(res) => {
+                        refresh()
+                        setFormOpen(false)
+                        toast.show({ message: res.message, type: "success" })
+                    }}
+                />
             </EduMainModal>
         </div>
     );

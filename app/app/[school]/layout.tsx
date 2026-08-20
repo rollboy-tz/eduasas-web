@@ -10,11 +10,7 @@ interface Props {
 }
 
 async function getSchoolData(schoolSlug: string): Promise<SchoolProfileResponse | null> {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "api.eduasas.co.tz";
-
-    if (!baseUrl) {
-        notFound();
-    }
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.eduasas.co.tz";
 
     try {
         const res = await fetch(`${baseUrl}/main/public/school-profile?slug=${schoolSlug}`, {
@@ -25,40 +21,42 @@ async function getSchoolData(schoolSlug: string): Promise<SchoolProfileResponse 
             return null;
         }
 
-        const data: SchoolProfileResponse = await res.json();
-        return data;
+        return await res.json();
     } catch (error) {
         return null;
     }
 }
 
-// 1. Dynamic Metadata Generation
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { school } = await params;
     const schoolData = await getSchoolData(school);
 
     if (!schoolData) {
-        return { title: 'School Not Found' };
+        return { title: 'School | EduAsas' };
     }
 
+    const schoolName = text.titleCase(schoolData.data.displayName) || text.titleCase(schoolData.data.name);
+
     return {
-        title: text.titleCase(schoolData.data.displayName) || text.titleCase(schoolData.data.name),
+        title: {
+            default: `${schoolName}`,
+            template: `%s - ${schoolName} | EduAsas`, // Ongeza | EduAsas hapa
+        },
         description: "Knowledge is power, but education is the flame that lights the way.",
     };
 }
 
 export default async function SchoolLayout({ children, params }: Props) {
-    // Kwenye Next.js 15+, params lazima ziwe awaited
     const { school } = await params;
-
     const schoolData = await getSchoolData(school);
 
     if (!schoolData) {
         return (
             <main>
                 <SchoolNotFound />
-            </main>)
+            </main>
+        );
     }
 
-    return (<>{children}</>);
+    return <>{children}</>;
 }

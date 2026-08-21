@@ -32,7 +32,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const schoolData = await getSchoolData(school);
 
     if (!schoolData) {
-        return { title: 'School | EduAsas' };
+        return {
+            title: {
+                default: 'School',
+                template: "%s | EduAsas"
+            },
+            description: "Easly manage you school in EduAsas AI Driven Schoom Management System"
+        };
     }
 
     const schoolName = text.titleCase(schoolData.data.displayName) || text.titleCase(schoolData.data.name);

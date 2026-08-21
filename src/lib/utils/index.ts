@@ -4,6 +4,6 @@ export * from './error-codes';
 //export * from './global-system.watcher';
 export * from './helper';
 export * from './string-utils';
-export * from './time-utils';
+export * from './DateUtils';
 export * from './data-utils';
 export * from './enhence';

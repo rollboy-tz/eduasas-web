@@ -44,7 +44,7 @@ export default function ProfilePanel({ children }: ProfilePanelProps) {
       />
 
       {/* 2. RIGHT CONTAINER PANEL (SHELL ONLY) */}
-      <aside className="fixed top-0 right-0 z-50 h-screen w-90 max-w-[90vw] bg-background border-l border-gray-200 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+      <aside className="fixed top-0 right-0 z-50 h-screen w-80 max-w-[90vw] bg-background border-l border-gray-200 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
 
         {/* PANEL CLOSE HEADER */}
         <div className="flex items-center justify-between p-2 border-b border-gray-100">

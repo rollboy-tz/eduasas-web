@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils/helper";
 import {
   DateUtils,
   DateDisplayFormat
-} from "@/lib/utils/time-utils";
+} from "@/lib/utils/DateUtils";
 import {
   DateMode,
   createDate,

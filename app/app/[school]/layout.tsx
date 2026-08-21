@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import { text } from '@/lib/string';
-import { notFound } from 'next/navigation';
 import { SchoolProfileResponse } from '@/types/dash';
 import { SchoolNotFound } from '@/components/pages/school/SchoolNotFound';
 

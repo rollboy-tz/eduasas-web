@@ -6,3 +6,4 @@ export * from './EduRadiaGroup';
 export * from './edu-moder-date-input';
 export * from './edu-modern-input';
 export * from './modern-input-v2';
+export * from './EduDateInput';

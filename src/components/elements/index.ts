@@ -5,3 +5,4 @@ export * from './edu-main-loader';
 export * from './edu-server-button';
 export * from './profile-header';
 export * from './skeleton';
+export * from './three-loading-dot'

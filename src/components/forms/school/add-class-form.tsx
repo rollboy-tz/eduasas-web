@@ -6,31 +6,46 @@ import { EduButton } from "@/components/ui";
 import { useMasterClasses } from "@/hooks/school";
 import { AlertCircle } from "lucide-react";
 import { useState } from "react";
-import { isApiError, apiMutation } from "@/lib/api";
+import { isApiError, apiMutation, ApiResponse, ApiError } from "@/lib/api";
+import { useToast } from "@/lib/store";
 
+interface AddClassForProps {
+    onSuccess: (Response: ApiResponse) => void;
+    onError?: (error: ApiError) => void;
+}
 
-export const AddClassForm = () => {
+export const AddClassForm = ( { onSuccess, onError }: AddClassForProps ) => {
 
     const { classes } = useMasterClasses();
-
+    const toast = useToast();
     const [classCode, setClassCode] = useState<string>()
     const [submiting, setSubmiting] = useState(false);
     
     if (!classes) return null
 
     const handleSubmit = async () => {
+
+        const loadingId = toast.show({ message: "Adding Class...", type: "loading"})
         setSubmiting(true)
 
         try {
 
-           const response = await apiMutation("post", "")
-
+           const response = await apiMutation("post", "/school/classes", { classCode })
+           if(response.status === "success") {
+            onSuccess(response)
+           }
         } catch(error) {
             if(isApiError(error)) {
-
+                toast.show({ message: error.message, type: "error" })
+                if(onError){
+                    onError(error);
+                } else {
+                    toast.show({ message: error.message || "Unable to add class", type: "error" })
+                }
             }
         } finally {
             setSubmiting(false)
+            toast.dismiss(loadingId)
         }
     }
 

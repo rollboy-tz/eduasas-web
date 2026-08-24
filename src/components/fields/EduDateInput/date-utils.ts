@@ -45,10 +45,22 @@ export function toDate(value?: string | Date | null): Date | null {
   const raw = value.trim();
   if (!raw) return null;
 
-  // ISO datetime kamili (mfano kutoka .toISOString(): "2026-08-23T14:23:11.123Z")
-  // - chukua sehemu ya tarehe tu, tunapuuza muda/timezone kwa uteuzi wa date/month/year.
-  const datePart = raw.includes("T") ? raw.split("T")[0] : raw;
-  const parts = datePart.split("-").map(Number);
+  // BUG ILIYOREKEBISHWA: kama string ina "T" (full ISO datetime, kwa
+  // mfano kutoka .toISOString() - "2026-08-01T21:00:00.000Z"), TULIKUWA
+  // tukichukua tarehe iliyoandikwa kwenye string moja kwa moja (UTC date).
+  // Tatizo: .toISOString() inabadilisha Date kuwa UTC - kwa Tanzania
+  // (UTC+3), saa 00:00 ya tarehe 2 (saa za mtaa) inakuwa 21:00 tarehe 1
+  // UTC - "tarehe ya nyuma" ilivyoripotiwa. Sasa tunatumia `new Date(raw)`
+  // (inayotambua "Z"/timezone kwa usahihi) kisha tunachukua tarehe ya
+  // MTAA (local calendar date) kutoka kwenye Date hiyo - hii inarudisha
+  // tarehe sahihi bila kujali ni saa ngapi UTC offset ilihamisha siku.
+  if (raw.includes("T")) {
+    const parsed = new Date(raw);
+    if (isNaN(parsed.getTime())) return null;
+    return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+  }
+
+  const parts = raw.split("-").map(Number);
 
   if (parts.length >= 1 && parts.length <= 3 && parts.every((p) => Number.isFinite(p))) {
     if (parts.length === 1) return new Date(parts[0], 0, 1);

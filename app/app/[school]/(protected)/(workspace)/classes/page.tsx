@@ -1,7 +1,7 @@
 
-import { ClassesContentsPage } from "@/components/pages/school";
 import { Metadata } from "next";
 import { Suspense } from "react";
+import { ClassesPageView } from "./_components";
 
 export const metadata: Metadata = {
   title: "Classes Management",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function ClassesPage() {
   return (
     <Suspense>
-      <ClassesContentsPage />
+      <ClassesPageView />
     </Suspense>
   );
 }

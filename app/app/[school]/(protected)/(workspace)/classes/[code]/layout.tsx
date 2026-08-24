@@ -7,7 +7,7 @@ import { ArrowLeft, AlertTriangle, RefreshCw } from "lucide-react";
 import { useSchoolClasses, useClassProfile } from "@/hooks/school";
 import { EduMainModal } from "@/components/modals";
 import { EduScreenLoader } from "@/components/ui";
-import { ClassProvider } from "./_components/class-context";
+import { ClassProvider } from "../_components/ClassContext";
 
 export default function ClassValidationLayout({
     children,

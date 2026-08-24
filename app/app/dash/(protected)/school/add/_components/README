@@ -1,0 +1,83 @@
+# Add School - refactor
+
+## Bugs halisi zilizogunduliwa na kurekebishwa
+
+### 1. `categoryIds` select - contract mismatch (data bug halisi)
+```tsx
+onChange={(selected: any) => {
+  const id = selected?.value || "";
+  setStepData({ categoryIds: id ? [id] : [] });
+}}
+```
+Field ya "School ownership" (juu yake, kwenye page ileile) inadhania
+`onChange` inarudisha RAW value moja kwa moja (`val as "GOVERNMENT" |
+"PRIVATE"`). Field ya "School level" inadhania inarudisha OBJECT
+(`selected.value`). Kama zote zinatumia component ileile ya `EduSelect`,
+moja ya hizi mbili ina bug ya kweli - `categoryIds` ingekuwa `[undefined]`
+kila wakati mtu akichagua level, na payload ya API ingetuma data batili
+bila mtu kuona error yoyote (kwa sababu `id ? [id] : []` inashindwa
+kimya). Nimerekebisha kufuata contract moja (raw value) - **hakikisha hii
+inalingana na `EduSelect` yako halisi**.
+
+### 2. CSS typo halisi - `justfy-between`
+```tsx
+className="... flex items-center justfy-between md:justify-end ..."
+```
+`justfy-between` haipo kwenye Tailwind (typo ya `justify-between`) - class
+hii haikuwahi kufanya kazi. Kwenye simu (chini ya `md:`), vitufe vya
+Back/Continue havikupangika kama ilivyokusudiwa. Nimerekebisha na
+kuongeza `flex-col-reverse sm:flex-row` ili vitufe viwe full-width
+vilivyopangwa vizuri kwenye simu (Continue juu, Back chini - order ya
+kimantiki ya vidole gumba).
+
+### 3. Hakuna full-form validation kabla ya Submit ya mwisho
+Step 1/2 zilikuwa na manual required-check kabla ya "Continue", lakini
+step 3/4 (region/district/email/phone) hazina check yoyote kabla ya
+"Submit" - kama email ina format mbaya lakini mtumiaji hakuwahi ku-blur
+field hiyo, ingeweza kutumwa kwenye API bila kukamatwa. Sasa
+`handleFinalSubmit` inathibitisha fields za step zote (1-4) kabla ya
+kutuma request.
+
+### 4. Stale state kwenye console.log (+ console.logs za production)
+```tsx
+setRegisteredSchool(res.data.school)
+console.log("Settled school: ", registeredSchool) // bado ni value ya ZAMANI
+```
+`setState` si synchronous - console.log ya papo hapo baada ya set
+inaonyesha value ya render iliyopita, si mpya. Nimeondoa console.logs zote
+za debugging (hazipaswi kubaki production).
+
+### 5. Hakuna semantic `<form>` / Enter-key support
+Vitufe vilikuwa `<div onClick>` bila `<form>` - kubonyeza Enter kwenye
+input hakukufanya chochote (tofauti na tabia ya kawaida ya forms).
+Sasa fields zote ziko ndani ya `<form onSubmit>` halisi, na vitufe
+vina `type="submit"`/`type="button"` sahihi.
+
+### 6. Progress dots hazikuwa na accessibility
+Screen reader haikuwa na njia ya kujua "uko step gani kati ya ngapi".
+Nimeongeza `role="progressbar"` + `aria-valuenow/min/max` + `aria-live`
+region inayotangaza jina la step mpya inapobadilika.
+
+## Responsive/UI improvements
+
+- Breakpoint tiers zaidi (`sm:`/`md:`/`lg:`) badala ya `md:` peke yake -
+  padding na font-size zinabadilika taratibu, si ghafla
+- Upande wa "info" (kushoto) sasa `shrink-0` - haubanwi kwenye tablet
+  widths kati ya `sm` na `md`
+- Vitufe vya Back/Continue: `flex-col-reverse` kwenye simu (full-width,
+  stacked) → `flex-row` kwenye desktop (ukubwa fasta)
+- Header ya page: logo/jina vina `truncate`/`shrink-0` sahihi ili
+  visivunjike kwenye simu nyembamba sana
+- `persist` (sessionStorage) kwenye store - maendeleo ya form
+  hayapotei kwa refresh ya bahati mbaya, lakini hayabaki milele kama
+  localStorage ingefanya (hatari kidogo zaidi kwa data ya usajili)
+
+## Kinachohitaji uangalizi wako
+
+- Thibitisha contract halisi ya `EduSelect.onChange` (raw value vs object)
+  dhidi ya component yako halisi - nimefuata dhana ya "raw value" (sawa
+  na Select tuliyoitengeneza mapema kwenye mazungumzo haya)
+- `EduInput`/`EduSelect`/`EduButton`/`InputLabel` sikuzigusa (sina source
+  yake) - kama zinafuata component library tuliyoitengeneza awali kwenye
+  mazungumzo haya, tayari zina underline/height-stable/accessibility
+  fixes zilizofanyika huko

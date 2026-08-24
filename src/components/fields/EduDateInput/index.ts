@@ -1,5 +1,5 @@
-export { EduModernDateInputV5 } from "./EduDateInput";
-export type { DateInputProps, DateInputClassNames } from "./EduDateInput";
+export { EduDateInput} from "./EduDateInput";
+export type { DateInputProps, EduDateInputClassNames } from "./EduDateInput";
 export {
   type DateMode,
   type DateOutputFormat,

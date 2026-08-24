@@ -17,7 +17,7 @@ import { EduModernDateInputV4, EduModernInputV2, EduModernSelect, EduRadioGroup 
 import { EduMainModal } from "@/components/modals";
 import { apiMutation } from "@/lib/api";
 import { GadingPreviewCard, SetUpPreviewCard } from "@/components/cards/dash";
-import { SchoolSetuCompletdCard } from "@/components/cards/dash/SetupCompletedCard";
+import { SchoolSetuCompletdCard } from "../../../../app/app/dash/(protected)/school/setup/_components/SetupCompletedCard";
 
 export function SchoolSetupForm() {
     const router = useRouter();

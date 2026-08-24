@@ -8,7 +8,7 @@ const IS_PROD = APP_STAGE === "production";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false, // Usalama: Kuficha teknolojia inayotumika
-  
+
   // 2. Optimization ya Webpack
   webpack: (config, { dev, isServer }) => {
     if (dev && !isServer) {
@@ -45,7 +45,7 @@ const nextConfig: NextConfig = {
 
   // 4. API Rewrites (Dynamic kulingana na stage)
   async rewrites() {
-      
+
     return [
       {
         source: '/main/:path*',
@@ -56,8 +56,8 @@ const nextConfig: NextConfig = {
 
   images: {
     remotePatterns: [
-        { protocol: 'https', hostname: 'api.eduasas.co.tz' },
-        // Ongeza hostname nyingine hapa kama picha zinatoka kwenye s3/cloudinary
+      { protocol: 'https', hostname: 'api.eduasas.co.tz' },
+      // Ongeza hostname nyingine hapa kama picha zinatoka kwenye s3/cloudinary
     ],
     formats: ['image/avif', 'image/webp'],
   },

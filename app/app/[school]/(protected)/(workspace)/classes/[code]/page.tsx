@@ -12,7 +12,7 @@ import {
   TrendingUp,
   GraduationCap
 } from "lucide-react";
-import { useClassContext } from "./_components/class-context";
+import { useClassContext } from "../_components/ClassContext";
 import { useWorkspace } from "@/providers";
 
 export default function ClassOverviewPage() {

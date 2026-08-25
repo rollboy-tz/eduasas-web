@@ -7,5 +7,6 @@ export * from './school-context.types';
 export * from './school-setup.types';
 export * from './school-staff-list.types';
 export * from './staff-invitation.types';
+export * from './student-enrollment.types';
 export * from './subjects.types';
 export * from './user-schools.types';

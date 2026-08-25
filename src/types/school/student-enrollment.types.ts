@@ -1,6 +1,6 @@
 // path: src/components/students/types/student.type.ts
 
-import { enrollSchema } from "@/components/pages/students/enroll.schema";
+import { enrollSchema } from "@/components/schemas/enroll.schema";
 import { z } from "zod";
 
 // --- ENUMS & LITERALS ---
@@ -73,3 +73,13 @@ export interface EnrollStudentFormInput {
 // --- ZOD SCHEMA INFERRED TYPES ---
 export type EnrollStudentInput = z.input<typeof enrollSchema>;   // Data kabla ya transform
 export type EnrollStudentOutput = z.output<typeof enrollSchema>; // Payload iliyosafishwa kuelekea API
+
+
+/**
+ * Student enrollment result data interface
+ */
+export interface EnrollStudentResult {
+  systemId: string;
+  studentId: string;
+  message: string;
+}

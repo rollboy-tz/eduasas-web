@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils/helper";
 import { MONTHS_FULL, toComparable } from "./date-utils";
+import { YearPicker } from "./YearPicker";
 
 interface MonthPickerProps {
   value: Date | null;
@@ -24,6 +25,29 @@ export function MonthPicker({
   max,
   disabled,
 }: MonthPickerProps) {
+  // "Ruka kwenye mwaka" - muhimu kwa mfano wa tarehe ya kuzaliwa (mtu wa
+  // miaka 20+) ambapo kubonyeza prev/next mara nyingi ni kuchosha.
+  // Bofya jina la mwaka -> orodha ya miaka 12 kwa wakati mmoja.
+  const [yearJump, setYearJump] = useState(false);
+  const [yearRangeAnchor, setYearRangeAnchor] = useState(viewYear);
+
+  if (yearJump) {
+    return (
+      <YearPicker
+        value={new Date(viewYear, 0, 1)}
+        viewYear={yearRangeAnchor}
+        onChange={(d) => {
+          onYearChange(d.getFullYear());
+          setYearJump(false);
+        }}
+        onNavigate={setYearRangeAnchor}
+        min={min}
+        max={max}
+        disabled={disabled}
+      />
+    );
+  }
+
   function isDisabledMonth(monthIndex: number) {
     const cmp = `${viewYear}-${String(monthIndex + 1).padStart(2, "0")}`;
     if (min) {
@@ -50,7 +74,18 @@ export function MonthPicker({
           <ChevronLeft size={17} />
         </button>
 
-        <span className="text-sm font-semibold text-gray-900">{viewYear}</span>
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => {
+            setYearRangeAnchor(viewYear);
+            setYearJump(true);
+          }}
+          aria-label={`${viewYear}, choose a different year`}
+          className="text-sm font-semibold text-gray-900 hover:text-blue-600 rounded px-2 py-0.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+        >
+          {viewYear}
+        </button>
 
         <button
           type="button"

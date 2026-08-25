@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import { Plus, GraduationCap } from "lucide-react";
 
 import { EduMainModal } from "@/components/modals";
@@ -8,8 +8,15 @@ import { AddClassForm } from "./AddClassForm";
 import { SchoolClassesConatiner } from "./SchoolClassesContainer";
 import { useSchoolClasses } from "@/hooks/school";
 import { useToast } from "@/lib/store";
+import { useWorkspace } from "@/providers";
 
 export const ClassesPageView = (): JSX.Element => {
+
+  const { setWorkspaceHeader } = useWorkspace();
+  useEffect(() => {
+    setWorkspaceHeader({ title: "Classes" });
+  }, [setWorkspaceHeader]);
+
   const { refresh: reloadClasses } = useSchoolClasses();
   const [formOpen, setFormOpen] = useState(false);
   const toast = useToast();

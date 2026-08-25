@@ -1,4 +1,4 @@
-import { SchoolInvitationContents } from "@/components/pages/school";
+import { SchoolInvitationContents } from "./_components";
 import { EduScreenLoader } from "@/components/ui";
 import { Metadata } from "next";
 import { Suspense } from "react";

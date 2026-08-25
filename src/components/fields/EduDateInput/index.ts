@@ -1,5 +1,5 @@
-export { EduDateInput} from "./EduDateInput";
-export type { DateInputProps, EduDateInputClassNames } from "./EduDateInput";
+export { EduDateInput } from "./EduDateInput";
+export type { EduDateInputProps, EduDateInputClassNames } from "./EduDateInput";
 export {
   type DateMode,
   type DateOutputFormat,

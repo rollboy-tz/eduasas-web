@@ -1,32 +1,31 @@
 'use client'
-
 import { EduScreenLoader } from "@/components/ui";
-import { Suspense, useEffect } from "react";
-import { useClassContext } from "../../_components";
-import { SectionsPageView } from "./_components";
 import { useWorkspace } from "@/providers";
+import { useEffect, Suspense } from "react";
+import { useClassContext } from "../../_components";
+import { StreamsPageView } from "./_comonents";
 
-export default function SectionsPage() {
+export default function StreamsPage() {
     const { classProfile } = useClassContext();
     const { setWorkspaceHeader } = useWorkspace();
 
 
     useEffect(() => {
         if (classProfile?.displayName) {
-            document.title = `${classProfile.displayName} - Sections | EduAsas`;
+            document.title = `${classProfile.displayName} - Streams | EduAsas`;
         }
     }, [classProfile?.displayName]);
 
     useEffect(() => {
         if (classProfile?.displayName) {
-            setWorkspaceHeader({ title: `${classProfile.displayName} - Sections` });
+            setWorkspaceHeader({ title: `${classProfile.displayName} - Streams` });
         }
     }, [setWorkspaceHeader]);
 
     if (!classProfile) return null;
     return (
         <Suspense fallback={<EduScreenLoader loadingText="One moment please" />}>
-            <SectionsPageView />
+            <StreamsPageView />
         </Suspense>
     )
 }

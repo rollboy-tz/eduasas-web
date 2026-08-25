@@ -1,6 +1,6 @@
 /**
- * @fileoverview School Classes Engine
- * @description Inasimamia utambulisho, usajili, uhariri na orodha ya madarasa katika shule.
+ * @fileoverview Students Management Engine
+ * @description Inasimamia usajili (enrollment), utambulisho na orodha ya wanafunzi katika shule.
  * @author Injinia Rollboy (EduAsas Tech)
  * @version 1.2.0
  */
@@ -8,87 +8,71 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ClassProfile, SchoolClass } from "@/types/school";
 import { apiFetch, apiMutation } from "@/lib/api";
+import { EnrollStudentOutput, EnrollStudentResult } from "@/types/school";
 
-const CLASSES_KEY = ["school-classes"];
+const STUDENTS_KEY = ["school-students"];
 
 /**
- * ### useSchoolClasses
- * Hook ya kusimamia orodha ya madarasa yote ya shule (Fetch List & Create).
+ * ### useStudents
+ * Hook ya kusimamia orodha ya wanafunzi na usajili wa mwanafunzi mpya (Fetch List & Enroll).
  */
-export function useSchoolStudents() {
+export function useStudents() {
   const queryClient = useQueryClient();
 
-  // 1. Fetching Classes List (GET)
-  const { data, isLoading, error } = useQuery<any>({
-    queryKey: CLASSES_KEY,
-    queryFn: () => apiFetch<any>("/school/academic/classes"),
+  // 1. Fetching Students List (GET)
+  const { data, isLoading, error } = useQuery<any[]>({
+    queryKey: STUDENTS_KEY,
+    queryFn: () => apiFetch<any[]>("/school/students"),
     staleTime: 1000 * 60 * 5, // Cache ya dakika 5
   });
 
-  // 2. Mutation Engine (CREATE CLASS)
-  const createMutation = useMutation({
-    mutationFn: (payload: { classCode: string }) =>
-      apiMutation("post", "/school/academic/classes", payload),
+  // 2. Mutation Engine (ENROLL STUDENT)
+  const enrollMutation = useMutation({
+    mutationFn: (payload: EnrollStudentOutput) =>
+      apiMutation<EnrollStudentResult>("post", "/school/students/enroll", payload),
 
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: CLASSES_KEY }),
+    onSuccess: () => {
+      // Refresh na ku-invalidate orodha kuu ya wanafunzi
+      queryClient.invalidateQueries({ queryKey: STUDENTS_KEY });
+    },
   });
 
-  const createClass = async (classCode: string) => {
-    return await createMutation.mutateAsync({ classCode });
+  const enrollStudent = async (payload: EnrollStudentOutput) => {
+    return await enrollMutation.mutateAsync(payload);
   };
 
   return {
-    classes: data || [],
+    students: data || [],
     isLoading,
     isError: error,
-    createClass,
-    isCreating: createMutation.isPending,
-    refresh: () => queryClient.invalidateQueries({ queryKey: CLASSES_KEY }),
+    enrollStudent,
+    isEnrolling: enrollMutation.isPending,
+    refreshStudents: () => queryClient.invalidateQueries({ queryKey: STUDENTS_KEY }),
   };
 }
 
 /**
- * ### useClassProfile
- * Hook ya kuvuta Class Profile mahususi na kufanya edits/updates.
- * @param classId - ID au Identifier ya Class iliyotokana na classCode
+ * ### useStudentProfile
+ * Hook ya kuvuta na kusimamia Single Student Profile mahususi.
+ * @param studentId - ID ya mwanafunzi
  */
-export function useStudentsProfile(classId?: string) {
+export function useStudentProfile(studentId?: string) {
   const queryClient = useQueryClient();
-  const PROFILE_KEY = ["school-studentProfile-profile", classId];
+  const PROFILE_KEY = ["school-student-profile", studentId];
 
-  // 1. Fetching Single Class Profile (GET)
-  const { data, isLoading, error } = useQuery<ClassProfile>({
+  // 1. Fetching Single Student Profile (GET)
+  const { data, isLoading, error } = useQuery<any>({
     queryKey: PROFILE_KEY,
-    queryFn: () => apiFetch<ClassProfile>(`/school/academic/classes/${classId}`),
-    enabled: !!classId, // Inapiga API iwapo tu classId ipo
+    queryFn: () => apiFetch<any>(`/school/students/${studentId}`),
+    enabled: !!studentId, // Inapiga API iwapo tu studentId ipo
     staleTime: 1000 * 60 * 2,
   });
 
-  // 2. Mutation Engine (UPDATE / EDIT CLASS)
-  const updateMutation = useMutation({
-    mutationFn: (payload: any) =>
-      apiMutation("patch", `/school/academic/classes/${classId}`, payload),
-
-    onSuccess: () => {
-      // Refresh zote mbili: profile ya sasa na orodha kuu ya madarasa
-      queryClient.invalidateQueries({ queryKey: PROFILE_KEY });
-      queryClient.invalidateQueries({ queryKey: CLASSES_KEY });
-    },
-  });
-
-  const updateClass = async (payload: any) => {
-    return await updateMutation.mutateAsync(payload);
-  };
-
   return {
-    classProfile: data,
+    studentProfile: data,
     isLoading,
     isError: error,
-    updateClass,
-    isUpdating: updateMutation.isPending,
-    refreshProfile: () =>
-      queryClient.invalidateQueries({ queryKey: PROFILE_KEY }),
+    refreshProfile: () => queryClient.invalidateQueries({ queryKey: PROFILE_KEY }),
   };
 }

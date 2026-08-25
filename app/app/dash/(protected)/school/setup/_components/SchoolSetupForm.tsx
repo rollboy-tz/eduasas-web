@@ -342,6 +342,7 @@ export function SchoolSetupForm() {
           label="Year opens"
           mode="date"
           value={year.startDate}
+          outputFormat={(date) => date.toISOString()}
           max={year.endDate || undefined}
           className={fieldsClasses}
           onChange={(val) => updateYear({ startDate: val })}
@@ -350,6 +351,7 @@ export function SchoolSetupForm() {
           label="Year closes"
           mode="date"
           value={year.endDate}
+          outputFormat={(date) => date.toISOString()}
           min={year.startDate || undefined}
           className={fieldsClasses}
           onChange={(val) => updateYear({ endDate: val })}
@@ -392,6 +394,7 @@ export function SchoolSetupForm() {
           <EduDateInput
             label="Opens"
             value={term.startDate}
+            outputFormat={(date) => date.toISOString()}
             min={minStart || undefined}
             max={term.endDate || year.endDate || undefined}
             className={fieldsClasses}
@@ -400,6 +403,7 @@ export function SchoolSetupForm() {
           <EduDateInput
             label="Closes"
             value={term.endDate}
+            outputFormat={(date) => date.toISOString()}
             min={term.startDate || minStart || undefined}
             max={maxEnd || undefined}
             onChange={(val) => updateTerm(index, { endDate: val })}

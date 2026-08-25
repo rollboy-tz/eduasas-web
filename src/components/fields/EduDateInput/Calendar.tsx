@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils/helper";
 import {
@@ -12,6 +12,7 @@ import {
   isSameDay,
   DateInputMessages,
 } from "./date-utils";
+import { MonthPicker } from "./MonthPicker";
 
 interface CalendarProps {
   value: Date | null;
@@ -36,6 +37,29 @@ export function Calendar({
 }: CalendarProps) {
   const { year, month, total, start } = getCalendarGrid(viewDate);
   const today = new Date();
+
+  // "Ruka kwenye mwezi/mwaka" - bila hii, kujaza tarehe ya nyuma (mfano
+  // tarehe ya kuzaliwa) inahitaji kubonyeza "mwezi uliopita" mara nyingi
+  // mno (miaka 20+ ikimaanisha mibofyo 240+). Bofya "August 2026" -> chagua
+  // mwezi + mwaka moja kwa moja -> unarudi kwenye siku ukiwa karibu.
+  const [drillIntoMonths, setDrillIntoMonths] = useState(false);
+
+  if (drillIntoMonths) {
+    return (
+      <MonthPicker
+        value={viewDate}
+        viewYear={year}
+        onChange={(d) => {
+          onNavigate(d);
+          setDrillIntoMonths(false);
+        }}
+        onYearChange={(y) => onNavigate(new Date(y, month, 1))}
+        min={min}
+        max={max}
+        disabled={disabled}
+      />
+    );
+  }
 
   function isDisabledDay(day: number) {
     const cmp = `${year}-${pad(month + 1)}-${pad(day)}`;
@@ -63,9 +87,15 @@ export function Calendar({
           <ChevronLeft size={17} />
         </button>
 
-        <div className="text-sm font-semibold text-gray-900" aria-live="polite">
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => setDrillIntoMonths(true)}
+          aria-label={`${MONTHS_FULL[month]} ${year}, choose a different month or year`}
+          className="text-sm font-semibold text-gray-900 hover:text-blue-600 rounded px-2 py-0.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+        >
           {MONTHS_FULL[month]} {year}
-        </div>
+        </button>
 
         <button
           type="button"

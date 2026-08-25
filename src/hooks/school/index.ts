@@ -5,3 +5,4 @@ export * from './use-school-classes';
 export * from './use-school-staff-invitations';
 export * from './use-school-staff-list';
 export * from './use-subjects';
+export * from './useStudents';

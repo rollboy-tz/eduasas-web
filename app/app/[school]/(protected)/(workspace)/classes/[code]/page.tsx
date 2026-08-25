@@ -5,8 +5,6 @@ import {
   Users,
   BookOpen,
   Layers,
-  CheckCircle2,
-  XCircle,
   ArrowUpRight,
   Sparkles,
   TrendingUp,
@@ -18,7 +16,6 @@ import { useWorkspace } from "@/providers";
 export default function ClassOverviewPage() {
   const { classProfile } = useClassContext();
   const { setWorkspaceHeader } = useWorkspace();
-
 
   useEffect(() => {
     if (classProfile?.displayName) {
@@ -125,37 +122,44 @@ export default function ClassOverviewPage() {
           </div>
         </div>
 
-        {/* Status Summary Card */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                System Health
-              </h3>
-              <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            </div>
-
-            <div className="mt-4 space-y-3">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500">Academic Status</span>
-                <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 text-[11px]">
-                  Ready
+        {/* New feture branding space */}
+        {(classProfile.classCategory === "A-LEVEL" || classProfile.classCategory === "O-LEVEL") ? (
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="text-xs font-bold tracking-wider text-slate-500">
+                  {classProfile.classCategory === "O-LEVEL" ? "Academic Streams" : "Combinations"}
+                </h3>
+                <span className="flex text-[10px] text-white py-0.5 px-2 rounded-full bg-indigo-500" >
+                  New
                 </span>
               </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500">Category</span>
-                <span className="font-bold text-slate-800 uppercase text-[11px]">
-                  {classProfile.classCategory || "N/A"}
-                </span>
+
+              <div className="mt-4 space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-500">Academic Stre</span>
+                  <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 text-[11px]">
+                    Ready
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-500">Category</span>
+                  <span className="font-bold text-slate-800 uppercase text-[11px]">
+                    {classProfile.classCategory || "N/A"}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="mt-6 rounded-xl bg-slate-50 p-3 border border-slate-100 text-[11px] text-slate-500 flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-primary-500 shrink-0" />
-            <span>Class setup is fully configured and operational.</span>
+            <div className="mt-6 rounded-xl bg-slate-50 p-3 border border-slate-100 text-[11px] text-slate-500 flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-primary-500 shrink-0" />
+              <span>Class setup is fully configured and operational.</span>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div></div>
+        )}
+
       </div>
     </div>
   );

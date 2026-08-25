@@ -63,9 +63,9 @@ export default function ClassValidationLayout({
                     isOpen={isErrorModalOpen}
                     size="sm"
                     onClose={handleModalClose}
-                    className="rounded-2xl border-slate-100 p-2 shadow-2xl"
+                    className="rounded-lg border-slate-100 bg-white/70 p-2 shadow-2xl"
                 >
-                    <div className="flex flex-col items-center text-center p-4">
+                    <div className="flex flex-col items-center text-center  p-4">
                         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-500 ring-8 ring-red-50/50 mb-4">
                             <AlertTriangle className="h-6 w-6 stroke-[2.25]" />
                         </div>
@@ -77,10 +77,30 @@ export default function ClassValidationLayout({
                         <p className="mt-2 text-xs text-slate-500 leading-relaxed max-w-[280px]">
                             {isError
                                 ? "We encountered an issue fetching the class details. Please check your connection and try again."
-                                : `No active class found matching the code "${classCode}". It may have been moved or deleted.`}
+                                : "No active class found matching the details. It may have been moved or deleted."}
                         </p>
 
-                        <div className="mt-6 flex w-full items-center justify-end gap-2 border-t border-slate-100 pt-4">
+                        <div
+                            className={`mt-6 flex w-full items-center gap-2.5 border-t border-slate-100 pt-4 ${isError ? "justify-end" : "justify-center"
+                                }`}
+                        >
+                            {/* Back to Classes Button */}
+                            <button
+                                type="button"
+                                onClick={handleModalClose}
+                                className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-4 py-2 text-xs font-semibold transition-all shadow-sm active:scale-[0.98] cursor-pointer ${isError 
+                                        ? "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+                                        : "bg-primary-500 text-white hover:bg-primary-600 shadow-primary-500/20"
+                                    }`}
+                            >
+                                <ArrowLeft
+                                    className={`h-3.5 w-3.5 ${isError ? "text-slate-500" : "text-white"
+                                        }`}
+                                />
+                                Back to Classes
+                            </button>
+
+                            {/* Primary Action: Try Again */}
                             {isError && refresh && (
                                 <button
                                     type="button"
@@ -88,21 +108,12 @@ export default function ClassValidationLayout({
                                         setErrorModalOpen(false);
                                         refresh();
                                     }}
-                                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all shadow-sm active:scale-[0.98]"
+                                    className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-primary-500 px-4 py-2 text-xs font-semibold text-white hover:bg-primary-600 transition-all shadow-sm shadow-primary-500/20 active:scale-[0.98] cursor-pointer"
                                 >
-                                    <RefreshCw className="h-3.5 w-3.5 text-slate-400" />
+                                    <RefreshCw className="h-3.5 w-3.5" />
                                     Try Again
                                 </button>
                             )}
-
-                            <button
-                                type="button"
-                                onClick={handleModalClose}
-                                className="inline-flex items-center gap-1.5 rounded-lg bg-primary-500 px-4 py-2 text-xs font-semibold text-white hover:bg-primary-600 transition-all shadow-sm shadow-primary-500/20 active:scale-[0.98]"
-                            >
-                                <ArrowLeft className="h-3.5 w-3.5" />
-                                Back to Classes
-                            </button>
                         </div>
                     </div>
                 </EduMainModal>

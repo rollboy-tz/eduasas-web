@@ -58,23 +58,15 @@ function Example() {
 chochote kinachokufaa.
 
 ```tsx
-// 1) Default - ISO (YYYY-MM-DD)
+// 1) Default - ISO (YYYY-MM-DD) - SALAMA, hakuna timezone shift
 <DateInput label="Start date" value={value} onChange={(v) => setValue(v)} />
 
-// 2) Pattern maalum
+// 2) Pattern maalum - pia salama, haitumii toISOString
 <DateInput
   label="Start date"
   outputFormat="DD/MM/YYYY"
   value={value}
   onChange={(v) => setValue(v)} // "22/08/2026"
-/>
-
-// 3) Function - udhibiti kamili (mfano unataka timestamp)
-<DateInput
-  label="Start date"
-  outputFormat={(date) => date.toISOString()}
-  value={value}
-  onChange={(v) => setValue(v)}
 />
 
 // 4) Usijali format kabisa - tumia Date moja kwa moja
@@ -84,6 +76,23 @@ chochote kinachokufaa.
   onChange={(_, date) => setNativeDate(date)}
 />
 ```
+
+> ⚠️ **USITUMIE `date.toISOString()` kwenye `outputFormat` kwa date-only
+> values.** `.toISOString()` inabadilisha `Date` kuwa UTC - kwa timezone
+> yoyote iliyo mbele ya UTC (mfano Tanzania, UTC+3), saa 00:00 ya "tarehe
+> 2" saa za mtaa inakuwa 21:00 "tarehe 1" UTC - **tarehe inayoonekana
+> kwenye string inakuwa ya NYUMA moja kuliko uliyochagua**. Hii ni bug ya
+> kawaida sana kwenye date pickers, si tatizo la component hii, lakini
+> `outputFormat` ikikuruhusu kuandika function yoyote, ni rahisi
+> kuingia kwenye mtego huu bila kujua.
+>
+> - Kama unahitaji tu tarehe (bila muda), tumia default (`"iso"`) au
+>   pattern string - zote mbili zinatumia tarehe ya MTAA moja kwa moja,
+>   hazipitii UTC kabisa.
+> - Kama LAZIMA uwe na full timestamp (saa+tarehe), jenga instant yako
+>   mwenyewe kwa uwazi badala ya kutegemea `.toISOString()` ya default
+>   (mfano midnight UTC ya tarehe hiyo hiyo): <br>
+>   `outputFormat={(date) => new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())).toISOString()}`
 
 ## Validation halisi
 
@@ -123,6 +132,14 @@ Ukitaka kubadilisha matini (i18n) - Kiswahili, Kifaransa, chochote:
 <DateInput mode="month" ... />  // -> "2026-08"
 <DateInput mode="year" ... />   // -> "2026"
 ```
+
+`displayFormat` (matini inayoonekana kwenye trigger) sasa inafuata `mode`
+kiotomatiki - hakuna haja ya kuipitisha wewe mwenyewe:
+- `mode="year"` → inaonyesha `"2026"` tu (si tarehe kamili)
+- `mode="month"` → inaonyesha `"August 2026"`
+- `mode="date"` → inaonyesha `"23 Aug 2026"`
+
+Bado unaweza ku-override kwa pattern yako mwenyewe (`displayFormat="MMM YYYY"` n.k) ikiwa unataka muonekano tofauti.
 
 ## Customization ya kina
 

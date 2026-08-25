@@ -44,8 +44,8 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
   return (
     <div className={cn(
       "pointer-events-auto border py-2 px-4 rounded-lg shadow-lg flex items-center justify-between gap-4",
-      toast.type === "error" && "bg-red-700 text-white border-red-600",
-      toast.type === "success" && "bg-blue-600 text-white border-blue-600",
+      toast.type === "error" && "bg-red-50 text-red-500 border-red-300",
+      toast.type === "success" && "bg-emerald-50 text-emerald-700 border-emerald-300",
       toast.type === "warning" && "bg-yellow-50 text-yellow-800",
       toast.type === "info" && "bg-blue-900 text-white",
       toast.type === "loading" && "bg-yellow-100 text-yellow-700",

@@ -2,6 +2,7 @@
 import { EduDateInput } from "@/components/fields/EduDateInput/EduDateInput"
 import { EduInput } from "@/components/fields/EduInput"
 import { EduSelect } from "@/components/fields/EduSelect"
+import { EduTimeInput } from "@/components/fields/EduTimeInput"
 import { IdCard } from "lucide-react"
 import { useState } from "react"
 
@@ -29,10 +30,9 @@ const ContactsPage = () => {
                     {/* Mode */}
                     <div className="flex flex-col gap-2">
                         <h3 className="font-bold text-small">Region: {mode}</h3>
-                        <EduInput
+                        <EduTimeInput
                             clearable={true}
                             value={mode}
-                            type="id"
                             icon={IdCard}
                             onChange={(v: string) => { setMode(v as string) }}
                             className="w-50 bg-white shadow-sm"

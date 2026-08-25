@@ -14,7 +14,7 @@ import {
   FileSpreadsheet
 } from "lucide-react";
 import { EduMainModal } from "@/components/modals";
-import { EnrollStudentForm } from "@/components/forms/school/add-student-form";
+import { EnrollStudentForm } from "./_components";
 
 // Component ya maudhui kuu ya Students Page
 function StudentsContent() {

@@ -41,7 +41,7 @@ export interface EduDateInputClassNames {
   errorText?: string;
 }
 
-export interface DateInputProps {
+export interface EduDateInputProps {
   /** id ya HTML - ikikosekana, itazalishwa moja kwa moja (kwa label association). */
   id?: string;
   /** Jina la field - linatumika kwenye hidden input, muhimu kwa forms za kawaida (non-JS submit). */
@@ -93,20 +93,20 @@ export interface DateInputProps {
   className?: string;
 }
 
-const sizeStyles: Record<NonNullable<DateInputProps["size"]>, string> = {
+const sizeStyles: Record<NonNullable<EduDateInputProps["size"]>, string> = {
   sm: "h-8 px-2 text-xs",
   md: "h-9 px-3 text-sm",
   lg: "h-10 px-3.5 text-base",
 };
 
-const EduDateInput = ({
+function EduDateInput({
   id,
   name,
   label,
   value,
   onChange,
   mode = "date",
-  displayFormat = "DD MMM YYYY",
+  displayFormat,
   outputFormat = "iso",
   placeholder = "Select date",
   min,
@@ -125,7 +125,7 @@ const EduDateInput = ({
   popoverWidth = 288,
   classNames,
   className,
-}: DateInputProps) => {
+}: EduDateInputProps) {
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const popoverId = `${inputId}-popover`;
@@ -133,6 +133,13 @@ const EduDateInput = ({
   const helperId = `${inputId}-helper`;
 
   const messages: DateInputMessages = { ...defaultDateInputMessages, ...messagesProp };
+
+  // BUG ILIYOREKEBISHWA: `displayFormat` ilikuwa na default fasta
+  // ("DD MMM YYYY") bila kujali `mode` - hivyo hata mode="year" ilionyesha
+  // "01 Jan 2026" badala ya "2026" tu, na mode="month" ilionyesha siku
+  // pia. Sasa default inafuata mode, isipokuwa uipitishe wewe mwenyewe.
+  const resolvedDisplayFormat =
+    displayFormat ?? (mode === "year" ? "YYYY" : mode === "month" ? "MMMM YYYY" : "DD MMM YYYY");
 
   const triggerRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -161,7 +168,7 @@ const EduDateInput = ({
   const finalError = error ?? internalError;
   const hasError = Boolean(finalError);
 
-  const displayValue = date ? formatDate(date, displayFormat) : "";
+  const displayValue = date ? formatDate(date, resolvedDisplayFormat) : "";
 
   // ---- outside click + escape -------------------------------------------
   useEffect(() => {
@@ -278,7 +285,7 @@ const EduDateInput = ({
   const canRenderPortal = typeof document !== "undefined";
 
   return (
-    <div className={cn("relative flex flex-col w-full gap-1.5 rounded-md overflow-hidden", classNames?.root, className)}>
+    <div className={cn("relative flex flex-col rounded-md overflow-hidden w-full gap-1.5", classNames?.root, className)}>
       {label && (
         <label
           htmlFor={inputId}
@@ -299,7 +306,8 @@ const EduDateInput = ({
       {/* Windows11-style: box tambarare + underline inayopanuka kwenye focus, badala ya border pande zote */}
       <div
         className={cn(
-          "w-full rounded-md overflow-hidden transition-colors bg-inherit",
+          "w-full transition-colors",
+          disabled && "opacity-60 hover:bg-gray-50"
         )}
       >
         <div
@@ -329,7 +337,7 @@ const EduDateInput = ({
           {Icon ? (
             <Icon size={18} className="shrink-0 text-gray-400" aria-hidden="true" />
           ) : (
-            <CalendarDays size={18} className="shrink-0 text-primary-400" aria-hidden="true" />
+            <CalendarDays size={18} className="shrink-0 text-gray-400" aria-hidden="true" />
           )}
 
           <span className={cn("flex-1 truncate", displayValue ? "text-gray-900" : "text-gray-400")}>
@@ -423,4 +431,4 @@ const EduDateInput = ({
   );
 }
 
-export { EduDateInput };
+export  { EduDateInput };

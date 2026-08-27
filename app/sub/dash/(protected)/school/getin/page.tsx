@@ -48,6 +48,7 @@ function SwitchContextContent() {
   }, [schools, slugParam, schoolIdParam]);
 
   const getHostDomain = () => {
+    // Usalama wa DOM/Window Object wakati wa SSR
     if (typeof window === "undefined") return "eduasas.co.tz";
 
     const parts = window.location.host.split(".");
@@ -61,7 +62,6 @@ function SwitchContextContent() {
     return parts.slice(-3).join(".");
   };
 
-  // Usalama wa DOM/Window Object wakati wa SSR
   const hostDomain = getHostDomain();
   const PROTOCOL = process.env.NEXT_PUBLIC_NET_PROTOCOL || "https";
   const DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || hostDomain || "eduasas.co.tz";

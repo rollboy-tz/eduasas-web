@@ -1,6 +1,4 @@
 import { Metadata } from "next";
-import { SchoolSetupForm } from "@/components/forms";
-import { EduScreenLoader } from "@/components/elements";
 import { EduServerButton } from "@/components/buttons";
 import Image from "next/image";
 import { Suspense } from "react";
@@ -13,7 +11,7 @@ export const metadata: Metadata = {
 export default function AddSchoolPage() {
   return (
     <Suspense fallback={ <EduScreenLoader /> }>
-    <main className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+    <main className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
 
       {/* 1. BACKGROUND DECORATION - "Unyama Mode" */}
       <div className="fixed inset-0 z-0 pointer-events-none">

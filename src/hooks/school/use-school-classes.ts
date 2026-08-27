@@ -1,55 +1,94 @@
 /**
  * @fileoverview School Classes Engine
- * @description Inasimamia utambulisho, usajili, na orodha ya madarasa katika shule.
+ * @description Inasimamia utambulisho, usajili, uhariri na orodha ya madarasa katika shule.
  * @author Injinia Rollboy (EduAsas Tech)
- * @version 1.0.0
+ * @version 1.2.0
  */
 
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiFetch } from "@/lib/api/api-fetch";
-import { api }  from "@/lib/api";
-import { SchoolClassesResponse } from "@/types/portal";
+import { ClassProfile, SchoolClass } from "@/types/school";
+import { apiFetch, apiMutation } from "@/lib/api";
+
+const CLASSES_KEY = ["school-classes"];
 
 /**
  * ### useSchoolClasses
- * Hook ya kusimamia madarasa ya shule (Fetch & Create).
+ * Hook ya kusimamia orodha ya madarasa yote ya shule (Fetch List & Create).
  */
 export function useSchoolClasses() {
   const queryClient = useQueryClient();
-  const CLASSES_KEY = ['school-classes'];
 
-  // 1. Fetching (GET)
-  const { data, isLoading, error } = useQuery<SchoolClassesResponse>({
+  // 1. Fetching Classes List (GET)
+  const { data, isLoading, error } = useQuery<SchoolClass[]>({
     queryKey: CLASSES_KEY,
-    queryFn: () => apiFetch<SchoolClassesResponse>("/school/academic/classes"),
-    staleTime: 1000 * 60 * 5, // Cache ya dakika 5 ili data iwe mpya
+    queryFn: () => apiFetch<SchoolClass[]>("/school/academic/classes"),
+    staleTime: 1000 * 60 * 5, // Cache ya dakika 5
   });
 
-  // 2. Mutation Engine (CREATE)
-  const mutation = useMutation({
-    mutationFn: (payload: { classCode: string }) => 
-      api.post("/school/academic/classes", payload),
-    
-    // Invalidate ili ku-force refetch ya list baada ya kuongeza darasa jipya
+  // 2. Mutation Engine (CREATE CLASS)
+  const createMutation = useMutation({
+    mutationFn: (payload: { classCode: string }) =>
+      apiMutation("post", "/school/academic/classes", payload),
+
     onSuccess: () => queryClient.invalidateQueries({ queryKey: CLASSES_KEY }),
   });
 
-  /**
-   * @function createClass
-   * @description Inasajili darasa jipya shuleni kwa kutumia classCode.
-   */
   const createClass = async (classCode: string) => {
-    return await mutation.mutateAsync({ classCode });
+    return await createMutation.mutateAsync({ classCode });
   };
 
   return {
-    classes: data?.data || [],
+    classes: data || [],
     isLoading,
     isError: error,
     createClass,
-    isCreating: mutation.isPending,
+    isCreating: createMutation.isPending,
     refresh: () => queryClient.invalidateQueries({ queryKey: CLASSES_KEY }),
+  };
+}
+
+/**
+ * ### useClassProfile
+ * Hook ya kuvuta Class Profile mahususi na kufanya edits/updates.
+ * @param classId - ID au Identifier ya Class iliyotokana na classCode
+ */
+export function useClassProfile(classId?: string) {
+  const queryClient = useQueryClient();
+  const PROFILE_KEY = ["school-class-profile", classId];
+
+  // 1. Fetching Single Class Profile (GET)
+  const { data, isLoading, error } = useQuery<ClassProfile>({
+    queryKey: PROFILE_KEY,
+    queryFn: () => apiFetch<ClassProfile>(`/school/academic/classes/${classId}`),
+    enabled: !!classId, // Inapiga API iwapo tu classId ipo
+    staleTime: 1000 * 60 * 2,
+  });
+
+  // 2. Mutation Engine (UPDATE / EDIT CLASS)
+  const updateMutation = useMutation({
+    mutationFn: (payload: any) =>
+      apiMutation("patch", `/school/academic/classes/${classId}`, payload),
+
+    onSuccess: () => {
+      // Refresh zote mbili: profile ya sasa na orodha kuu ya madarasa
+      queryClient.invalidateQueries({ queryKey: PROFILE_KEY });
+      queryClient.invalidateQueries({ queryKey: CLASSES_KEY });
+    },
+  });
+
+  const updateClass = async (payload: any) => {
+    return await updateMutation.mutateAsync(payload);
+  };
+
+  return {
+    classProfile: data,
+    isLoading,
+    isError: error,
+    updateClass,
+    isUpdating: updateMutation.isPending,
+    refreshProfile: () =>
+      queryClient.invalidateQueries({ queryKey: PROFILE_KEY }),
   };
 }

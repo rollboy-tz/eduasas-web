@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { SchoolCategory, SchoolCategoriesState } from "@/types/portal/school-categories.types";
+import { SchoolCategory, SchoolCategoriesState } from "@/types/school/school-categories.types";
 
 interface SchoolCategoriesStore extends SchoolCategoriesState {
   setCategories: (categories: SchoolCategory[]) => void;

@@ -45,5 +45,5 @@ export const logoutAndRedirect = async () => {
   }
 
   // 6. Redirect kwenda Login ikiwa na callback
-  window.location.href = `/auth/sign-in?callback=${encodeURIComponent(currentPath)}`;
+  window.location.href = `dash.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/auth/login?return_url=${encodeURIComponent(currentPath)}`;
 };

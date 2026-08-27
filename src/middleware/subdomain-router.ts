@@ -13,13 +13,10 @@ const IGNORED_HOSTS = new Set(["www"]);
 
 /**
  * Only allow safe, single-level subdomain names: letters, numbers, hyphens.
- * This is the key defense against Host-header spoofing — since `hostname`
- * comes straight from the client, we never trust it to build a path
- * without validating it first (blocks things like `..`, `/`, `%2e%2e`, etc).
  */
 const VALID_SUBDOMAIN_PATTERN = /^[a-z0-9-]+$/;
 
-const isDev = process.env.NEXT_PUBLIC_APP_STAGE === "development" || process.env.NEXT_PUBLIC_APP_STAGE === "staging";
+const isDev = process.env.NEXT_PUBLIC_APP_STAGE === "development" || process.env.NEXT_PUBLIC_APP_STAGE === "beta";
 
 /* =========================================================
    HELPERS
@@ -31,22 +28,20 @@ function stripPort(hostname: string): string {
 
 /**
  * Extracts a validated subdomain from a raw Host header.
- * Returns null when there's no subdomain, or when the host doesn't
- * belong to our root domain at all (custom/unknown domains are left
- * untouched rather than guessed at).
  */
 function extractSubdomain(rawHostname: string): string | null {
   const host = stripPort(rawHostname).toLowerCase();
 
+  // Handle localhost during local development seamlessly
+  const activeRootDomain = host.includes("localhost") ? "localhost" : ROOT_DOMAIN;
+
   let sub: string;
 
-  if (host === ROOT_DOMAIN) {
+  if (host === activeRootDomain) {
     sub = "";
-  } else if (host.endsWith(`.${ROOT_DOMAIN}`)) {
-    sub = host.slice(0, -(ROOT_DOMAIN.length + 1));
+  } else if (host.endsWith(`.${activeRootDomain}`)) {
+    sub = host.slice(0, -(activeRootDomain.length + 1));
   } else {
-    // Host doesn't match our root domain at all (e.g. a stray/misconfigured
-    // custom domain). Don't guess — just let the request pass through.
     return null;
   }
 
@@ -73,24 +68,26 @@ function extractSubdomain(rawHostname: string): string | null {
    MAIN LOGIC
    ========================================================= */
 
-/**
- * Rewrites requests on `<subdomain>.<rootDomain>` to the matching
- * `/subdomain` folder in the app, so e.g. `portal.eduasas.co.tz/dashboard`
- * serves `app/portal/dashboard`.
- *
- * Returns null when no rewrite is needed, so callers can fall through
- * to the next piece of middleware logic (e.g. auth).
- */
 export async function handleRouting(req: NextRequest): Promise<NextResponse | null> {
   const url = req.nextUrl;
-  const hostname = req.headers.get("host") || "";
 
+  // Avoid rewriting from api routes
+  if (url.pathname.startsWith('/main') || url.pathname.startsWith('/api')) {
+    return null;
+  }
+
+  const hostname = req.headers.get("host") || "";
   const subdomain = extractSubdomain(hostname);
+
+  // ULINZI: Zuia direct access ya /app/... kutoka kwenye main domain
+  if (!subdomain && url.pathname.startsWith("/sub")) {
+    return NextResponse.rewrite(new URL("/404", req.url));
+  }
+
   if (!subdomain) return null;
 
-  // Avoid rewriting a request that's already targeting this folder
-  // (e.g. an internal redirect that already resolved it).
-  if (url.pathname === `/${subdomain}` || url.pathname.startsWith(`/${subdomain}/`)) {
+  // Avoid infinite rewrite loops
+  if (url.pathname === `/sub/${subdomain}` || url.pathname.startsWith(`/sub/${subdomain}/`)) {
     return null;
   }
 
@@ -98,8 +95,16 @@ export async function handleRouting(req: NextRequest): Promise<NextResponse | nu
     console.log(`[Routing] Host: ${hostname} -> Subdomain: ${subdomain}`);
   }
 
-  // Preserve the original path AND query string — the previous version
-  // silently dropped query params on every rewrite.
-  const rewriteUrl = new URL(`/${subdomain}${url.pathname}${url.search}`, req.url);
-  return NextResponse.rewrite(rewriteUrl);
+  // Pass custom header for easy retrieval in Server Components/Actions
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-subdomain", subdomain);
+
+  // Rewrite to app/app/[subdomain]/...
+  const rewriteUrl = new URL(`/sub/${subdomain}${url.pathname}${url.search}`, req.url);
+  
+  return NextResponse.rewrite(rewriteUrl, {
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }

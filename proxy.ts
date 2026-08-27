@@ -1,7 +1,7 @@
 // path: src/middleware.ts
 
 import { NextRequest } from "next/server";
-import { authProxy } from "@/middleware/auth-proxy";
+import { authProxy } from "@/middleware/auth-middlewere";
 import { handleRouting } from "@/middleware/subdomain-router";
 
 /**
@@ -31,6 +31,6 @@ export async function proxy(request: NextRequest) {
  */
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|icons|images|fonts|favicon.ico|robots.txt|sitemap.xml|manifest.json|sw.js|workbox-).*)",
+    "/((?!api|main|_next/static|_next/image|icons|images|fonts|favicon.ico|robots.txt|sitemap.xml|manifest.json|sw.js|workbox-).*)",
   ],
 };

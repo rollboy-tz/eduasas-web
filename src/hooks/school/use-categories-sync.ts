@@ -11,7 +11,7 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api/api-fetch";
-import { SchoolCategory } from "@/types/portal";
+import { SchoolCategory } from "@/types/school";
 import { useSchoolCategoriesStore } from "@/store/school";
 
 /**

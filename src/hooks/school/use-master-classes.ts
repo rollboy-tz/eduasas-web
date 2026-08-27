@@ -10,7 +10,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api/api-fetch";
-import {  MasterClassesResponse } from "@/types/portal/master-class";
+import {  MasterClass, MasterClassesResponse } from "@/types/school/master-class";
 
 /**
  * ### MasterClassesHookReturn
@@ -26,9 +26,9 @@ import {  MasterClassesResponse } from "@/types/portal/master-class";
  */
 export function useMasterClasses() {
   // 1. Fetching (GET)
-  const { data, error, isLoading } = useQuery<MasterClassesResponse>({
+  const { data, error, isLoading } = useQuery<MasterClass[]>({
     queryKey: ['master-classes', 'discovery'],
-    queryFn: () => apiFetch<MasterClassesResponse>("/school/academic/classes/discovery"),
+    queryFn: () => apiFetch<MasterClass[]>("/school/academic/classes/discovery"),
     
     // Performance: Madarasa hayabadiliki kila sekunde, 
     // tunaiweka cache iwe ya muda mrefu (dakika 30)
@@ -39,7 +39,7 @@ export function useMasterClasses() {
 
   // 2. Logic: Hakikisha data ipo, kama haipo tunarudisha array tupu
   // Hapa unaweza kuongeza sort logic kama kuna kipaumbele cha madarasa (e.g. Form 1 -> Form 4)
-  const classes = data?.data ? [...data.data] : [];
+  const classes = data ?? [];
 
   return {
     classes,

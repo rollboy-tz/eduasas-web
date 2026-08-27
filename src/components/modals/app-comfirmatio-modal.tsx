@@ -8,7 +8,7 @@ interface ConfirmProps {
   title: string;
   message: string;
   confirmLabel?: string;
-  variant: "danger" | "neutral";
+  variant: "danger" | "muted";
   cancelLabel?: string;
   onConfirm: () => void;
   onCancel?: () => void;

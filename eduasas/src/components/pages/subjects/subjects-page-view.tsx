@@ -47,7 +47,7 @@ export function SubjectsPageView() {
             onConfirm() {
                 console.log("Selected subject trigered");
             },
-            variant: "neutral"
+            variant: "muted"
         })
     }
 

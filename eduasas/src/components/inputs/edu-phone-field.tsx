@@ -9,7 +9,7 @@ import { capitalize } from "@/lib/utils/string-utils";
 /**
  * PHONE NUMBER INPUT (v4.2 - Adaptive & Global)
  * --------------------------------------------
- * 1. Variant: 'neon' (Blue focus) vs 'flat' (Neutral focus).
+ * 1. Variant: 'neon' (Blue focus) vs 'flat' (muted focus).
  * 2. Size: 'sm', 'md', 'lg' yenye Adaptive Radius.
  * 3. Strategy: 'floating', 'fixed', 'none'.
  * 4. Logic: ITU-T Validation & Tanzania Zero-Cleanup.

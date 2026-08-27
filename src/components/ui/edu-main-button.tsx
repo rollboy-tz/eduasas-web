@@ -41,17 +41,17 @@ export const EduButton = ({
   
   // 1. VARIANT STYLES
   const variantClasses = {
-    primary: "bg-primary text-white hover:opacity-70 shadow-primary/20 border-none opacity-90",
+    primary: "bg-primary-500 text-white hover:opacity-70 shadow-primary/20 border-none opacity-90",
     danger: "bg-red-500 text-white hover:bg-red-600 shadow-red-500/20 border-none",
     neon: "border-2 border-primary text-primary bg-primary/5 shadow-[0_0_15px_rgba(var(--primary-rgb),0.2)] hover:bg-primary hover:text-white",
-    outline: "border-2 border-slate-500/20 text-foreground hover:border-primary hover:text-primary",
-    ghost: "item-hover border-2 border-muted/50 text-muted-foreground hover:bg-slate-500/10 hover:text-foreground",
+    outline: "border-2 border-muted-200 text-foreground hover:border-primary hover:text-primary",
+    ghost: "item-hover border-2 border-muted-300 bg-muted-300 text-muted-foreground hover:bg-muted-400/60 hover:text-foreground",
   };
 
   const sizeClasses = {
-    sm: "h-10 px-3 text-[11px] gap-2 rounded",
-    md: "h-11 px-5 text-[12px] gap-2.5 rounded-md",
-    lg: "h-13 px-7 text-[14px] gap-3 rounded-lg",
+    sm: "h-9 px-3 text-[11px] gap-2 rounded",
+    md: "h-10 px-5 text-xs gap-2.5 rounded-md",
+    lg: "h-11 px-7 text-sm gap-3 rounded-lg",
   };
 
   // 2. TEXT TRANSFORMATION CLASS
@@ -66,7 +66,7 @@ export const EduButton = ({
       disabled={disabled || isLoading}
       className={cn(
         "relative inline-flex items-center justify-center font-black transition-all overflow-hidden",
-        "active:scale-[0.96] transition-transform duration-150 cursor-pointer",
+        "active:scale-[0.96] transition-transform duration-150 cursor-pointer shadow-sm",
         // DISABLED STATE: Kijivu, cursor inakataa, hakuna shadow
         "disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 disabled:shadow-none",
         variantClasses[variant],

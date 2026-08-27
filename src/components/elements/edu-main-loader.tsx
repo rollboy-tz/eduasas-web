@@ -16,25 +16,25 @@ interface EduMainLoaderProps {
  * @param loadingText - Optional: Ukiiacha wazi, maandishi hayatokei
  */
 
-export function EduMainLoader({ 
-  size = 30, 
-  color = "var(--primary)", 
-  loadingText 
+export function EduMainLoader({
+  size = 30,
+  color = "#0066FF",
+  loadingText
 }: EduMainLoaderProps) {
 
-//hometaine text size accoding to loader size
+  //hometaine text size accoding to loader size
   let textSize = "";
   if (size < 20) {
     textSize = "text-[10px]";
   } else if (size < 30) {
-    textSize = "text-[13px]";
+    textSize = "text-[11px]";
   } else {
-    textSize = "text-[15px]";
+    textSize = "text-[12px]";
   }
-  
+
   return (
     <div className="flex flex-col items-center justify-center gap-6">
-      
+
       {/* THE SPINNER CONTAINER */}
       <div className="relative" style={{ width: size, height: size }}>
         <svg
@@ -51,7 +51,7 @@ export function EduMainLoader({
             strokeWidth="4"
             className="opacity-0" // Imetoweka kabisa (Pure Transparent)
           />
-          
+
           {/* The Morphing Arc (The Real Chrome Style) */}
           <circle
             cx="25"
@@ -66,11 +66,34 @@ export function EduMainLoader({
         </svg>
       </div>
 
-      {/* LOADING TEXT - Inatokea tu kama imepitishwa */}
+      {/* MODERN ANIMATED DOTS TEXT */}
       {loadingText && (
-        <span className="text-[10px] font-black text-muted animate-pulse">
-          {capitalize(loadingText)}...
-        </span>
+        <div className="flex items-center gap-0.5 text-slate-600">
+          <span className={`${textSize} font-semibold `}>
+            {capitalize(loadingText)}
+          </span>
+
+          <span className="inline-flex items-center space-x-0.3 font-semibold text-base">
+            <span
+              className="animate-pulse"
+              style={{ animationDuration: "1s", animationDelay: "0ms" }}
+            >
+              .
+            </span>
+            <span
+              className="animate-pulse"
+              style={{ animationDuration: "1s", animationDelay: "200ms" }}
+            >
+              .
+            </span>
+            <span
+              className="animate-pulse"
+              style={{ animationDuration: "1s", animationDelay: "400ms" }}
+            >
+              .
+            </span>
+          </span>
+        </div>
       )}
     </div>
   );

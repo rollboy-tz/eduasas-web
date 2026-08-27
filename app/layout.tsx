@@ -1,15 +1,33 @@
 import type { Metadata, Viewport } from "next";
-//import { useEffect } from 'react';
-// import { GeistSans } from "geist/font/sans";
-// import { GeistMono } from "geist/font/mono";
-
+//import { Inter, Plus_Jakarta_Sans, Fira_Code } from "next/font/google";
 import "./globals.css";
 
-import { EduToaster } from "@/components/ui/toaster"; 
+import { EduToaster } from "@/components/ui/toaster";
 import { ReactQueryProvider, ThemeProvider } from "@/providers";
-import GlobalSystemWatcher from "@/lib/utils/global-system.watcher";
+//import GlobalSystemWatcher from "@/lib/utils/global-system.watcher";
 import { AppFeedbackModal, AppConfirmModal } from "@/components/modals";
+import { Providers } from "./providers";
 
+// // 1. Font ya maandishi ya kawaida / Aya (Body)
+// const inter = Inter({
+//   subsets: ["latin"],
+//   display: "swap",
+//   variable: "--font-sans",
+// });
+
+// // 2. Font ya Headings (Modern Sans)
+// const jakarta = Plus_Jakarta_Sans({
+//   subsets: ["latin"],
+//   display: "swap",
+//   variable: "--font-heading",
+// });
+
+// // 3. Font ya Code / Mono
+// const firaCode = Fira_Code({
+//   subsets: ["latin"],
+//   display: "swap",
+//   variable: "--font-mono",
+// });
 
 // 1. METADATA - AI-Ready & Industrial Branding
 export const metadata: Metadata = {
@@ -92,28 +110,35 @@ export default function RootLayout({
   return (
     <html
       lang="sw"
-      // className={`${GeistSans.variable} ${GeistMono.variable} antialiased scroll-smooth`}
+    //   className={`
+    //     // $ {inter.className}
+    //     // $ {jakarta.variable}
+    //     // $ {firaCode.variable} TOTO: Config google font here remove below classes
+    //     antialiased scroll-smoot
+    // `}
       className="antialiased scroll-smoot"
       suppressHydrationWarning
     >
       <body
         className={`
-          min-h-screen bg-background text-foreground 
+          min-h-screen text-foreground 
           selection:bg-gray selection:text-primary-foreground
           overflow-x-hidden font-sans
         `}
         suppressHydrationWarning={true}
       >
-        <GlobalSystemWatcher /> {/* Hii ni lazima */}
+        {/* <GlobalSystemWatcher /> Hii ni lazima */}
         <ThemeProvider
           attribute="class"        // Inatumia class="dark" kwenye html tag
-          defaultTheme="system"    // Inaanza na kile OS inachotaka
+          defaultTheme="light"    // Inaanza na kile OS inachotaka
           enableSystem={true}      // Inaruhusu kusoma settings za PC/Simu
           disableTransitionOnChange // Inazuia rangi "kuteleza" wakati wa kubadili (fastest load)
         >
           {/* HAPA NDIPO TUNAFUNGA SECURITY GUARD WETU */}
           <ReactQueryProvider>
-            {children}
+            <Providers>
+              {children}
+            </Providers>
             <AppFeedbackModal />
             <AppConfirmModal />
             <EduToaster />

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { SchoolSetupStore } from "@/types/portal/school-setup.types";
+import { SchoolSetupStore } from "@/types/school/school-setup.types";
 
 const initialYear = new Date().getFullYear();
 

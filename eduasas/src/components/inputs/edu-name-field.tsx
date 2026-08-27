@@ -8,7 +8,7 @@ import { cleanSingleName, cleanFullName, capitalize } from "@/lib/utils/string-u
 /**
  * NAME FIELD (v4.2 - Adaptive & Modular)
  * ---------------------------------------
- * 1. Variant: 'neon' (Blue focus) vs 'flat' (Neutral focus).
+ * 1. Variant: 'neon' (Blue focus) vs 'flat' (muted focus).
  * 2. Size: 'sm', 'md', 'lg' yenye Adaptive Radius.
  * 3. Strategy: 'floating', 'fixed', 'none'.
  * 4. Logic: Inabaki na name cleaning na validation zako.

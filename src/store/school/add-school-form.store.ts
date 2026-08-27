@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { AddSchoolStore, SchoolFormData } from "@/types/portal/add-school.types";
+import { AddSchoolStore, SchoolFormData } from "@/types/school/add-school.types";
 
 const initialFormData: SchoolFormData = {
   name: "",

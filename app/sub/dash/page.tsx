@@ -6,7 +6,6 @@ import { UserIcon } from "lucide-react";
 import { EduMainModal } from "@/components/modals";
 import { EduAsasLogo } from "@/components/ui/edu-asas-logo"
 import { EduModernInput } from "@/components/fields/edu-modern-input";
-import { SchoolAdddeCard } from "@/components/cards/dash/SchoolAddedCard";
 
 const DashPage = () => {
 
@@ -14,7 +13,6 @@ const DashPage = () => {
 
     const state = { loading: true, authenticated: false, unaunthenticated: false };
     const [valem, setValuem] = useState("Initial value")
-    const [modalopen, setModalOpen] = useState(true);
 
     return (
         <>

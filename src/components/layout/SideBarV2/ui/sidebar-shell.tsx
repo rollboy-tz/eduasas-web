@@ -46,7 +46,7 @@ export function SidebarShell({ children, className }: SidebarShellProps) {
     <aside
       style={{ width }}
       className={cn(
-        "z-50 flex flex-col border bg-white backdrop-blur-xl",
+        "z-50 flex flex-col bg-white backdrop-blur-xl",
         "transition-[width,transform] duration-300 ease-out",
 
         // Docked Mode Layout

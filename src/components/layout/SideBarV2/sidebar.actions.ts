@@ -1,11 +1,3 @@
-import type { Dispatch } from "react";
-import type { SidebarReducerAction } from "./sidebar.reducer";
-import type {
-  SidebarDevice,
-  SidebarVariant,
-  SidebarSize,
-} from "./sidebar.types";
-
 /**
  * ============================================================================
  * EduAsas Sidebar V2 - Actions
@@ -14,15 +6,19 @@ import type {
  * Action creators za Sidebar V2.
  *
  * Faili hili linaficha implementation details za dispatch actions
- * kutoka kwenye UI components.
+ * kutoka kwenye UI components na kutoa interface iliyonyooka.
  *
- * Faida:
- * - Components hazina haja ya kujua action types za ndani.
- * - Refactoring inakuwa rahisi bila kuathiri components zote.
- * - API ya Sidebar inakuwa wazi na rahisi kuisoma (Readable API).
- *
- * @version 2.0.0
+ * @author EduAsas
+ * @version 2.3.1
  */
+
+import type { Dispatch } from "react";
+import type { SidebarReducerAction } from "./sidebar.reducer";
+import type {
+  SidebarDevice,
+  SidebarSize,
+  SidebarVariant,
+} from "./sidebar.types";
 
 /* ============================================================================
  * Sidebar Action Creators
@@ -30,11 +26,6 @@ import type {
 
 /**
  * Fungua Sidebar.
- *
- * @param dispatch Sidebar reducer dispatch function
- *
- * @example
- * openSidebar(dispatch);
  */
 export function openSidebar(dispatch: Dispatch<SidebarReducerAction>): void {
   dispatch({ type: "OPEN" });
@@ -42,86 +33,63 @@ export function openSidebar(dispatch: Dispatch<SidebarReducerAction>): void {
 
 /**
  * Funga Sidebar.
- *
- * @param dispatch Sidebar reducer dispatch function
- *
- * @example
- * closeSidebar(dispatch);
  */
 export function closeSidebar(dispatch: Dispatch<SidebarReducerAction>): void {
   dispatch({ type: "CLOSE" });
 }
 
 /**
- * Toggle Sidebar kati ya open na closed.
- *
- * @param dispatch Sidebar reducer dispatch function
+ * Weka Layout (Size na Variant) kwa pamoja kulingana na Screen Rules.
  */
-export function toggleSidebar(dispatch: Dispatch<SidebarReducerAction>): void {
-  dispatch({ type: "TOGGLE" });
-}
-
-/**
- * Badilisha device ya Sidebar.
- *
- * @param dispatch Sidebar reducer dispatch function
- * @param device Device mpya (desktop | tablet | mobile)
- */
-export function setSidebarDevice(
+export function setSidebarLayout(
   dispatch: Dispatch<SidebarReducerAction>,
-  device: SidebarDevice
-): void {
-  dispatch({
-    type: "SET_DEVICE",
-    payload: device,
-  });
-}
-
-/**
- * Badilisha variant ya Sidebar.
- *
- * @param dispatch Sidebar reducer dispatch function
- * @param variant Variant mpya (docked | floating)
- *
- * @example
- * setSidebarVariant(dispatch, "floating");
- */
-export function setSidebarVariant(
-  dispatch: Dispatch<SidebarReducerAction>,
+  size: SidebarSize,
   variant: SidebarVariant
 ): void {
   dispatch({
-    type: "SET_VARIANT",
-    payload: variant,
+    type: "SET_LAYOUT",
+    payload: { size, variant },
   });
 }
 
 /**
- * Badilisha ukubwa wa Sidebar.
- *
- * @param dispatch Sidebar reducer dispatch function
- * @param size Sidebar size mpya (expanded | minimal)
- *
- * @example
- * setSidebarSize(dispatch, "minimal");
+ * Rejesha Layout ya kifaa baada ya Resize au Breakpoint change.
  */
-export function setSidebarSize(
+export function resetSidebarForDevice(
   dispatch: Dispatch<SidebarReducerAction>,
-  size: SidebarSize
+  payload: {
+    device: SidebarDevice;
+    size: SidebarSize;
+    variant: SidebarVariant;
+    isOpen: boolean;
+  }
 ): void {
   dispatch({
-    type: "SET_SIZE",
-    payload: size,
+    type: "RESET_FOR_DEVICE",
+    payload,
   });
 }
 
 /**
- * Weka hover expansion state.
- *
- * Hutumika kwa tabia kama: minimal sidebar + hover = expand temporarily.
- *
- * @param dispatch Sidebar reducer dispatch function
- * @param expanded Hover state
+ * Hifadhi layout ya sasa kabla ya kufanya temporary transition (k.m. kwenye Tablet).
+ */
+export function savePreviousSidebarLayout(
+  dispatch: Dispatch<SidebarReducerAction>
+): void {
+  dispatch({ type: "SAVE_PREVIOUS_LAYOUT" });
+}
+
+/**
+ * Rejesha layout ya nyuma (Restore State) baada ya kufunga floating panel.
+ */
+export function restorePreviousSidebarLayout(
+  dispatch: Dispatch<SidebarReducerAction>
+): void {
+  dispatch({ type: "RESTORE_PREVIOUS" });
+}
+
+/**
+ * Weka hover expansion state pale mtumiaji anapoweka mouse kwenye minimal sidebar.
  */
 export function setSidebarHoverExpanded(
   dispatch: Dispatch<SidebarReducerAction>,
@@ -131,42 +99,4 @@ export function setSidebarHoverExpanded(
     type: "SET_HOVER_EXPANDED",
     payload: expanded,
   });
-}
-
-/**
- * Weka user collapse preference.
- *
- * @param dispatch Sidebar reducer dispatch function
- * @param collapsed Ikiwa mteja/mtumiaji amecollapse
- */
-export function setSidebarCollapsedByUser(
-  dispatch: Dispatch<SidebarReducerAction>,
-  collapsed: boolean
-): void {
-  dispatch({
-    type: "SET_COLLAPSED_BY_USER",
-    payload: collapsed,
-  });
-}
-
-/**
- * Anzisha animation state.
- *
- * @param dispatch Sidebar reducer dispatch function
- */
-export function startSidebarAnimation(
-  dispatch: Dispatch<SidebarReducerAction>
-): void {
-  dispatch({ type: "START_ANIMATION" });
-}
-
-/**
- * Maliza animation state.
- *
- * @param dispatch Sidebar reducer dispatch function
- */
-export function stopSidebarAnimation(
-  dispatch: Dispatch<SidebarReducerAction>
-): void {
-  dispatch({ type: "STOP_ANIMATION" });
 }

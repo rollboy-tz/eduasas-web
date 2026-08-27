@@ -1,4 +1,4 @@
-import { MenuGroup } from "@/components/layout/sidebar/sidebar-composer";
+import { MenuGroup } from "@/types/layout";
 
 
 export const sidebarMockData: MenuGroup[] = [

@@ -1,5 +1,4 @@
-import { Users } from "lucide-react";
-import { MenuGroup } from "../components/layout/sidebar/sidebar-composer";
+import { MenuGroup } from "@/types/layout";
 
 export const SchoolMockSidebar: MenuGroup[] = [
   {

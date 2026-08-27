@@ -80,14 +80,14 @@ export async function handleRouting(req: NextRequest): Promise<NextResponse | nu
   const subdomain = extractSubdomain(hostname);
 
   // ULINZI: Zuia direct access ya /app/... kutoka kwenye main domain
-  if (!subdomain && url.pathname.startsWith("/app")) {
+  if (!subdomain && url.pathname.startsWith("/sub")) {
     return NextResponse.rewrite(new URL("/404", req.url));
   }
 
   if (!subdomain) return null;
 
   // Avoid infinite rewrite loops
-  if (url.pathname === `/app/${subdomain}` || url.pathname.startsWith(`/app/${subdomain}/`)) {
+  if (url.pathname === `/sub/${subdomain}` || url.pathname.startsWith(`/sub/${subdomain}/`)) {
     return null;
   }
 
@@ -100,7 +100,7 @@ export async function handleRouting(req: NextRequest): Promise<NextResponse | nu
   requestHeaders.set("x-subdomain", subdomain);
 
   // Rewrite to app/app/[subdomain]/...
-  const rewriteUrl = new URL(`/app/${subdomain}${url.pathname}${url.search}`, req.url);
+  const rewriteUrl = new URL(`/sub/${subdomain}${url.pathname}${url.search}`, req.url);
   
   return NextResponse.rewrite(rewriteUrl, {
     request: {

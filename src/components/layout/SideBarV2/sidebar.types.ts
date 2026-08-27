@@ -1,401 +1,163 @@
 /**
  * ============================================================================
- * EduAsas Sidebar V2 Types
+ * EduAsas Sidebar V2 - Types
  * ============================================================================
  *
  * Chanzo rasmi cha types, interfaces na contracts za Sidebar V2.
  *
  * File hili halina business logic.
  * Linafafanua data structures zinazotumiwa na:
- *
  * - Provider
  * - Reducer
  * - Hooks
  * - UI Components
  *
  * @author EduAsas
- * @version 2.3.0
+ * @version 2.3.1
  */
 
-
-import type {
-    ReactNode,
-    ElementType,
-} from "react";
-
-
-
-
+import type { ReactNode, ElementType } from "react";
 
 /* ============================================================================
- * Devices
+ * Devices & Presentation Modes
  * ============================================================================
  */
 
+export type SidebarDevice = "mobile" | "tablet" | "desktop";
 
-export type SidebarDevice =
-    | "mobile"
-    | "tablet"
-    | "desktop";
+export type SidebarVariant = "docked" | "floating";
 
-
-
-
-
-
-/* ============================================================================
- * Variant
- * ============================================================================
- */
-
-
-export type SidebarVariant =
-    | "docked"
-    | "floating";
-
-
-
-
-
-
-/* ============================================================================
- * Size
- * ============================================================================
- */
-
-
-export type SidebarSize =
-    | "expanded"
-    | "minimal";
-
-
-
-
-
-
+export type SidebarSize = "expanded" | "minimal";
 
 /* ============================================================================
  * Previous Layout Memory
  * ============================================================================
  */
 
-
 /**
  * Hifadhi state ya nyuma kabla ya temporary transition.
  *
  * Hutumika zaidi kwenye tablet:
- *
- * minimal + docked
- *        ↓
- * expanded + floating
- *        ↓
- * restore
- *        ↓
- * minimal + docked
+ * minimal + docked -> expanded + floating -> restore -> minimal + docked
  */
 export interface SidebarPreviousLayout {
-
-
-    size: SidebarSize;
-
-
-    variant: SidebarVariant;
-
-
-    isOpen: boolean;
-
-
+  size: SidebarSize;
+  variant: SidebarVariant;
+  isOpen: boolean;
 }
-
-
-
-
-
-
-
 
 /* ============================================================================
  * Sidebar State
  * ============================================================================
  */
 
-
 /**
  * Runtime state ya Sidebar.
  */
 export interface SidebarState {
+  /** Device ya sasa */
+  device: SidebarDevice;
 
+  /** Presentation mode */
+  variant: SidebarVariant;
 
+  /** Width mode */
+  size: SidebarSize;
 
-    /**
-     * Device ya sasa.
-     */
-    device: SidebarDevice;
+  /** Visibility state */
+  isOpen: boolean;
 
+  /**
+   * Previous stable state.
+   * Optional kwa sababu:
+   * - Initial mount haina history.
+   * - Desktop haitumii restore.
+   */
+  previousLayout?: SidebarPreviousLayout;
 
+  /** Hover expansion */
+  hoverExpanded: boolean;
 
-
-
-    /**
-     * Presentation mode.
-     */
-    variant: SidebarVariant;
-
-
-
-
-
-    /**
-     * Width mode.
-     */
-    size: SidebarSize;
-
-
-
-
-
-    /**
-     * Visibility state.
-     */
-    isOpen: boolean;
-
-
-
-
-
-    /**
-     * Previous stable state.
-     *
-     * Optional kwa sababu:
-     *
-     * - Initial mount haina history.
-     * - Desktop haitumii restore.
-     */
-    previousLayout?: SidebarPreviousLayout;
-
-
-
-
-
-    /**
-     * Hover expansion.
-     */
-    hoverExpanded: boolean;
-
-
-
-
-
-    /**
-     * Animation state.
-     */
-    animating: boolean;
-
-
+  /** Animation state */
+  animating: boolean;
 }
-
-
-
-
-
-
 
 /* ============================================================================
  * Actions
  * ============================================================================
  */
 
-
 /**
- * Public Sidebar API.
+ * Public Sidebar API Actions.
  */
 export interface SidebarActions {
+  /** Change sidebar variant */
+  setVariant(variant: SidebarVariant): void;
 
+  /** Change sidebar size */
+  setSize(size: SidebarSize): void;
 
+  /** Open sidebar */
+  open(): void;
 
-    /**
-     * Change sidebar variant.
-     */
-    setVariant(
-        variant: SidebarVariant
-    ): void;
+  /** Close sidebar */
+  close(): void;
 
+  /** Toggle sidebar open/close state */
+  toggle(): void;
 
-
-
-
-    /**
-     * Change sidebar size.
-     */
-    setSize(
-        size: SidebarSize
-    ): void;
-
-
-
-
-
-    /**
-     * Open sidebar.
-     */
-    open(): void;
-
-
-
-
-
-    /**
-     * Close sidebar.
-     */
-    close(): void;
-
-
-
-
-
-    /**
-     * Toggle sidebar.
-     */
-    toggle(): void;
-
-
-
-
-
-    /**
-     * Hover expansion.
-     */
-    setHoverExpanded(
-        expanded: boolean
-    ): void;
-
-
+  /** Hover expansion control */
+  setHoverExpanded(expanded: boolean): void;
 }
-
-
-
-
-
-
-
 
 /* ============================================================================
  * Context
  * ============================================================================
  */
 
-
 /**
- * Contract ya useSidebar().
+ * Contract ya useSidebar() Hook.
  */
-export interface SidebarContextType
-    extends SidebarState,
-        SidebarActions {
-
-
-
-    /**
-     * Device helpers.
-     */
-    isMobile: boolean;
-
-
-    isTablet: boolean;
-
-
-    isDesktop: boolean;
-
-
+export interface SidebarContextType extends SidebarState, SidebarActions {
+  /** Device helpers */
+  isMobile: boolean;
+  isTablet: boolean;
+  isDesktop: boolean;
 }
-
-
-
-
-
-
 
 /* ============================================================================
  * Provider
  * ============================================================================
  */
 
-
 export interface SidebarProviderProps {
-
-
-    children: ReactNode;
-
-
+  children: ReactNode;
 }
 
-
-
-
-
-
-
-
 /* ============================================================================
- * Navigation
+ * Navigation Items
  * ============================================================================
  */
 
-
 /**
- * Sidebar navigation item.
+ * Sidebar navigation item contract.
  */
 export interface SidebarMenuItem {
+  /** Menu label */
+  label: string;
 
+  /** Icon component */
+  icon: ElementType;
 
-    /**
-     * Menu label.
-     */
-    label: string;
+  /** Route URL */
+  href?: string;
 
+  /** Disabled state */
+  disabled?: boolean;
 
+  /** Nested children for sub-menus */
+  children?: SidebarMenuItem[];
 
-
-
-    /**
-     * Icon component.
-     */
-    icon: ElementType;
-
-
-
-
-
-    /**
-     * Route.
-     */
-    href?: string;
-
-
-
-
-
-    /**
-     * Disabled state.
-     */
-    disabled?: boolean;
-
-
-
-
-
-    /**
-     * Nested children.
-     */
-    children?: SidebarMenuItem[];
-
-
-
-
-
-    /**
-     * Optional badge.
-     */
-    badge?: string | number;
-
-
+  /** Optional badge count or tag */
+  badge?: string | number;
 }

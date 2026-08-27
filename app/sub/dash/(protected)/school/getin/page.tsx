@@ -47,8 +47,22 @@ function SwitchContextContent() {
     return schools.find((s) => s.slug === slugParam || s.schoolId === schoolIdParam) || schools[0];
   }, [schools, slugParam, schoolIdParam]);
 
+  const getHostDomain = () => {
+    if (typeof window === "undefined") return "eduasas.co.tz";
+
+    const parts = window.location.host.split(".");
+
+    // Kama ipo kwenye localhost au IP
+    if (parts.length <= 1 || window.location.host.includes("localhost")) {
+      return window.location.host;
+    }
+
+    // Kwa domain kama eduasas.co.tz (vipande 3 vya mwisho: eduasas + co + tz)
+    return parts.slice(-3).join(".");
+  };
+
   // Usalama wa DOM/Window Object wakati wa SSR
-  const hostDomain = typeof window !== "undefined" ? window.location.host.split(".")[1] : "eduasas.co.tz";
+  const hostDomain = getHostDomain();
   const PROTOCOL = process.env.NEXT_PUBLIC_NET_PROTOCOL || "https";
   const DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || hostDomain || "eduasas.co.tz";
 
@@ -62,7 +76,7 @@ function SwitchContextContent() {
       try {
         // 1. SWITCH SESSION & GET TOKEN
         setSteps({ switching: 1, verifying: 0, finalizing: 0 });
-        
+
         // Tumia function iliyoboreshwa ya switchTenant inayorudisha response yenye token
         const res = await switchTenant(schoolUId, schoolId);
 
@@ -91,11 +105,11 @@ function SwitchContextContent() {
         // 4. REDIRECT WITH TOKEN & REDIRECT_TO PARAMETERS
         // Inampeleka mtumiaji kwenye consumer page ya subdomain mfano: https://school-a.eduasas.co.tz/consumer?token=XYZ&redirect_to=/dashboard
         const destinationUrl = `${PROTOCOL}://${slug}.${DOMAIN}/consumer?token=${generatedToken}&redirect_to=${encodeURIComponent(pushTo)}`;
-        
+
         window.location.href = destinationUrl;
 
       } catch (err: any) {
-         console.error(err)
+        console.error(err)
         isProcessing.current = false;
         setErrorDetail({
           title: "Synchronization Failed",
@@ -183,9 +197,8 @@ function StatusRow({ label, state }: { label: string; state: 0 | 1 | 2 }) {
         {state === 2 && <Check className="w-4 h-4 text-emerald-800 stroke-[3]" />}
       </div>
       <span
-        className={`text-xs transition-all duration-300 ${
-          isActive ? "text-muted-900 font-bold" : "text-muted-500 font-semibold"
-        }`}
+        className={`text-xs transition-all duration-300 ${isActive ? "text-muted-900 font-bold" : "text-muted-500 font-semibold"
+          }`}
       >
         {label}
       </span>

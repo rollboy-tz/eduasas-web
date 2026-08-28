@@ -64,7 +64,7 @@ export interface EduDateInputProps {
    * Format ya thamani inayorudishwa kwenye onChange (param ya kwanza):
    * - "iso" (default) -> YYYY-MM-DD / YYYY-MM / YYYY
    * - pattern string   -> mfano "DD/MM/YYYY"
-   * - function         -> (date: Date) => string, udhibiti kamili
+   * - "iso-datetime"        -> Iso string salama dhidi ya time zone
    */
   outputFormat?: DateOutputFormat;
   placeholder?: string;
@@ -94,9 +94,9 @@ export interface EduDateInputProps {
 }
 
 const sizeStyles: Record<NonNullable<EduDateInputProps["size"]>, string> = {
-  sm: "h-8 px-2 text-xs",
-  md: "h-9 px-3 text-sm",
-  lg: "h-10 px-3.5 text-base",
+  sm: "h-10 px-2 text-sm",
+  md: "h-11 px-3 text-base",
+  lg: "h-12 px-3.5 text-base",
 };
 
 function EduDateInput({

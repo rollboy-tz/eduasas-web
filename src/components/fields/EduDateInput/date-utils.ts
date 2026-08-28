@@ -104,12 +104,29 @@ export function formatDate(date: Date | null, pattern: string): string {
 }
 
 /**
- * Output format inayoweza kupangwa na mtumiaji wa component:
- * - "iso"            -> YYYY-MM-DD / YYYY-MM / YYYY (kutegemea mode) - DEFAULT
- * - pattern string    -> mfano "DD/MM/YYYY"
- * - function          -> full control, unapata Date halisi
+ * Inatengeneza ISO datetime string SALAMA kwa tarehe-tu (date-only) value -
+ * yaani "UTC midnight ya TAREHE HIYO HIYO uliyochagua", si "local midnight
+ * iliyobadilishwa kuwa UTC" (ambayo ndiyo chanzo cha bug ya 'siku ya
+ * nyuma' - `date.toISOString()` ya kawaida kwenye Date ya local-midnight
+ * inahamisha tarehe nyuma kwa timezone yoyote iliyo mbele ya UTC, kama
+ * Tanzania UTC+3).
+ *
+ * Tumia hii (kupitia `outputFormat="iso-datetime"`) badala ya kuandika
+ * `date.toISOString()` mwenyewe - hasa kama backend/API yako inahitaji
+ * full timestamp string (si "YYYY-MM-DD" tu).
  */
-export type DateOutputFormat = "iso" | string | ((date: Date) => string);
+export function toSafeISOString(date: Date): string {
+  return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())).toISOString();
+}
+
+/**
+ * Output format inayoweza kupangwa na mtumiaji wa component:
+ * - "iso"          -> YYYY-MM-DD / YYYY-MM / YYYY (kutegemea mode) - DEFAULT, salama kabisa
+ * - "iso-datetime" -> full ISO datetime string, salama dhidi ya timezone shift (angalia toSafeISOString)
+ * - pattern string -> mfano "DD/MM/YYYY"
+ * - function       -> full control, unapata Date halisi
+ */
+export type DateOutputFormat = "iso" | "iso-datetime" | string | ((date: Date) => string);
 
 export function resolveOutputValue(
   date: Date | null,
@@ -123,6 +140,10 @@ export function resolveOutputValue(
     if (mode === "year") return String(date.getFullYear());
     if (mode === "month") return `${date.getFullYear()}-${pad(date.getMonth() + 1)}`;
     return toComparable(date);
+  }
+
+  if (output === "iso-datetime") {
+    return toSafeISOString(date);
   }
 
   return formatDate(date, output);

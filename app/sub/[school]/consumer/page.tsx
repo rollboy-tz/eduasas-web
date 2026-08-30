@@ -17,30 +17,28 @@ export default function SchoolConsumerPage() {
   // 2. Tumia React Query kufanya authentication backend kama token ipo
   const { data, error, isLoading, isSuccess } = useQuery({
     queryKey: ["auth-consumer", token],
-    queryFn: () => apiFetch(`/auth/consume?token=${token}`),
+    queryFn: () => apiFetch(`/auth/consumer?token=${token}`),
     enabled: !!token, // Ita-execute PEKEE kama token ipo
   });
 
   // 3. X-Factor logic: Mambo ya kufanya baada ya Auth kufanikiwa au kumalizika
   useEffect(() => {
-    if (isSuccess && token) {
-      // a. Save token kwenye Cookie
-      document.cookie = `auth_token=${token}; path=/; max-age=86400; SameSite=Lax`;
-
-      // b. Tengeneza URL mpya isiyo na token
+    if (isSuccess) {
+      
+      // a. Tengeneza URL mpya isiyo na token
       const params = new URLSearchParams(searchParams.toString());
       params.delete("token");
       params.delete("redirect_to")
       const newQuery = params.toString() ? `?${params.toString()}` : "";
 
-      // c. Safisha URL na mpeleke mtumiaji kwenye ukurasa wa ndani (mfano dashboard)
+      // b. Safisha URL na mpeleke mtumiaji kwenye ukurasa wa ndani (mfano dashboard)
       router.replace(`${redirect_to}${newQuery}`);
     }
   }, [isSuccess, token, searchParams, redirect_to, router]);
 
   // Handle Loading State
   if (isLoading) {
-    return <EduScreenLoader />;
+    return <EduScreenLoader loadingText="Initializing session"/>;
   }
 
   // Handle Error State (Kama token ni invalid au imewahi kutumika)
@@ -49,7 +47,7 @@ export default function SchoolConsumerPage() {
       <main className="flex h-screen items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-bold text-red-600">Authentication Failed</h2>
-          <p className="text-gray-600">Token hii si sahihi au imemaliza muda wake.</p>
+          <p className="text-gray-600">{error.message}.</p>
         </div>
       </main>
     );

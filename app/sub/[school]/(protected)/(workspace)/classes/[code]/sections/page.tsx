@@ -26,7 +26,7 @@ export default function SectionsPage() {
     if (!classProfile) return null;
     return (
         <Suspense fallback={<EduScreenLoader loadingText="One moment please" />}>
-            <SectionsPageView />
+            <SectionsPageView currentClass={classProfile}/>
         </Suspense>
     )
 }

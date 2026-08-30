@@ -57,3 +57,40 @@ export interface SchoolClass {
   createdAt: string;
   updatedAt: string;
 }
+
+/**
+ * This interface used either to create or update section
+ */
+export interface SectionsMutation {
+  name: string;
+  capacity: number;
+  streamId: string | null;
+  classTeacherId: string | null;
+}
+
+/**
+ * Stream details found in class sections list
+ */
+export interface SectionStream {
+    id: string;
+    name: string;
+    code: string;
+}
+
+/**
+ * Sections list streams
+ */
+export interface ClassSections {
+    id: string;
+    name: string;
+    streamId: string;
+    stream: SectionStream | null;
+    capacity: number;
+    currentStudents: number;
+    availableSlots: number;
+    classTeacher: null;
+    timestamps: {
+        createdAt: string;
+        updatedAt: string;
+    }
+}

@@ -23,6 +23,10 @@ export function TimeColumn({ items, selected, onSelect, ariaLabel, disabled }: T
 
   // Auto-scroll kwenye item iliyochaguliwa unapofungua popover - mtumiaji
   // haipaswi kutafuta kwa mkono kila wakati anapofungua time picker.
+  // block:"center" bila padding ya ziada - kwa items zilizo katikati ya
+  // orodha zinatua katikati kabisa; kwa zilizo karibu na mwanzo/mwisho,
+  // scroll inasimama pale inapofika ukingo (BILA kuacha nafasi tupu -
+  // browser inabana scroll position ndani ya mipaka ya content halisi).
   useEffect(() => {
     const index = items.findIndex((item) => item.value === selected);
     if (index >= 0) {
@@ -35,7 +39,7 @@ export function TimeColumn({ items, selected, onSelect, ariaLabel, disabled }: T
       ref={containerRef}
       role="listbox"
       aria-label={ariaLabel}
-      className="h-56 w-full overflow-y-auto scroll-smooth snap-y snap-mandatory py-24 flex flex-col items-stretch [scrollbar-width:thin]"
+      className="h-56 w-full overflow-y-auto scroll-smooth py-2 snap-y snap-mandatory flex flex-col items-stretch [scrollbar-width:thin]"
     >
       {items.map((item, index) => {
         const isSelected = item.value === selected;

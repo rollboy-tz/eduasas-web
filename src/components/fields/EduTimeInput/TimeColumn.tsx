@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils/helper";
 
 export interface TimeColumnItem {
@@ -35,7 +35,7 @@ export function TimeColumn({ items, selected, onSelect, ariaLabel, disabled }: T
       ref={containerRef}
       role="listbox"
       aria-label={ariaLabel}
-      className="h-56 w-full overflow-y-auto scroll-smooth snap-y snap-mandatory py-24 [scrollbar-width:thin]"
+      className="h-56 w-full overflow-y-auto scroll-smooth snap-y snap-mandatory py-24 flex flex-col items-stretch [scrollbar-width:thin]"
     >
       {items.map((item, index) => {
         const isSelected = item.value === selected;
@@ -51,7 +51,7 @@ export function TimeColumn({ items, selected, onSelect, ariaLabel, disabled }: T
             disabled={disabled || item.disabled}
             onClick={() => onSelect(item.value)}
             className={cn(
-              "snap-center flex items-center justify-center w-full h-8 text-sm font-medium rounded-md transition-colors",
+              "snap-center shrink-0 flex items-center justify-center w-full h-8 text-sm font-medium rounded-md transition-colors",
               "text-gray-700 hover:bg-gray-100",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-1",
               isSelected && "bg-blue-600 text-white hover:bg-blue-600 font-semibold",

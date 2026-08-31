@@ -70,9 +70,9 @@ export interface EduTimeInputProps {
 }
 
 const sizeStyles: Record<NonNullable<EduTimeInputProps["size"]>, string> = {
-  sm: "h-10 px-2 text-sm",
-  md: "h-11 px-3 text-base",
-  lg: "h-12 px-3.5 text-base",
+  sm: "h-9 lg:h-8 px-2 text-sm",
+  md: "h-10 lg:h-9 px-3 text-base",
+  lg: "h-11 lg:h-10 px-3.5",
 };
 
 export function EduTimeInput({
